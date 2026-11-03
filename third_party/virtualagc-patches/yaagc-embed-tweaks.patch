@@ -1,0 +1,163 @@
+diff --git a/yaAGC/CMakeLists.txt b/yaAGC/CMakeLists.txt
+index 2b1236fed..961663a55 100644
+--- a/yaAGC/CMakeLists.txt
++++ b/yaAGC/CMakeLists.txt
+@@ -1,36 +1,46 @@
+-set(_libagc_src agc_engine_init.c agc_engine.c agc_utilities.c rfopen.c
+-Backtrace.c SocketAPI.c DecodeDigitalDownlink.c)
+-
+-set(_agc_src main.c agc_cli.c agc_simulator.c agc_debugger.c
+-agc_gdbmi.c agc_disassembler.c agc_help.c nbfgets.c agc_symtab.c
+-NormalizeSourceName.c ${PROJECT_SOURCE_DIR}/Tools/checkdec.c)
+-
+-add_library(libyaAGC OBJECT ${_libagc_src})
+-# used by targets in other directories
+-
+-if(NOT (Threads_FOUND AND CMAKE_USE_PTHREADS_INIT))
+-  return()
+-endif()
+-
+-add_executable(yaAGC ${_agc_src} ${_libagc_src})
+-target_compile_definitions(yaAGC PRIVATE NVER="${NVER}" NOREADLINE="yes" GDBMI)
+-target_link_libraries(yaAGC PRIVATE $<$<NOT:$<BOOL:${MSVC}>>:m>)
+-if(Threads_FOUND)
+-  target_link_libraries(yaAGC PRIVATE Threads::Threads)
+-endif()
+-
+-if(WIN32)
+-  add_library(regex regex.c)
+-  target_compile_definitions(regex PRIVATE STDC_HEADERS)
+-
+-  target_sources(yaAGC PRIVATE random.c)
+-  target_link_libraries(yaAGC PRIVATE regex ${WINSOCK_LIBRARIES})
+-endif()
+-
+-if(APPLE OR WIN32)
+-  target_compile_definitions(yaAGC PRIVATE STDC_HEADERS)
+-endif()
+-
+-
+-
+-install(TARGETS yaAGC)
++cmake_minimum_required(VERSION 3.16)
++project(yaAGC C)
++
++# Minimal libyaAGC: the AGC virtual machine and the small helpers actually
++# called from an embedded host.  Excluded from the original Makefile's
++# LIBOBJECTS: SocketAPI.c (host provides its own ChannelInput/Output;
++# for lib_SaturnIB those are in SaturnIBStack.cpp).
++#
++# Embed-only static lib (branch embed-yaagc tracks origin/master).
++# Diff vs upstream yaAGC/CMakeLists.txt: no SocketAPI / no yaAGC exe;
++# host supplies ChannelInput/Output/RequestRadarData (SaturnIBStack).
++# Local source patches on this branch: named `typedef struct agc_t`,
++# and dddConfigure() returns -1 instead of exit(1) when TSV specs are
++# missing.  Downlink UI needs dddConfigure("<RomStem>","") plus
++# ddd-*.tsv in CWD (see ApolloA/).
++set(YAAGC_SRC
++    agc_engine.c
++    agc_engine_init.c
++    agc_utilities.c
++    rfopen.c
++    Backtrace.c
++    DecodeDigitalDownlink.c
++)
++
++add_library(yaAGC STATIC ${YAAGC_SRC})
++
++set_target_properties(yaAGC PROPERTIES POSITION_INDEPENDENT_CODE ON)
++
++target_include_directories(yaAGC
++    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
++)
++
++target_compile_options(yaAGC PRIVATE
++    -Wno-implicit-function-declaration
++    -Wno-int-conversion
++    -Wno-incompatible-pointer-types
++    -Wno-format
++    -Wno-unused-result
++    -Wno-return-type
++    -Wno-parentheses
++    -Wno-pointer-sign
++    -Wno-deprecated-non-prototype
++)
++
++# NVER is stamped into version strings and expected as -DNVER=<n>.
++target_compile_definitions(yaAGC PRIVATE NVER=0)
+diff --git a/yaAGC/DecodeDigitalDownlink.c b/yaAGC/DecodeDigitalDownlink.c
+index ed5bce540..4bccdc2be 100644
+--- a/yaAGC/DecodeDigitalDownlink.c
++++ b/yaAGC/DecodeDigitalDownlink.c
+@@ -797,8 +797,12 @@ dddConfigure (char *agcSoftware, const char *docPrefix)
+   findTsvFiles(aliasTsv);
+   if (numTsvFiles == 0)
+     {
+-      fprintf(stderr, "No TSV files found for %s\n", agcSoftware);
+-      exit(1);
++      // Embed hosts must not abort the whole process if downlink specs are
++      // missing from CWD; leave protocol flags clear so DecodeDigitalDownlink
++      // stays a no-op until configured successfully.
++      fprintf(stderr, "No TSV files found for %s (downlink decode disabled)\n",
++              agcSoftware);
++      return -1;
+     }
+   for (int j = 0; j < numTsvFiles && j < MAX_DOWNLISTS; j++)
+     {
+@@ -913,6 +917,7 @@ dddConfigure (char *agcSoftware, const char *docPrefix)
+ 	      i--;
+ 	      continue;
+ 	    }
++	  int illFormed = 0;
+ 	  for (s = line, n = 0; n < 6; s = ss + 1, n++)
+ 	    {
+ 	      for (ss = s; *ss != 0; ss++)
+@@ -920,8 +925,10 @@ dddConfigure (char *agcSoftware, const char *docPrefix)
+ 		  break;
+ 	      if (*ss == 0 && n < 5)
+ 		{
+-		  fprintf(stderr, "Ill-formed line %d in %s\n", i, filename);
+-		  exit(1);
++		  fprintf(stderr, "Ill-formed line %d in %s (skipped)\n", i,
++		          filename);
++		  illFormed = 1;
++		  break;
+ 		}
+ 	      *ss = 0;
+ 	      if (n == 0)
+@@ -937,12 +944,18 @@ dddConfigure (char *agcSoftware, const char *docPrefix)
+ 	      else if (n == 5)
+ 		unitField = s;
+ 	    }
++	  if (illFormed)
++	    {
++	      i--;
++	      continue;
++	    }
+ 	  if (!isUnsigned(offsetField) &&
+ 	      !(offsetField[0] == '-' && isUnsigned(&offsetField[1])))
+ 	    {
+-	      fprintf(stderr, "Non-numeric field %s at line %d in %s\n",
++	      fprintf(stderr, "Non-numeric field %s at line %d in %s (skipped)\n",
+ 		      offsetField, i, filename);
+-	      exit(1);
++	      i--;
++	      continue;
+ 	    }
+ 	  offset = atoi(offsetField);
+ 	  fieldSpec = &(dls->FieldSpecs[i]);
+diff --git a/yaAGC/agc_engine.h b/yaAGC/agc_engine.h
+index c4b0e8317..2309bfe39 100644
+--- a/yaAGC/agc_engine.h
++++ b/yaAGC/agc_engine.h
+@@ -367,7 +367,9 @@ typedef void ProcessDownlinkList_t (DownlinkListSpec_t *Spec);
+ // that contains the CPU's internal states, the complete memory space, and any
+ // other little handy items needed to track execution by the CPU.
+ 
+-typedef struct
++// Named struct tag (agc_t) required so host code can forward-declare
++// `typedef struct agc_t agc_t;` without including this header in public APIs.
++typedef struct agc_t
+ {
+   // The following variable counts the total number of clock cycles since
+   // CPU-startup.  A 64-bit integer is used, because with a 32-bit integer

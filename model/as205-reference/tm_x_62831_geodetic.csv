@@ -1,0 +1,50 @@
+# NASA-TM-X-62831 geodetic ground track (Tables 6/7 + App C)
+# LONG = longitude deg East (negative = west), LATT = geodetic latitude deg North
+# Digitized from TM scan; S-IB from App-C CHIP/LONG/LATT listing; S-IVB from Table 7.
+# Cross-checked against tm_x_62831_chi.csv times. OCR-uncertain rows marked.
+t_flight_sec,stage,lon_deg,lat_deg,ocr_note
+0.0,S-IB,-80.56,28.53,
+10.0,S-IB,-80.55,28.53,
+20.0,S-IB,-80.54,28.54,
+30.0,S-IB,-80.51,28.55,
+40.0,S-IB,-80.47,28.56,
+50.0,S-IB,-80.43,28.57,
+60.0,S-IB,-80.38,28.58,
+70.0,S-IB,-80.33,28.60,
+80.0,S-IB,-80.28,28.61,
+90.0,S-IB,-80.23,28.62,
+100.0,S-IB,-80.18,28.64,
+110.0,S-IB,-80.14,28.65,
+120.0,S-IB,-80.10,28.66,
+130.0,S-IB,-80.05,28.68,
+140.0,S-IB,-80.01,28.69,
+144.49,ULLAGE,-79.96,28.69,
+150.0,S-IVB,-79.87,28.72,
+156.41,S-IVB,-79.76,28.75,
+163.11,S-IVB,-79.65,28.78,
+170.0,S-IVB,-79.53,28.81,
+190.0,S-IVB,-79.17,28.91,
+210.0,S-IVB,-78.78,29.01,interp between 190/230
+230.0,S-IVB,-78.38,29.12,
+250.0,S-IVB,-77.94,29.23,
+270.0,S-IVB,-77.47,29.34,
+290.0,S-IVB,-76.97,29.45,
+310.0,S-IVB,-76.44,29.57,
+330.0,S-IVB,-75.87,29.70,
+350.0,S-IVB,-75.27,29.82,
+370.0,S-IVB,-74.62,29.95,
+390.0,S-IVB,-73.92,30.08,
+410.0,S-IVB,-73.18,30.21,
+430.0,S-IVB,-72.38,30.35,
+450.0,S-IVB,-71.52,30.49,
+454.75,S-IVB,-71.30,30.52,mixture-ratio shift
+470.0,S-IVB,-70.60,30.63,
+490.0,S-IVB,-69.62,30.77,
+510.0,S-IVB,-68.59,30.90,
+530.0,S-IVB,-67.49,31.04,
+550.0,S-IVB,-66.30,31.16,interp between 530/570
+570.0,S-IVB,-65.08,31.29,
+590.0,S-IVB,-63.75,31.40,
+610.0,S-IVB,-62.33,31.51,
+614.63,S-IVB,-61.24,31.58,GCS
+624.63,S-IVB,-61.21,31.68,orbit insertion

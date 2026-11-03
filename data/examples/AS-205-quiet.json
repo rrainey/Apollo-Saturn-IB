@@ -1,0 +1,9 @@
+{
+  "sim": {
+    "run_time_sec": 800.0,
+    "timeStep": 0.01
+  },
+  "agc": {
+    "pad_load_file": "-"
+  }
+}

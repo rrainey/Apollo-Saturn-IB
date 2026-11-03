@@ -1,0 +1,23 @@
+{
+  "sim": {
+    "run_time_sec": 904.0,
+    "timeStep": 0.01,
+    "final_output": "/tmp/as205-tm-x-62831-final.json",
+    "csv_output": "/tmp/as205-tm-x-62831.csv"
+  },
+  "launch_date": {
+    "year": 1968, "month": 10, "day": 11,
+    "hour": 14, "minute": 57, "second": 45.0
+  },
+  "model": {
+    "A_z_deg": 72.0,
+    "CG_LLA_deg_m": [28.521963, -80.561141, 34.7],
+    "T_L_prime_sec": 300.0
+  },
+  "agc": {
+    "rom_path": "Colossus249.bin",
+    "pad_load_file": "-",
+    "pad_load_start_sec": 15.0
+  },
+  "_comment": "NASA-TM-X-62831 ops: 300s on pad + ~604s flight (GCS~614.6s after first motion). A_z=72° flight azimuth. Requires Obliq stack with tm-x-62831 model parameters."
+}

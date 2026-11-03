@@ -1,0 +1,10 @@
+build/
+third_party/virtualagc/
+__pycache__/
+# Written at runtime when running from data/
+data/saturn_a_log.txt
+data/imu_pipa_cdu.csv
+data/console.log
+data/final.json
+data/results.csv
+data/after.txt

@@ -1,0 +1,7 @@
+# EVENT sep t_sim=447.07 t_flight=147.07 h_km=0.000 Ve=0.00
+# EVENT mode 0->1 t_sim=776.00 t_flight=476.00 T3=159.4 chiZ=19.4
+# EVENT mode 1->2 t_sim=777.60 t_flight=477.60 T3=175.9 chiZ=27
+# EVENT mode 2->3 t_sim=809.60 t_flight=509.60 T3=110.7 chiZ=9.72
+# EVENT mode 3->4 t_sim=915.20 t_flight=615.20 T3=5.081 chiZ=45
+# EVENT gcs_proxy t_sim=916.80 t_flight=616.80 h_km=229.086 Ve=7929.26 hsl=1
+# COMPARE_HOOKS sep_h_km=0.000 sep_Ve=0.00 gcs_h_km=229.086 gcs_Ve=7929.26

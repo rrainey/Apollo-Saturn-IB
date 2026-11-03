@@ -1,0 +1,1677 @@
+{
+  "name": "stable_member_control",
+  "version": 2,
+  "data": {
+    "version": "2.1",
+    "metadata": {
+      "description": "Obliq port of Green StableMemberControl.mdl (CM ISS). Hierarchy mirrors RTW hilite_system map S1\u2013S8.",
+      "greenSource": "lib_SaturnIB/StableMemberControl_grt_malloc_rtw/",
+      "rtwMap": {
+        "S1": "StableMemberControl/StableMemberControl",
+        "S2": "ECI2BODY",
+        "S3": "ECI2SM",
+        "S4": "Stable Member Gimbal Angles (IM,MM,OM)",
+        "S5": "Update Stable Member orientation",
+        "S6": "ECI2BODY/Normalize",
+        "S7": "ECI2SM/Normalize",
+        "S8": "Update Stable Member orientation/qdot"
+      }
+    },
+    "sheets": [
+      {
+        "id": "main",
+        "name": "Main",
+        "blocks": [
+          {
+            "id": "root_inq0",
+            "name": "q_ECItoSM_0",
+            "type": "input_port",
+            "position": {
+              "x": 40,
+              "y": 40
+            },
+            "parameters": {
+              "portName": "q_ECItoSM_0",
+              "dataType": "double[4]",
+              "defaultValue": 0
+            }
+          },
+          {
+            "id": "root_inw",
+            "name": "GimbalRates_rad_per_sec",
+            "type": "input_port",
+            "position": {
+              "x": 40,
+              "y": 140
+            },
+            "parameters": {
+              "portName": "GimbalRates_rad_per_sec",
+              "dataType": "double[3]",
+              "defaultValue": 0
+            }
+          },
+          {
+            "id": "root_inqb",
+            "name": "q_ECItoBody",
+            "type": "input_port",
+            "position": {
+              "x": 40,
+              "y": 240
+            },
+            "parameters": {
+              "portName": "q_ECItoBody",
+              "dataType": "double[4]",
+              "defaultValue": 0
+            }
+          },
+          {
+            "id": "sub_s1",
+            "name": "StableMemberControl",
+            "type": "subsystem",
+            "position": {
+              "x": 200,
+              "y": 40
+            },
+            "parameters": {
+              "sheets": [
+                {
+                  "id": "sub_s1_sheet",
+                  "name": "StableMemberControl",
+                  "blocks": [
+                    {
+                      "id": "s1_inq0",
+                      "name": "q_ECItoSM_0",
+                      "type": "input_port",
+                      "position": {
+                        "x": 40,
+                        "y": 40
+                      },
+                      "parameters": {
+                        "portName": "q_ECItoSM_0",
+                        "dataType": "double[4]"
+                      }
+                    },
+                    {
+                      "id": "s1_inw",
+                      "name": "GimbalRates_rad_per_sec",
+                      "type": "input_port",
+                      "position": {
+                        "x": 40,
+                        "y": 120
+                      },
+                      "parameters": {
+                        "portName": "GimbalRates_rad_per_sec",
+                        "dataType": "double[3]"
+                      }
+                    },
+                    {
+                      "id": "s1_inqb",
+                      "name": "q_ECItoBody",
+                      "type": "input_port",
+                      "position": {
+                        "x": 40,
+                        "y": 200
+                      },
+                      "parameters": {
+                        "portName": "q_ECItoBody",
+                        "dataType": "double[4]"
+                      }
+                    },
+                    {
+                      "id": "sub_s5",
+                      "name": "Update_Stable_Member_orientation",
+                      "type": "subsystem",
+                      "position": {
+                        "x": 40,
+                        "y": 40
+                      },
+                      "parameters": {
+                        "sheets": [
+                          {
+                            "id": "sub_s5_sheet",
+                            "name": "Update_Stable_Member_orientation",
+                            "blocks": [
+                              {
+                                "id": "s5_inq0",
+                                "name": "q_ECItoSM_0",
+                                "type": "input_port",
+                                "position": {
+                                  "x": 40,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "portName": "q_ECItoSM_0",
+                                  "dataType": "double[4]"
+                                }
+                              },
+                              {
+                                "id": "s5_inw",
+                                "name": "GimbalRates_rad_per_sec",
+                                "type": "input_port",
+                                "position": {
+                                  "x": 40,
+                                  "y": 160
+                                },
+                                "parameters": {
+                                  "portName": "GimbalRates_rad_per_sec",
+                                  "dataType": "double[3]"
+                                }
+                              },
+                              {
+                                "id": "sub_s8",
+                                "name": "qdot",
+                                "type": "subsystem",
+                                "position": {
+                                  "x": 400,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "sheets": [
+                                    {
+                                      "id": "sub_s8_sheet",
+                                      "name": "qdot",
+                                      "blocks": [
+                                        {
+                                          "id": "qdot_inq",
+                                          "name": "q",
+                                          "type": "input_port",
+                                          "position": {
+                                            "x": 40,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "portName": "q",
+                                            "dataType": "double[4]"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_inw",
+                                          "name": "GimbalRates_rad_per_sec",
+                                          "type": "input_port",
+                                          "position": {
+                                            "x": 40,
+                                            "y": 220
+                                          },
+                                          "parameters": {
+                                            "portName": "GimbalRates_rad_per_sec",
+                                            "dataType": "double[3]"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_dmx_q",
+                                          "name": "Demux_q",
+                                          "type": "demux",
+                                          "position": {
+                                            "x": 200,
+                                            "y": 40
+                                          },
+                                          "parameters": {
+                                            "numberOfOutputs": 4
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_mux_q",
+                                          "name": "Mux_q_col",
+                                          "type": "mux",
+                                          "position": {
+                                            "x": 360,
+                                            "y": 40
+                                          },
+                                          "parameters": {
+                                            "numberOfInputs": 4,
+                                            "dataType": "double[4][1]",
+                                            "outputType": "double[4][1]"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_dmx_w",
+                                          "name": "Demux_rates",
+                                          "type": "demux",
+                                          "position": {
+                                            "x": 200,
+                                            "y": 220
+                                          },
+                                          "parameters": {
+                                            "numberOfOutputs": 3
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_kin",
+                                          "name": "Fcn_qdots",
+                                          "type": "body2quaternion_rates",
+                                          "position": {
+                                            "x": 560,
+                                            "y": 100
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "qdot_k",
+                                          "name": "High_Gain_Quaternion_Normalization",
+                                          "type": "source",
+                                          "position": {
+                                            "x": 200,
+                                            "y": 360
+                                          },
+                                          "parameters": {
+                                            "signalType": "constant",
+                                            "value": 0.0,
+                                            "dataType": "double",
+                                            "useParameter": true,
+                                            "parameterName": "k_quat"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_dot",
+                                          "name": "Dot_Product",
+                                          "type": "dot_product",
+                                          "position": {
+                                            "x": 360,
+                                            "y": 320
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "qdot_fb",
+                                          "name": "norm_feedback",
+                                          "type": "evaluate",
+                                          "position": {
+                                            "x": 560,
+                                            "y": 300
+                                          },
+                                          "parameters": {
+                                            "numInputs": 3,
+                                            "expression": "[in(0)*(1.0-in(1))*in(2)[0], in(0)*(1.0-in(1))*in(2)[1], in(0)*(1.0-in(1))*in(2)[2], in(0)*(1.0-in(1))*in(2)[3]]",
+                                            "dataType": "double[4]",
+                                            "outputType": "double[4]"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_kin_flat",
+                                          "name": "qdot_kin_flat",
+                                          "type": "evaluate",
+                                          "position": {
+                                            "x": 720,
+                                            "y": 100
+                                          },
+                                          "parameters": {
+                                            "numInputs": 1,
+                                            "expression": "[in(0)[0][0], in(0)[1][0], in(0)[2][0], in(0)[3][0]]",
+                                            "dataType": "double[4]",
+                                            "outputType": "double[4]"
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_sum",
+                                          "name": "Sum",
+                                          "type": "sum",
+                                          "position": {
+                                            "x": 880,
+                                            "y": 140
+                                          },
+                                          "parameters": {
+                                            "numberOfInputs": 2
+                                          }
+                                        },
+                                        {
+                                          "id": "qdot_out",
+                                          "name": "qdot",
+                                          "type": "output_port",
+                                          "position": {
+                                            "x": 1040,
+                                            "y": 140
+                                          },
+                                          "parameters": {
+                                            "portName": "qdot",
+                                            "dataType": "double[4]"
+                                          }
+                                        }
+                                      ],
+                                      "extents": {
+                                        "width": 1200,
+                                        "height": 450
+                                      },
+                                      "connections": [
+                                        {
+                                          "id": "qd_w0",
+                                          "sourceBlockId": "qdot_inq",
+                                          "targetBlockId": "qdot_dmx_q",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w1a",
+                                          "sourceBlockId": "qdot_dmx_q",
+                                          "targetBlockId": "qdot_mux_q",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w1b",
+                                          "sourceBlockId": "qdot_dmx_q",
+                                          "targetBlockId": "qdot_mux_q",
+                                          "sourcePortIndex": 1,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "qd_w1c",
+                                          "sourceBlockId": "qdot_dmx_q",
+                                          "targetBlockId": "qdot_mux_q",
+                                          "sourcePortIndex": 2,
+                                          "targetPortIndex": 2
+                                        },
+                                        {
+                                          "id": "qd_w1d",
+                                          "sourceBlockId": "qdot_dmx_q",
+                                          "targetBlockId": "qdot_mux_q",
+                                          "sourcePortIndex": 3,
+                                          "targetPortIndex": 3
+                                        },
+                                        {
+                                          "id": "qd_w2",
+                                          "sourceBlockId": "qdot_inw",
+                                          "targetBlockId": "qdot_dmx_w",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w3",
+                                          "sourceBlockId": "qdot_mux_q",
+                                          "targetBlockId": "qdot_kin",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w4",
+                                          "sourceBlockId": "qdot_dmx_w",
+                                          "targetBlockId": "qdot_kin",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "qd_w5",
+                                          "sourceBlockId": "qdot_dmx_w",
+                                          "targetBlockId": "qdot_kin",
+                                          "sourcePortIndex": 1,
+                                          "targetPortIndex": 2
+                                        },
+                                        {
+                                          "id": "qd_w6",
+                                          "sourceBlockId": "qdot_dmx_w",
+                                          "targetBlockId": "qdot_kin",
+                                          "sourcePortIndex": 2,
+                                          "targetPortIndex": 3
+                                        },
+                                        {
+                                          "id": "qd_w7",
+                                          "sourceBlockId": "qdot_inq",
+                                          "targetBlockId": "qdot_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w8",
+                                          "sourceBlockId": "qdot_inq",
+                                          "targetBlockId": "qdot_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "qd_w9",
+                                          "sourceBlockId": "qdot_k",
+                                          "targetBlockId": "qdot_fb",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w10",
+                                          "sourceBlockId": "qdot_dot",
+                                          "targetBlockId": "qdot_fb",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "qd_w11",
+                                          "sourceBlockId": "qdot_inq",
+                                          "targetBlockId": "qdot_fb",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 2
+                                        },
+                                        {
+                                          "id": "qd_w12",
+                                          "sourceBlockId": "qdot_kin",
+                                          "targetBlockId": "qdot_kin_flat",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w13",
+                                          "sourceBlockId": "qdot_kin_flat",
+                                          "targetBlockId": "qdot_sum",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "qd_w14",
+                                          "sourceBlockId": "qdot_fb",
+                                          "targetBlockId": "qdot_sum",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "qd_w15",
+                                          "sourceBlockId": "qdot_sum",
+                                          "targetBlockId": "qdot_out",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "inputPorts": [
+                                    "q",
+                                    "GimbalRates_rad_per_sec"
+                                  ],
+                                  "outputPorts": [
+                                    "qdot"
+                                  ],
+                                  "codeGenStrategy": "flatten",
+                                  "showEnableInput": false
+                                }
+                              },
+                              {
+                                "id": "s5_int",
+                                "name": "q0_q1_q2_q3",
+                                "type": "integrator",
+                                "position": {
+                                  "x": 700,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "showInitPort": true,
+                                  "initialValue": 0,
+                                  "showResetInput": false,
+                                  "useLimits": false,
+                                  "dataType": "double[4]"
+                                }
+                              },
+                              {
+                                "id": "s5_out",
+                                "name": "q_ECItoSM",
+                                "type": "output_port",
+                                "position": {
+                                  "x": 900,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "portName": "q_ECItoSM",
+                                  "dataType": "double[4]"
+                                }
+                              }
+                            ],
+                            "extents": {
+                              "width": 1100,
+                              "height": 400
+                            },
+                            "connections": [
+                              {
+                                "id": "s5_ic",
+                                "sourceBlockId": "s5_inq0",
+                                "targetBlockId": "s5_int",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "s5_qfb",
+                                "sourceBlockId": "s5_int",
+                                "targetBlockId": "sub_s8",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s5_w",
+                                "sourceBlockId": "s5_inw",
+                                "targetBlockId": "sub_s8",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "s5_der",
+                                "sourceBlockId": "sub_s8",
+                                "targetBlockId": "s5_int",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s5_outw",
+                                "sourceBlockId": "s5_int",
+                                "targetBlockId": "s5_out",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              }
+                            ]
+                          }
+                        ],
+                        "inputPorts": [
+                          "q_ECItoSM_0",
+                          "GimbalRates_rad_per_sec"
+                        ],
+                        "outputPorts": [
+                          "q_ECItoSM"
+                        ],
+                        "codeGenStrategy": "flatten",
+                        "showEnableInput": false
+                      }
+                    },
+                    {
+                      "id": "sub_s3",
+                      "name": "ECI2SM",
+                      "type": "subsystem",
+                      "position": {
+                        "x": 200,
+                        "y": 40
+                      },
+                      "parameters": {
+                        "sheets": [
+                          {
+                            "id": "sub_s3_sheet",
+                            "name": "ECI2SM",
+                            "blocks": [
+                              {
+                                "id": "eci2sm_in",
+                                "name": "q",
+                                "type": "input_port",
+                                "position": {
+                                  "x": 40,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "portName": "q",
+                                  "dataType": "double[4]"
+                                }
+                              },
+                              {
+                                "id": "sub_s7",
+                                "name": "Normalize",
+                                "type": "subsystem",
+                                "position": {
+                                  "x": 200,
+                                  "y": 200
+                                },
+                                "parameters": {
+                                  "sheets": [
+                                    {
+                                      "id": "sub_s7_sheet",
+                                      "name": "Normalize",
+                                      "blocks": [
+                                        {
+                                          "id": "s7_in",
+                                          "name": "q_in",
+                                          "type": "input_port",
+                                          "position": {
+                                            "x": 40,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "portName": "q_in",
+                                            "dataType": "double[4]"
+                                          }
+                                        },
+                                        {
+                                          "id": "s7_dot",
+                                          "name": "Dot_Product",
+                                          "type": "dot_product",
+                                          "position": {
+                                            "x": 200,
+                                            "y": 80
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "s7_sqrt",
+                                          "name": "Math_Function",
+                                          "type": "evaluate",
+                                          "position": {
+                                            "x": 360,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "numInputs": 1,
+                                            "expression": "sqrt(in(0))",
+                                            "dataType": "double"
+                                          }
+                                        },
+                                        {
+                                          "id": "s7_div",
+                                          "name": "Normalize_Quaternion_Magnitude",
+                                          "type": "divide",
+                                          "position": {
+                                            "x": 520,
+                                            "y": 80
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "s7_out",
+                                          "name": "q_hat",
+                                          "type": "output_port",
+                                          "position": {
+                                            "x": 700,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "portName": "q_hat",
+                                            "dataType": "double[4]"
+                                          }
+                                        }
+                                      ],
+                                      "extents": {
+                                        "width": 800,
+                                        "height": 200
+                                      },
+                                      "connections": [
+                                        {
+                                          "id": "s7_w1",
+                                          "sourceBlockId": "s7_in",
+                                          "targetBlockId": "s7_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s7_w2",
+                                          "sourceBlockId": "s7_in",
+                                          "targetBlockId": "s7_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "s7_w3",
+                                          "sourceBlockId": "s7_dot",
+                                          "targetBlockId": "s7_sqrt",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s7_w4",
+                                          "sourceBlockId": "s7_in",
+                                          "targetBlockId": "s7_div",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s7_w5",
+                                          "sourceBlockId": "s7_sqrt",
+                                          "targetBlockId": "s7_div",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "s7_w6",
+                                          "sourceBlockId": "s7_div",
+                                          "targetBlockId": "s7_out",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "inputPorts": [
+                                    "q_in"
+                                  ],
+                                  "outputPorts": [
+                                    "q_hat"
+                                  ],
+                                  "codeGenStrategy": "flatten",
+                                  "showEnableInput": false
+                                }
+                              },
+                              {
+                                "id": "eci2sm_dmx",
+                                "name": "Demux_qhat",
+                                "type": "demux",
+                                "position": {
+                                  "x": 520,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "numberOfOutputs": 4
+                                }
+                              },
+                              {
+                                "id": "eci2sm_mux",
+                                "name": "Mux_qhat_col",
+                                "type": "mux",
+                                "position": {
+                                  "x": 680,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "numberOfInputs": 4,
+                                  "dataType": "double[4][1]",
+                                  "outputType": "double[4][1]"
+                                }
+                              },
+                              {
+                                "id": "eci2sm_dcm",
+                                "name": "Fcn_11_33",
+                                "type": "orientation_conversion",
+                                "position": {
+                                  "x": 860,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "conversionType": "quat_to_dcm"
+                                }
+                              },
+                              {
+                                "id": "eci2sm_out",
+                                "name": "DCM",
+                                "type": "output_port",
+                                "position": {
+                                  "x": 1040,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "portName": "DCM",
+                                  "dataType": "double[3][3]"
+                                }
+                              }
+                            ],
+                            "extents": {
+                              "width": 1200,
+                              "height": 280
+                            },
+                            "connections": [
+                              {
+                                "id": "eci2sm_w0",
+                                "sourceBlockId": "eci2sm_in",
+                                "targetBlockId": "sub_s7",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2sm_w1",
+                                "sourceBlockId": "sub_s7",
+                                "targetBlockId": "eci2sm_dmx",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2sm_w2a",
+                                "sourceBlockId": "eci2sm_dmx",
+                                "targetBlockId": "eci2sm_mux",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2sm_w2b",
+                                "sourceBlockId": "eci2sm_dmx",
+                                "targetBlockId": "eci2sm_mux",
+                                "sourcePortIndex": 1,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "eci2sm_w2c",
+                                "sourceBlockId": "eci2sm_dmx",
+                                "targetBlockId": "eci2sm_mux",
+                                "sourcePortIndex": 2,
+                                "targetPortIndex": 2
+                              },
+                              {
+                                "id": "eci2sm_w2d",
+                                "sourceBlockId": "eci2sm_dmx",
+                                "targetBlockId": "eci2sm_mux",
+                                "sourcePortIndex": 3,
+                                "targetPortIndex": 3
+                              },
+                              {
+                                "id": "eci2sm_w3",
+                                "sourceBlockId": "eci2sm_mux",
+                                "targetBlockId": "eci2sm_dcm",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2sm_w4",
+                                "sourceBlockId": "eci2sm_dcm",
+                                "targetBlockId": "eci2sm_out",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              }
+                            ]
+                          }
+                        ],
+                        "inputPorts": [
+                          "q"
+                        ],
+                        "outputPorts": [
+                          "DCM"
+                        ],
+                        "codeGenStrategy": "flatten",
+                        "showEnableInput": false
+                      }
+                    },
+                    {
+                      "id": "sub_s2",
+                      "name": "ECI2BODY",
+                      "type": "subsystem",
+                      "position": {
+                        "x": 200,
+                        "y": 200
+                      },
+                      "parameters": {
+                        "sheets": [
+                          {
+                            "id": "sub_s2_sheet",
+                            "name": "ECI2BODY",
+                            "blocks": [
+                              {
+                                "id": "eci2body_in",
+                                "name": "q",
+                                "type": "input_port",
+                                "position": {
+                                  "x": 40,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "portName": "q",
+                                  "dataType": "double[4]"
+                                }
+                              },
+                              {
+                                "id": "sub_s6",
+                                "name": "Normalize",
+                                "type": "subsystem",
+                                "position": {
+                                  "x": 200,
+                                  "y": 200
+                                },
+                                "parameters": {
+                                  "sheets": [
+                                    {
+                                      "id": "sub_s6_sheet",
+                                      "name": "Normalize",
+                                      "blocks": [
+                                        {
+                                          "id": "s6_in",
+                                          "name": "q_in",
+                                          "type": "input_port",
+                                          "position": {
+                                            "x": 40,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "portName": "q_in",
+                                            "dataType": "double[4]"
+                                          }
+                                        },
+                                        {
+                                          "id": "s6_dot",
+                                          "name": "Dot_Product",
+                                          "type": "dot_product",
+                                          "position": {
+                                            "x": 200,
+                                            "y": 80
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "s6_sqrt",
+                                          "name": "Math_Function",
+                                          "type": "evaluate",
+                                          "position": {
+                                            "x": 360,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "numInputs": 1,
+                                            "expression": "sqrt(in(0))",
+                                            "dataType": "double"
+                                          }
+                                        },
+                                        {
+                                          "id": "s6_div",
+                                          "name": "Normalize_Quaternion_Magnitude",
+                                          "type": "divide",
+                                          "position": {
+                                            "x": 520,
+                                            "y": 80
+                                          },
+                                          "parameters": {}
+                                        },
+                                        {
+                                          "id": "s6_out",
+                                          "name": "q_hat",
+                                          "type": "output_port",
+                                          "position": {
+                                            "x": 700,
+                                            "y": 80
+                                          },
+                                          "parameters": {
+                                            "portName": "q_hat",
+                                            "dataType": "double[4]"
+                                          }
+                                        }
+                                      ],
+                                      "extents": {
+                                        "width": 800,
+                                        "height": 200
+                                      },
+                                      "connections": [
+                                        {
+                                          "id": "s6_w1",
+                                          "sourceBlockId": "s6_in",
+                                          "targetBlockId": "s6_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s6_w2",
+                                          "sourceBlockId": "s6_in",
+                                          "targetBlockId": "s6_dot",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "s6_w3",
+                                          "sourceBlockId": "s6_dot",
+                                          "targetBlockId": "s6_sqrt",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s6_w4",
+                                          "sourceBlockId": "s6_in",
+                                          "targetBlockId": "s6_div",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        },
+                                        {
+                                          "id": "s6_w5",
+                                          "sourceBlockId": "s6_sqrt",
+                                          "targetBlockId": "s6_div",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 1
+                                        },
+                                        {
+                                          "id": "s6_w6",
+                                          "sourceBlockId": "s6_div",
+                                          "targetBlockId": "s6_out",
+                                          "sourcePortIndex": 0,
+                                          "targetPortIndex": 0
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "inputPorts": [
+                                    "q_in"
+                                  ],
+                                  "outputPorts": [
+                                    "q_hat"
+                                  ],
+                                  "codeGenStrategy": "flatten",
+                                  "showEnableInput": false
+                                }
+                              },
+                              {
+                                "id": "eci2body_dmx",
+                                "name": "Demux_qhat",
+                                "type": "demux",
+                                "position": {
+                                  "x": 520,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "numberOfOutputs": 4
+                                }
+                              },
+                              {
+                                "id": "eci2body_mux",
+                                "name": "Mux_qhat_col",
+                                "type": "mux",
+                                "position": {
+                                  "x": 680,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "numberOfInputs": 4,
+                                  "dataType": "double[4][1]",
+                                  "outputType": "double[4][1]"
+                                }
+                              },
+                              {
+                                "id": "eci2body_dcm",
+                                "name": "Fcn_11_33",
+                                "type": "orientation_conversion",
+                                "position": {
+                                  "x": 860,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "conversionType": "quat_to_dcm"
+                                }
+                              },
+                              {
+                                "id": "eci2body_out",
+                                "name": "DCM",
+                                "type": "output_port",
+                                "position": {
+                                  "x": 1040,
+                                  "y": 80
+                                },
+                                "parameters": {
+                                  "portName": "DCM",
+                                  "dataType": "double[3][3]"
+                                }
+                              }
+                            ],
+                            "extents": {
+                              "width": 1200,
+                              "height": 280
+                            },
+                            "connections": [
+                              {
+                                "id": "eci2body_w0",
+                                "sourceBlockId": "eci2body_in",
+                                "targetBlockId": "sub_s6",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2body_w1",
+                                "sourceBlockId": "sub_s6",
+                                "targetBlockId": "eci2body_dmx",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2body_w2a",
+                                "sourceBlockId": "eci2body_dmx",
+                                "targetBlockId": "eci2body_mux",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2body_w2b",
+                                "sourceBlockId": "eci2body_dmx",
+                                "targetBlockId": "eci2body_mux",
+                                "sourcePortIndex": 1,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "eci2body_w2c",
+                                "sourceBlockId": "eci2body_dmx",
+                                "targetBlockId": "eci2body_mux",
+                                "sourcePortIndex": 2,
+                                "targetPortIndex": 2
+                              },
+                              {
+                                "id": "eci2body_w2d",
+                                "sourceBlockId": "eci2body_dmx",
+                                "targetBlockId": "eci2body_mux",
+                                "sourcePortIndex": 3,
+                                "targetPortIndex": 3
+                              },
+                              {
+                                "id": "eci2body_w3",
+                                "sourceBlockId": "eci2body_mux",
+                                "targetBlockId": "eci2body_dcm",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "eci2body_w4",
+                                "sourceBlockId": "eci2body_dcm",
+                                "targetBlockId": "eci2body_out",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              }
+                            ]
+                          }
+                        ],
+                        "inputPorts": [
+                          "q"
+                        ],
+                        "outputPorts": [
+                          "DCM"
+                        ],
+                        "codeGenStrategy": "flatten",
+                        "showEnableInput": false
+                      }
+                    },
+                    {
+                      "id": "s1_body2eci",
+                      "name": "BODYtoECI",
+                      "type": "transpose",
+                      "position": {
+                        "x": 520,
+                        "y": 200
+                      },
+                      "parameters": {}
+                    },
+                    {
+                      "id": "s1_prod2",
+                      "name": "Product2",
+                      "type": "matrix_multiply",
+                      "position": {
+                        "x": 700,
+                        "y": 120
+                      },
+                      "parameters": {}
+                    },
+                    {
+                      "id": "s1_sm2body",
+                      "name": "SM2BODY",
+                      "type": "transpose",
+                      "position": {
+                        "x": 880,
+                        "y": 120
+                      },
+                      "parameters": {}
+                    },
+                    {
+                      "id": "sub_s4",
+                      "name": "Stable_Member_Gimbal_Angles_IM_MM_OM",
+                      "type": "subsystem",
+                      "position": {
+                        "x": 600,
+                        "y": 280
+                      },
+                      "parameters": {
+                        "sheets": [
+                          {
+                            "id": "sub_s4_sheet",
+                            "name": "Stable_Member_Gimbal_Angles_IM_MM_OM",
+                            "blocks": [
+                              {
+                                "id": "s4_in",
+                                "name": "SM2BODY",
+                                "type": "input_port",
+                                "position": {
+                                  "x": 40,
+                                  "y": 100
+                                },
+                                "parameters": {
+                                  "portName": "SM2BODY",
+                                  "dataType": "double[3][3]"
+                                }
+                              },
+                              {
+                                "id": "s4_oga_n",
+                                "name": "neg_Cos_MGA_Sin_OGA",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 220,
+                                  "y": 40
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "-in(0)[2][1]",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_oga_d",
+                                "name": "Cos_MGA_Cos_OGA",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 220,
+                                  "y": 100
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "in(0)[1][1]",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_oga",
+                                "name": "Trigonometric_Function1",
+                                "type": "trig",
+                                "position": {
+                                  "x": 400,
+                                  "y": 60
+                                },
+                                "parameters": {
+                                  "function": "atan2"
+                                }
+                              },
+                              {
+                                "id": "s4_iga_n",
+                                "name": "neg_sin_IGA_cos_MGA",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 220,
+                                  "y": 180
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "-in(0)[2][0]",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_iga_d",
+                                "name": "cos_IGA_cos_MGA",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 220,
+                                  "y": 240
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "in(0)[0][0]",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_iga",
+                                "name": "Trigonometric_Function3",
+                                "type": "trig",
+                                "position": {
+                                  "x": 400,
+                                  "y": 200
+                                },
+                                "parameters": {
+                                  "function": "atan2"
+                                }
+                              },
+                              {
+                                "id": "s4_mga_u",
+                                "name": "sin_MGA",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 220,
+                                  "y": 320
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "in(0)[1][0]",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_sat",
+                                "name": "Saturate_asin",
+                                "type": "evaluate",
+                                "position": {
+                                  "x": 400,
+                                  "y": 320
+                                },
+                                "parameters": {
+                                  "numInputs": 1,
+                                  "expression": "(in(0)<-1.0?-1.0:(in(0)>1.0?1.0:in(0)))",
+                                  "dataType": "double"
+                                }
+                              },
+                              {
+                                "id": "s4_mga",
+                                "name": "Trigonometric_Function4",
+                                "type": "trig",
+                                "position": {
+                                  "x": 560,
+                                  "y": 320
+                                },
+                                "parameters": {
+                                  "function": "asin"
+                                }
+                              },
+                              {
+                                "id": "s4_mux",
+                                "name": "Mux_Resolvers",
+                                "type": "mux",
+                                "position": {
+                                  "x": 720,
+                                  "y": 160
+                                },
+                                "parameters": {
+                                  "numberOfInputs": 3
+                                }
+                              },
+                              {
+                                "id": "s4_out",
+                                "name": "ResolverAngles_rad",
+                                "type": "output_port",
+                                "position": {
+                                  "x": 900,
+                                  "y": 160
+                                },
+                                "parameters": {
+                                  "portName": "ResolverAngles_rad",
+                                  "dataType": "double[3]"
+                                }
+                              }
+                            ],
+                            "extents": {
+                              "width": 1100,
+                              "height": 420
+                            },
+                            "connections": [
+                              {
+                                "id": "s4_w0",
+                                "sourceBlockId": "s4_in",
+                                "targetBlockId": "s4_oga_n",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w1",
+                                "sourceBlockId": "s4_in",
+                                "targetBlockId": "s4_oga_d",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w2",
+                                "sourceBlockId": "s4_oga_n",
+                                "targetBlockId": "s4_oga",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w3",
+                                "sourceBlockId": "s4_oga_d",
+                                "targetBlockId": "s4_oga",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "s4_w4",
+                                "sourceBlockId": "s4_in",
+                                "targetBlockId": "s4_iga_n",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w5",
+                                "sourceBlockId": "s4_in",
+                                "targetBlockId": "s4_iga_d",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w6",
+                                "sourceBlockId": "s4_iga_n",
+                                "targetBlockId": "s4_iga",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w7",
+                                "sourceBlockId": "s4_iga_d",
+                                "targetBlockId": "s4_iga",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "s4_w8",
+                                "sourceBlockId": "s4_in",
+                                "targetBlockId": "s4_mga_u",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w9",
+                                "sourceBlockId": "s4_mga_u",
+                                "targetBlockId": "s4_sat",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w10",
+                                "sourceBlockId": "s4_sat",
+                                "targetBlockId": "s4_mga",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w11",
+                                "sourceBlockId": "s4_oga",
+                                "targetBlockId": "s4_mux",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              },
+                              {
+                                "id": "s4_w12",
+                                "sourceBlockId": "s4_iga",
+                                "targetBlockId": "s4_mux",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 1
+                              },
+                              {
+                                "id": "s4_w13",
+                                "sourceBlockId": "s4_mga",
+                                "targetBlockId": "s4_mux",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 2
+                              },
+                              {
+                                "id": "s4_w14",
+                                "sourceBlockId": "s4_mux",
+                                "targetBlockId": "s4_out",
+                                "sourcePortIndex": 0,
+                                "targetPortIndex": 0
+                              }
+                            ]
+                          }
+                        ],
+                        "inputPorts": [
+                          "SM2BODY"
+                        ],
+                        "outputPorts": [
+                          "ResolverAngles_rad"
+                        ],
+                        "codeGenStrategy": "flatten",
+                        "showEnableInput": false
+                      }
+                    },
+                    {
+                      "id": "s1_outq",
+                      "name": "q_ECItoSM",
+                      "type": "output_port",
+                      "position": {
+                        "x": 1200,
+                        "y": 40
+                      },
+                      "parameters": {
+                        "portName": "q_ECItoSM",
+                        "dataType": "double[4]"
+                      }
+                    },
+                    {
+                      "id": "s1_outr",
+                      "name": "ResolverAngles_rad",
+                      "type": "output_port",
+                      "position": {
+                        "x": 1200,
+                        "y": 280
+                      },
+                      "parameters": {
+                        "portName": "ResolverAngles_rad",
+                        "dataType": "double[3]"
+                      }
+                    }
+                  ],
+                  "extents": {
+                    "width": 1400,
+                    "height": 500
+                  },
+                  "connections": [
+                    {
+                      "id": "s1_w0",
+                      "sourceBlockId": "s1_inq0",
+                      "targetBlockId": "sub_s5",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w1",
+                      "sourceBlockId": "s1_inw",
+                      "targetBlockId": "sub_s5",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 1
+                    },
+                    {
+                      "id": "s1_w2",
+                      "sourceBlockId": "sub_s5",
+                      "targetBlockId": "s1_outq",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w3",
+                      "sourceBlockId": "sub_s5",
+                      "targetBlockId": "sub_s3",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w4",
+                      "sourceBlockId": "s1_inqb",
+                      "targetBlockId": "sub_s2",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w5",
+                      "sourceBlockId": "sub_s2",
+                      "targetBlockId": "s1_body2eci",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w6",
+                      "sourceBlockId": "sub_s3",
+                      "targetBlockId": "s1_prod2",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w7",
+                      "sourceBlockId": "s1_body2eci",
+                      "targetBlockId": "s1_prod2",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 1
+                    },
+                    {
+                      "id": "s1_w8",
+                      "sourceBlockId": "s1_prod2",
+                      "targetBlockId": "s1_sm2body",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w9",
+                      "sourceBlockId": "s1_sm2body",
+                      "targetBlockId": "sub_s4",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    },
+                    {
+                      "id": "s1_w10",
+                      "sourceBlockId": "sub_s4",
+                      "targetBlockId": "s1_outr",
+                      "sourcePortIndex": 0,
+                      "targetPortIndex": 0
+                    }
+                  ]
+                }
+              ],
+              "inputPorts": [
+                "q_ECItoSM_0",
+                "GimbalRates_rad_per_sec",
+                "q_ECItoBody"
+              ],
+              "outputPorts": [
+                "q_ECItoSM",
+                "ResolverAngles_rad"
+              ],
+              "codeGenStrategy": "flatten",
+              "showEnableInput": false
+            }
+          },
+          {
+            "id": "root_outq",
+            "name": "q_ECItoSM",
+            "type": "output_port",
+            "position": {
+              "x": 900,
+              "y": 40
+            },
+            "parameters": {
+              "portName": "q_ECItoSM",
+              "dataType": "double[4]"
+            }
+          },
+          {
+            "id": "root_outr",
+            "name": "ResolverAngles_rad",
+            "type": "output_port",
+            "position": {
+              "x": 900,
+              "y": 200
+            },
+            "parameters": {
+              "portName": "ResolverAngles_rad",
+              "dataType": "double[3]"
+            }
+          }
+        ],
+        "extents": {
+          "width": 1100,
+          "height": 400
+        },
+        "connections": [
+          {
+            "id": "rw0",
+            "sourceBlockId": "root_inq0",
+            "targetBlockId": "sub_s1",
+            "sourcePortIndex": 0,
+            "targetPortIndex": 0
+          },
+          {
+            "id": "rw1",
+            "sourceBlockId": "root_inw",
+            "targetBlockId": "sub_s1",
+            "sourcePortIndex": 0,
+            "targetPortIndex": 1
+          },
+          {
+            "id": "rw2",
+            "sourceBlockId": "root_inqb",
+            "targetBlockId": "sub_s1",
+            "sourcePortIndex": 0,
+            "targetPortIndex": 2
+          },
+          {
+            "id": "rw3",
+            "sourceBlockId": "sub_s1",
+            "targetBlockId": "root_outq",
+            "sourcePortIndex": 0,
+            "targetPortIndex": 0
+          },
+          {
+            "id": "rw4",
+            "sourceBlockId": "sub_s1",
+            "targetBlockId": "root_outr",
+            "sourcePortIndex": 1,
+            "targetPortIndex": 0
+          }
+        ]
+      }
+    ],
+    "parameters": [
+      {
+        "name": "k_quat",
+        "dataType": "double",
+        "defaultValue": "0",
+        "signalType": "double",
+        "value": 0.0
+      }
+    ],
+    "globalSettings": {
+      "simulationTimeStep": 0.001,
+      "simulationDuration": 1.0
+    }
+  }
+}

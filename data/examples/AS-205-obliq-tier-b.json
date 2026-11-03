@@ -1,0 +1,22 @@
+{
+  "sim": {
+    "run_time_sec": 1000.0,
+    "timeStep": 0.01,
+    "final_output": "/tmp/obliq-tier-b-final.json",
+    "csv_output": "/tmp/obliq-tier-b.csv"
+  },
+  "launch_date": {
+    "year": 1968, "month": 10, "day": 11,
+    "hour": 14, "minute": 57, "second": 45.0
+  },
+  "model": {
+    "A_z_deg": 82.82,
+    "CG_LLA_deg_m": [28.521963, -80.561141, 34.7],
+    "T_L_prime_sec": 300.0
+  },
+  "agc": {
+    "rom_path": "Colossus249.bin",
+    "pad_load_file": "-",
+    "pad_load_start_sec": 15.0
+  }
+}

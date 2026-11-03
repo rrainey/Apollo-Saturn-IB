@@ -1,0 +1,7 @@
+# EVENT sep t_sim=445.15 t_flight=145.15 h_km=0.000 Ve=0.00
+# EVENT ullage_jettison t_sim=456.43 t_flight=156.43 mass=137131.64
+# EVENT les_jettison t_sim=463.13 t_flight=163.13 mass=131445.43
+# EVENT mode 0->1 t_sim=772.80 t_flight=472.80 T3=160.2 chiZ=19.8
+# EVENT mode 1->2 t_sim=774.40 t_flight=474.40 T3=176.8 chiZ=27.4
+# EVENT mode 2->3 t_sim=806.40 t_flight=506.40 T3=128.1 chiZ=19.8
+# COMPARE_HOOKS sep_h_km=0.000 sep_Ve=0.00 gcs_h_km=nan gcs_Ve=nan

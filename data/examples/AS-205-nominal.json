@@ -1,0 +1,26 @@
+{
+  "sim": {
+    "run_time_sec": 800.0,
+    "timeStep": 0.01,
+    "final_output": "final.json",
+    "csv_output": "results.csv"
+  },
+  "launch_date": {
+    "year":   1968,
+    "month":  10,
+    "day":    11,
+    "hour":   14,
+    "minute": 57,
+    "second": 45.0
+  },
+  "model": {
+    "A_z_deg":        82.8200,
+    "CG_LLA_deg_m":   [28.521963, -80.561141, 34.7],
+    "T_L_prime_sec":  300.0
+  },
+  "agc": {
+    "rom_path":           "Colossus249.bin",
+    "pad_load_file":      "TM-X-62831_PAD_LOAD.txt",
+    "pad_load_start_sec": 15.0
+  }
+}
