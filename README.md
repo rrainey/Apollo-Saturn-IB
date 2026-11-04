@@ -55,7 +55,7 @@ ctest --test-dir build --output-on-failure
 | `lib_SaturnIBObliq/` | Generated plant and hand-edited LVDC ([details](lib_SaturnIBObliq/README.md)) |
 | `model/` | Obliq-2 models and AS-205 reference tables; `provenance/` has the original Simulink model and its reference run |
 | `data/` | Runtime files: ROM, pad loads, downlink tables, panel layout, textures, example inputs |
-| `reference/` | [OCR text of source documents](reference/README.md) |
+| `reference/` | [Source documents and their OCR text](reference/README.md) |
 | `docs/` | [User docs and engineering notes](docs/README.md) |
 | `tests/` | Batch regression scripts and the GUI scenario |
 | `third_party/` | Bundled libraries, Virtual AGC patches |

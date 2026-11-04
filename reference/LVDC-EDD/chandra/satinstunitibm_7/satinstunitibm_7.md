@@ -1,0 +1,3915 @@
+PART II
+
+TABLE OF CONTENTS
+
+<table><thead><tr><th>Paragraph</th><th>Title</th><th>Page</th></tr></thead><tbody><tr><td>N/A</td><td>EDD CONFIGURATION CONTROL PAGE LISTING</td><td>ii</td></tr><tr><td>SECTION 1:</td><td>AS-206 DATA AND REQUIREMENTS</td><td>---</td></tr><tr><td>1.1</td><td>INTRODUCTION</td><td>II-1-1</td></tr><tr><td>1.2</td><td>LOGIC DIFFERENCES BETWEEN THE AS-206<br/>MISSION AND THE BASELINE REQUIREMENTS</td><td>3</td></tr><tr><td>1.3</td><td>EVENT SEQUENCING TIMELINE</td><td>5</td></tr><tr><td>1.4</td><td>ORBITAL ATTITUDE TIMELINE</td><td>23</td></tr><tr><td>1.5</td><td>PRESETTINGS</td><td>25</td></tr><tr><td>1.6</td><td>FLIGHT SEQUENCING</td><td>45</td></tr><tr><td>1.7</td><td>DIGITAL COMMAND SYSTEM (DCS) MODE<br/>COMMAND SUMMARY</td><td>63</td></tr><tr><td>1.8</td><td>FLIGHT SIMULATION LADDER PROFILES</td><td>65</td></tr></tbody></table>
+
+1------------------------------------------------
+
+PART II
+
+SAT IB EDD CONFIGURATION CONTROL PAGE LISTING, REVISION A
+
+This Revision A constitutes a complete reprinting of this volume; pages affected by this revision are identified by the notation "Rev. A" in the lower right corner. The following Flight Program Change Requests (FPCRs) are incorporated in this revision: FPCR 206-1 thru -9; 206-D1, -D2, and -D3.
+
+2------------------------------------------------
+
+## SECTION 1
+
+### AS-206 DATA AND REQUIREMENTS
+
+#### 1.1 INTRODUCTION
+
+The requirements for the AS-206 Flight Program consist of the baseline defined in Part I and this section of Part II. Wherever the AS-206 program functions must differ from the baseline, the requirements of this section supersede the baseline requirements of Part I.
+
+The AS-206 Launch Vehicle is assigned to the Skylab A mission which comprises one dual and two single launch missions. The first payload is the unmanned Skylab, designated SL-1. It is boosted into orbit by the S-IC and S-II stages of the AS-513 launch vehicle. The second payload, assigned to the AS-206 launch vehicle, is a manned Command and Service Module (CSM) designated SL-2. At the conclusion of the first mission phase, the Skylab (SL-1) is stored in orbit for the use of later revisit missions. Each of the two revisit missions consists of a single Saturn IB launch with a manned CSM. The AS-207 and AS-208 launch vehicles are assigned to the revisit missions, designated SL-3 and SL-4 respectively. Each manned CSM docks with the Skylab in orbit.
+
+The SL-1/Skylab A will be launched northeasterly from KSC Launch Complex 39 Pad A (LC-39A) and will be inserted in a circular orbit of approximately 235 NM altitude at an inclination of 50 degrees. Prior to launching the SL-2 CSM and each subsequent CSM, the Skylab will be checked from the ground by telemetry for compliance with pre-specified launch commit criteria.
+
+3------------------------------------------------
+
+On the first day following the SL-1 launch, the SL-2 manned CSM will be launched northeasterly on a Saturn IB vehicle from KSC Launch Complex 39, Pad B (LC-39B). The CSM will be inserted into an 81 x 120 NM orbit. The Service Module (SM), Service Propulsion System (SPS), and SM Reaction Control System (RCS) will be used to complete the CSM rendezvous maneuvers and to dock axially with the Skylab at port 5 of the Multiple Docking Adapter. The crew will then transfer from the CSM and activate the Skylab.
+
+The SL-1/SL-2 mission will be planned for a duration of up to 28 days from the launch of the SL-2 CSM. After completion of the scheduled experiments the Skylab will be prepared for orbital storage and will be left in the solar inertial attitude. The CSM will undock from the Skylab and deorbit with the SPS. Assuming planned mission duration and deorbit, recovery will occur during daylight in the West Atlantic recovery area.
+
+The subsequent SL-2 and SL-3 Manned CSM revisit missions will also be launched northeasterly from KSC LC-39B. Assuming planned mission duration and deorbit, both recoveries will occur during daylight in the mid-Pacific recovery area.
+
+4------------------------------------------------
+
+## 1.2 LOGIC DIFFERENCES BETWEEN THE AS-206 MISSION AND THE BASELINE REQUIREMENTS
+
+As presently defined, there are no logic differences from the baseline to the AS-206 logic requirements. As new logic, unique to AS-206, is defined, it will be added to this section.
+
+5------------------------------------------------
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+6------------------------------------------------
+
+### 1.3 EVENT SEQUENCING TIMELINE
+
+The following table describes the requirements for flight program sequencing. For each timed event, the table gives:
+
+- • A definition of the event
+- • The time at which the event must occur
+- • The time base or other occurrence to which the event is referenced
+- • The name of the time presetting.
+
+During boost mode, the events must occur at the times specified in the table with a minus zero, plus one boost major loop tolerance (unless a closer tolerance is defined). During orbital mode, the tolerance is minus zero, plus one second (unless a closer tolerance is defined). Events specified to occur at a time base plus zero ( $Tj+0$ ) must be performed after the essential functions of starting the time base, but before any other functions except switch selector functions and minor loops.
+
+Events that are defined with different presetting names must not be initiated by common logic, even though the times of occurrence may be the same. Common logic may be used for all events that are specified with the same presetting name.
+
+The table contains a source code that is not a program requirement. It indicates the source and character of certain presettings and is included for convenience only. The meanings of the source codes are:
+
+7------------------------------------------------
+
+- A1 Times established by the baseline requirements (mission-independent)
+- B Times established by IBM
+- C2 Times established by the orbital timeline
+- C3 Times established by normal boost guidance requirements
+- C4 Times established by alternate mission requirements
+- D1 Times established by the Flight Sequence ICD
+- D3 Times established by other program requirements
+- E Times established by DCS transmitted data.
+
+8------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Initialize acceleration, (F/M), to FM0</p>
+<p>Set backup acceleration (F/M)<sub>c</sub>, to the negative of the computed value of G<sub>Sx</sub>.</p>
+<p>Set the accelerometer RTCs to 3 m/sec<sup>2</sup> vertical (X), 2 m/sec<sup>2</sup> crossrange (Y) and downrange (Z).</p>
+<p>Enable accelerometer zero test, using sin (2°) to compute A<sub>c0</sub>.</p>
+<p>Initialize all values of reciprocal acceleration to (M/F)<sub>0</sub> for use in S-IVB stage IGM.</p>
+<p>Reset all interrupts.</p>
+<p>Release Inhibit on INT9, TLC Interrupt.</p>
+<p>Set the number of permissible unreasonable backup resolver readings (MS15DT) to 12 per 0.8 sec. The guidance reference failure discretes (D04 and D06) will be set on detecting 13 unreasonable backup resolver readings in 0.8 sec.</p>
+<p>Set the zero gimbal test constant ML6HUN to 0.06 deg (all channels).</p>
+<p>Set MS25DT to 25*ΔT<sub>N1</sub>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+9------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set MS04DT to <math>0.04/\Delta T_{N1}</math>.</p>
+<p>Start performing tests for guidance reference failure. If that condition is detected, set D04 and D06 and the appropriate mode code bits. These tests must be performed during all phases of flight.</p>
+<p>Set ladder rate limits (MSK5) to 0.48 deg per minor loop, all channels.</p>
+<p>Set ladder magnitude limits to 15.3 deg in pitch and yaw (MSK6) and roll (MSK16).</p>
+<p>Set attitude command (<math>\chi</math>) rate limits to 1.0 deg per sec. (MSLIM1=0.04 deg per minor loop in roll, MSLIM2=0.04 deg per minor loop in pitch and yaw.)</p>
+<p>Set the fine gimbal angle RTCs, (MLK2) and (MLK12) to 1.4 deg per minor loop in the pitch, yaw and roll channels for the initial reading only. After the initial reading, set the fine gimbal angle RTCs to 0.4 deg per minor loop in pitch and yaw (MLK2) and 0.4 deg per minor loop in roll (MLK12).</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+10------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set the backup gimbal angle RTC (MLKRC1) to 18.5 deg for first use in all channels.</p>
+<p>Set the backup gimbal angle RTC after first use to 0.6 deg per minor loop in pitch and yaw (MLKRC3) and 0.6 deg per minor loop in roll (MLKRC5).</p>
+</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>16.0 (-0,+40 ms)</td>
+<td>D1</td>
+<td>
+<p>* Start checking DI24 (Liftoff) for purpose of setting Time Base 1. This discrete must be checked before and after every minor loop (twice every 40 ms).</p>
+</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>BU2</td>
+<td>17.5</td>
+<td>D1</td>
+<td>
+<p>* Begin search for liftoff acceleration.</p>
+</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>BU3</td>
+<td>150.0</td>
+<td>D1</td>
+<td>
+<p>* Enter a one instruction non-interruptible loop, preventing TBI initiation, if liftoff has not been detected.</p>
+</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>TM</td>
+<td>497.0</td>
+<td>D1</td>
+<td>
+<p>* Activate ECS Water Valve logic. The variable TM is incremented by 300 sec each time the logic is exercised.</p>
+</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>NUPTIM</td>
+<td>Variable</td>
+<td>E</td>
+<td>
+<p>Update position and velocity components via Navigation Update DCS command. This is a transmitted parameter and has meaning only if that command has been received and accepted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+11------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Initialize backup thrust, mass and mass flow rate to <math>F_1</math>, <math>M_1</math>, and <math>\dot{M}_1</math>, and start computing <math>(F/M)c</math>.</p>
+<p>Stop looking for Liftoff Discrete, DI24.</p>
+<p>Start using <math>\Delta T_{N2}</math>.</p>
+<p>Decrement T1 by T1BIAS if Time Base 1 was set by backup method.<br/>(T1 = T1-T1BIAS)</p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{S1EO}</math></td>
+<td>5.8</td>
+<td>D3</td>
+<td>
+<p>Start computing acceleration (F/M) based on measured velocities, using the first guess FM0 initialized at T0+0.</p>
+<p>Start checking DI14 and DI15 for S-IB engine out indications. If either discrete is detected, the <math>\sin(6^\circ)</math> will be used to compute <math>A_{C0}</math>, time tilt guidance will be modified, the backup time for Time Base 2 start will be modified, bit 18 of Mode Code 24 will be set, and either bit 8 (for DI15) or bit 9 (for DI14) of Mode Code 25 will be set.</p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{RTC}</math></td>
+<td>10.0</td>
+<td>D3</td>
+<td>
+<p>Set the accelerometer RTCs to <math>6 \text{ m/sec}^2</math> downrange (Z), vertical (X), and cross-range (Y).</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+12------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>T<sub>f1</sub></td>
+<td>5.8</td>
+<td>C3</td>
+<td>Change from first to second segment freeze time function for S-IB engine out. *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>f2</sub></td>
+<td>40.0</td>
+<td>C3</td>
+<td>End of second segment of engine failure freeze time function. (This is the latest time that an engine failure will result in a chi freeze.) *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>far</sub></td>
+<td>110.0</td>
+<td>C3</td>
+<td>Change from first segment to second segment of tilt arrest time bias function. Tilt arrest time will not be decreased for engine failures after this time. *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>132.0</td>
+<td>D1</td>
+<td>Enable INT2 (S-IB Low Level Sensors Dry "A") and start checking DI21 (S-IB Low Level Sensors Dry "B") for initiation of Time Base 2. This is keyed to the "Propellant Level Sensors Enable" switch selector command. If either signal is recognized after this time and down-range velocity is greater than 500 m/sec (bypass when GRF has occurred), Time Base 2 must be set. *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>NTSTB2</td>
+<td>135.5</td>
+<td>D1</td>
+<td>Nominal start time for Time Base 2 used in repeatable flight simulation. *</td>
+</tr>
+</tbody>
+</table>
+
+13------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T<sub>c</sub></td>
+<td>TMEFRZ</td>
+<td>0</td>
+<td>C3</td>
+<td>End X<sub>y</sub> freeze following an S-IB engine out. Y<sub>TMEFRZ</sub> is recalculated at the engine out time T<sub>EO</sub>. (T = T<sub>-Tilt</sub> + T<sub>d</sub>, where T<sub>c</sub> is the implementation delay.)</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>T<sub>S0</sub></td>
+<td>10.3</td>
+<td>C3</td>
+<td>Backup time for starting pitch and roll guidance (Guidance will nominally be started at tower clearance.)</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>T<sub>T2</sub></td>
+<td>30.0</td>
+<td>C4</td>
+<td>Earliest time for chi freeze initiation if an S-IB engine failure occurs.</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>T<sub>S1</sub></td>
+<td>46.3</td>
+<td>C3</td>
+<td>Begin using second segment Time Tilt (Pitch program) coefficients.</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>T<sub>S2</sub></td>
+<td>89.05</td>
+<td>C3</td>
+<td>Begin using third segment Time Tilt (Pitch program) coefficients.</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>T<sub>ar</sub></td>
+<td>131.05</td>
+<td>C3</td>
+<td>Nominal time to stop Time Tilt (Tilt Arrest). (This time can be extended by an S-IB engine out.)</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+\*
+
+\*
+
+\*
+
+14------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Stop checking DI21 and inhibit INT2 (S-IB Low Level Sense signals). If DI15 has not been previously detected, continue checking for it until detected. Do not modify accelerometer Zero test if DI15 is detected during Time Base 2.</p>
+</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>3.1</td>
+<td>D1</td>
+<td>
+<p>Continue checking for DI14. Do not modify accelerometer backups if DI14 is detected during Time Base 2.</p>
+</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>4.6</td>
+<td>D1</td>
+<td>
+<p>Set acceleration, F/M, to the preset constant FM2. (This is keyed to the inboard engines cutoff switch selector.)</p>
+<p>Adjust the S-IB accelerometer backup parameters (<math>\dot{M}_1</math>, <math>F_1</math>) to one-half their present values.</p>
+</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>6.0</td>
+<td>D1</td>
+<td>
+<p>Start checking for S-IB outboard engines cutoff signals (INT5 and DI23), initiated at propellant depletion cutoff, for the purpose of setting Time Base 3. (This is keyed to the LOX Depletion Cutoff Enable switch selector.)</p>
+</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>NTSTB3</td>
+<td>6.0</td>
+<td>D1</td>
+<td>
+<p>Nominal start time for Time Base 3 used in repeatable flight simulation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\* \*
+
+\* \* \*
+
+\*
+
+\*
+
+\* \* \*
+
+15------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Reinitialize first guess at acceleration, (F/M), to FM4.</p>
+<p>Increase vertical and downrange accelerometer RTCs to 50 m/sec<sup>2</sup>; crossrange RTC unchanged at 6 m/sec<sup>2</sup>.</p>
+<p>Disable accelerometer zero test.</p>
+<p>Reinitialize backup mass, mass flow rate and thrust to M<sub>2</sub>, zero and F<sub>21</sub>, respectively.</p>
+<p>End Time Tilt guidance if tilt arrest has not already occurred.</p>
+<p>Stop checking DI14 and DI15 for S-IB engine failures. If either discrete was detected earlier, the checking of the recognized discrete stopped at that time.</p>
+<p>Resume using sin (2°) to compute A<sub>c0</sub> and reset bit 18 of Mode Code 24, if set.</p>
+<p>Stop checking DI23 and inhibit INT5 (S-IB Cutoff signals).</p>
+<p>Start checking DI22 and release inhibit on INT6 for Manual initiation of S-IVB cutoff. This time must not be less than the time of issuance of the S-IVB Engine Cutoff No. 1 Off switch selector.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\* \* \* \* \*
+
+16------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub>C</td>
+<td>6.08</td>
+<td>C3</td>
+<td>Start using mass flow rate, <math>\dot{M}_2</math>, and backup thrust, <math>F_2</math>, in computing backup acceleration, (F/M). (This is the predicted time of S-IVB 90% thrust.)</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>6.08</td>
+<td>C3</td>
+<td>If neither INT6 nor DI22 has been recognized in this time base, enable the accelerometer zero test and decrease vertical and downrange accelerometer RTCs to 6 m/sec<sup>2</sup>.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub></td>
+<td>6.08</td>
+<td>C3</td>
+<td>Resume computing acceleration, (F/M), using first guess, FM4, initialized at T3+0.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Start computing smoothed reciprocal acceleration, (M/F)<sub>S</sub>, using first guess, (M/F)<sub>0</sub>, initialized at T0+0.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>S4IGTM</td>
+<td>10.0</td>
+<td>D1</td>
+<td>Release inhibit on Time Base 4 and start checking for cutoff conditions. Flight Program response to INT4 is inhibited before this time. Start checking DI5. (After this time, the presence of any two of the four S-IVB cutoff indications will initiate Time Base 4.)</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>IGM</sub></td>
+<td>30.0</td>
+<td>C3</td>
+<td>Start IGM.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Start using <math>\Delta T_{N3}</math>.</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+17------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>T<sub>SMC</sub></td>
+<td>58.5</td>
+<td>C3</td>
+<td>Enable SMC calculations.</td>
+</tr>
+<tr>
+<td>T<sub>1i</sub></td>
+<td>None</td>
+<td>0.0</td>
+<td>C3</td>
+<td>Start computing artificial <math>\tau_3</math> and decrementing T<sub>3i</sub>.<br/>Set T<sub>1i</sub> = 0.<br/>Stop computing <math>\tau_1</math> and T<sub>1i</sub>.<br/>Start using mass flow rate, <math>\dot{M}_3</math>, and backup thrust, F<sub>3</sub>, in computation of backup acceleration, <math>(F/M)_c</math>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td><math>\epsilon_2</math></td>
+<td>25.0</td>
+<td>D2</td>
+<td>Start X, terminal steering guidance mode.<br/>Start using <math>\Delta T_{N4}</math>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td>BN<sub>1</sub></td>
+<td>14.4</td>
+<td>B</td>
+<td>Start building velocity history for S-IVB cutoff.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td>T<sub>HSL</sub> + <math>\Delta T_b</math></td>
+<td>5.0 + <math>\Delta T_b</math></td>
+<td>D2</td>
+<td>Enter IGM high speed cutoff loop when the velocity-to-be-gained is less than a velocity guard, V<sub>GRD</sub>. (If guidance reference failure has occurred, do not enter the high speed cutoff loop. If GRF occurs after entering, continue until cutoff.)<br/>Inhibit SMC calculations.</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+18------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IGM<br/>Time-to-<br/>go</td>
+<td><math>T_{HSL} + \Delta T_b</math></td>
+<td><math>5.0 + \Delta T_b</math></td>
+<td>D2</td>
+<td>Set up S-IVB Engine Cutoff On switch selector.</td>
+</tr>
+</tbody>
+</table>
+
+19------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set acceleration, (F/M), to zero.</p>
+<p>Increase vertical and downrange accelerometer RTCs to 50 m/sec<sup>2</sup> (crossover RTC unchanged at 6 m/sec<sup>2</sup>).</p>
+<p>Disable accelerometer zero test.</p>
+<p>Set backup thrust and mass flow rate to zero.</p>
+<p>Reset the command decoder and the DCS error counter and enable INT8.</p>
+<p>Enable the following DCS commands; Time Base Update, Generalized Switch Selector, Execute Generalized Maneuver, Return to Nominal Timeline, Terminate, Inhibit Water Control Valve Logic.</p>
+<p>Stop checking for S-IVB cutoff. (Disable INT4 and DI5.)</p>
+<p>Stop checking DI22 and inhibit INT6 for Manual Initiation of S-IVB cutoff.</p>
+<p>Start using <math>\Delta T_{N5}</math>.</p>
+<p>Change the zero gimbal test constant, ML6HUN, to 1.4 deg.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+20------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Change attitude command rate limits in all channels. MSLIM1 = 0.024 deg per minor loop in roll (0.6 deg per sec). MSLIM2 = 0.016 deg per minor loop in pitch and yaw (0.4 deg per sec).</p>
+<p>Change from IGM guidance to orbital guidance.</p>
+<p>Set SMC corrections to zero.</p>
+<p>Set guidance commands and minor loop guidance commands to the gimbal angles on the first pass only. Start a X freeze. Maintain constant X commands.</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>5.0</td>
+<td>D1</td>
+<td>
+<p>Start checking DI9, S/C control of Saturn. (The start of this test is keyed to the switch selector command S/C Control of Saturn Enable. If guidance reference failure occurs, DI9 checks will be enabled at the time of failure, independent of programmed time guards.</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Enter orbit initialize and begin orbit navigation.</p>
+<p>Enable the following DCS commands: Memory Dump and Navigation Update.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+21------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Change the minor loop rate from 25 per sec to 10 per sec.</p>
+<p>Continue using MSLIM1 = 0.6 deg per sec and MSLIM2 = 0.4 deg per sec.</p>
+<p>Start telemetry acquisition and loss calculations.</p>
+<p>Set the number of permissible unreasonable backup resolver readings (MS15DT) to 6 per sec. The guidance reference failure discretes (D04 and D06) will be set on detecting 7 unreasonable backup resolver readings in 1 sec.</p>
+<p>Set the gimbal angle RTC for first pass on the backup gimbal (MLKRC1) to 18.5 deg.</p>
+<p>Change the backup gimbal angle RTC after first use to 1.1 deg per minor loop in pitch and yaw (MLKRC3) and 1.1 deg per minor loop in roll (MLKRC5).</p>
+<p>Start using <math>\Delta T_{N6}</math>.</p>
+<p>Change the fine gimbal angle RTC to 0.2 deg per minor loop in pitch and yaw (MLK2) and 0.2 deg per minor loop in roll (MLK12).</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+22------------------------------------------------
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Change ladder rate limit (MSK5) to 0.24 deg per minor loop, all channels, unless guidance reference failure has occurred. In that case, leave MSK5 unchanged at zero.</p>
+<p>Set MS04DT to <math>.1/\Delta T_{N6}</math>.</p>
+<p>Set MS25DT to <math>10 \cdot \Delta T_{N6}</math>.</p>
+<p>Continue using the zero gimbal test constant, ML6HUN, of 1.40 deg (all channels).</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T<sub>RNTL</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>
+<p>Implement the DCS return to nominal timeline. This is a transmitted parameter and has meaning only if that command has been received and accepted.</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T<sub>SOM</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>
+<p>Start a DCS generalized orbital maneuver or DCS specialized maneuver. This is a transmitted parameter and has meaning only if the corresponding command has been received and accepted.</p>
+</td>
+</tr>
+<tr>
+<td>T4+TBB-TB</td>
+<td>T<sub>SEQ</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>
+<p>Start a DCS generalized alternate sequence. This is a transmitted parameter and has meaning only if that command has been received and accepted.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\* \*
+
+\*
+
+\*
+
+\* \* \* \*
+
+23------------------------------------------------
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+24------------------------------------------------
+
+#### 1.4 ORBITAL ATTITUDE TIMELINE
+
+The following table (Table 1-2) describes the nominal attitude maneuver timeline from S-IVB cutoff until EOM. The following items are defined in the timeline for each maneuver:
+
+- • Maneuver number
+- • Description of the maneuver
+- • Nominal maneuver start time
+- • Maneuver type.
+
+25------------------------------------------------
+
+TABLE 1-2 ORBITAL ATTITUDE TIMELINE
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="98 798 178 898">Maneuver Number</th>
+<th data-bbox="98 660 178 798">Nominal Maneuver Time<br/>Seconds</th>
+<th data-bbox="98 225 178 660">Description of Maneuver</th>
+<th data-bbox="98 80 178 225">Maneuver Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="178 798 218 898">1</td>
+<td data-bbox="178 660 218 798">T4+0.0</td>
+<td data-bbox="178 225 218 660">Maintain vehicle attitude</td>
+<td data-bbox="178 80 218 225">X freeze</td>
+</tr>
+<tr>
+<td data-bbox="218 798 258 898">2</td>
+<td data-bbox="218 660 258 798">T4+20.0</td>
+<td data-bbox="218 225 258 660">Track local horizontal - posigrade, Position I down</td>
+<td data-bbox="218 80 258 225">Track local reference</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td style="text-align: center;">*</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td style="text-align: center;">*</td>
+</tr>
+</tbody>
+</table>
+
+26------------------------------------------------
+
+## 1.5 PRESETTINGS
+
+Table 1-3 establishes the presettings to be used in the flight program. Program sequencing presettings are excluded since they are established in Section 1.3. For each presetting, the table gives:
+
+- • The symbol
+- • The required value and associated units
+- • The definition
+- • A source code.
+
+Notice that the units of mass, force and angle presettings are not the same as those specified to be used in the flight program in Section 15 of Part I. The units used in the following table are consistent with those in other Apollo documentation while those in the flight program are dictated by programming constraints. For flight program implementation, all values given in degrees must be converted to pirads by dividing by 180. The forces, given in newtons, and masses, given in kilograms, must be converted to kilograms and  $\text{kg-sec}^2/\text{m}$ , respectively, by dividing each quantity by  $9.80665 \text{ m/sec}^2$ .
+
+The source codes are inserted for information only and are not flight program requirements. The codes denote:
+
+- A1 Constants established by the baseline requirements (mission-independent)
+- A2 Launch pad dependent constants
+
+27------------------------------------------------
+
+- B Constants established by IBM
+- C2 Constants established by the orbital timeline
+- C3 Constants established by normal boost guidance requirements
+- C4 Constants established by alternate mission requirements
+- D2 Constants established by vehicle dynamics requirements
+- D3 Constants established by other program requirements.
+
+28------------------------------------------------
+
+TABLE 1-3 PRESETTINGS
+
+PAD 39B
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\cos(\phi'_L)</math></td>
+<td>0.87910194</td>
+<td></td>
+<td>A2</td>
+<td>Cosine of geocentric latitude of launch pad</td>
+</tr>
+<tr>
+<td><math>R_L</math></td>
+<td>6373401.0</td>
+<td>m</td>
+<td>A2</td>
+<td>Geocentric radius to the center of the IU on the launch pad, used to calculate initial conditions</td>
+</tr>
+<tr>
+<td><math>\sin(\phi_L - \phi'_L)</math></td>
+<td>0.0028191516</td>
+<td></td>
+<td>A2</td>
+<td>Sine of geodetic latitude minus geocentric latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>\cos(\phi_L)</math></td>
+<td>0.87775474</td>
+<td></td>
+<td>A2</td>
+<td>Cosine of the geodetic latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>\sin(\phi_L)</math></td>
+<td>0.47911023</td>
+<td></td>
+<td>A2</td>
+<td>Sine of the geodetic latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>X_{LS}</math></td>
+<td>6373376.0</td>
+<td>m</td>
+<td>A2</td>
+<td>Initial radius component along <math>X_S</math>-axis</td>
+</tr>
+</tbody>
+</table>
+
+Note:  $\phi_L = 28.6273060$   
+ $\phi'_L = 28.4657803$
+
+29------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)
+
+PREFLIGHT PTL SPECIAL DATA
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A<sub>00</sub></td>
+<td>490.931</td>
+<td>deg</td>
+<td>D3</td>
+<td rowspan="4">Coefficients of the variable azimuth polynomial, included in flight routines for use by preflight routines</td>
+</tr>
+<tr>
+<td>A<sub>01</sub></td>
+<td>-20.131</td>
+<td></td>
+<td>D3</td>
+</tr>
+<tr>
+<td>A<sub>10</sub></td>
+<td>-1.2501</td>
+<td></td>
+<td>D3</td>
+</tr>
+<tr>
+<td>A<sub>11</sub></td>
+<td>.0975</td>
+<td>deg<sup>-1</sup></td>
+<td>D3</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+30------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+BOOST INITIALIZATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>A_{zL}</math></td>
+<td>90.0</td>
+<td>deg</td>
+<td>A1</td>
+<td>Position I Azimuth</td>
+</tr>
+<tr>
+<td><math>G_H</math></td>
+<td>9.7972155</td>
+<td>m/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Huntsville gravity used for flight simulation</td>
+</tr>
+<tr>
+<td><math>\phi_H</math></td>
+<td>34.7166666</td>
+<td>deg</td>
+<td>A1</td>
+<td>Huntsville geodetic latitude used for flight simulation</td>
+</tr>
+<tr>
+<td><math>G_L</math></td>
+<td>9.7923069</td>
+<td>m/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Cape Kennedy gravity used for flight simulation</td>
+</tr>
+<tr>
+<td><math>\dot{x}_0</math></td>
+<td>0.0</td>
+<td>m/sec</td>
+<td>A1</td>
+<td>Initial velocity component along <math>X_S</math> axis</td>
+</tr>
+<tr>
+<td>T1BIAS</td>
+<td>4.9</td>
+<td>sec</td>
+<td>B</td>
+<td>Time Base 1 bias used if liftoff is detected by the backup scheme</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+\*
+
+\*
+
+\*
+
+31------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+ BOOST INITIALIZATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T<sub>GRR0</sub></td>
+<td>TBD</td>
+<td>sec</td>
+<td>D3</td>
+<td>Nominal value of T<sub>GRR</sub></td>
+</tr>
+<tr>
+<td>TLCK</td>
+<td>TBD</td>
+<td></td>
+<td>D3</td>
+<td>Target load checksum factor</td>
+</tr>
+</tbody>
+</table>
+
+32------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+ACCELEROMETER PROCESSING
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F<sub>1</sub></td>
+<td>7933924.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IB thrust used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td>F<sub>2I</sub></td>
+<td>526359.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB buildup thrust used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td>F<sub>2</sub></td>
+<td>994431.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB thrust used to compute <math>(F/M)_c</math> before EMRC</td>
+<td>*</td>
+</tr>
+<tr>
+<td>F<sub>3</sub></td>
+<td>847773.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB thrust used to compute <math>(F/M)_c</math> after EMRC</td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\dot{M}_1</math></td>
+<td>2878.24</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IB backup mass flow rate used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\dot{M}_2</math></td>
+<td>239.707</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IVB backup mass flow rate prior to EMRC used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\dot{M}_3</math></td>
+<td>202.742</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IVB backup mass flow rate after EMRC used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td>M<sub>1</sub></td>
+<td>589697.6</td>
+<td>kg</td>
+<td>C4</td>
+<td>Mass of the vehicle at liftoff used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+<tr>
+<td>M<sub>2</sub></td>
+<td>134210.9</td>
+<td>kg</td>
+<td>C4</td>
+<td>Mass of the vehicle (not including LES) at T3+T3<sub>FMC</sub> used to compute <math>(F/M)_c</math></td>
+<td>*</td>
+</tr>
+</tbody>
+</table>
+
+33------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)
+
+ACCELEROMETER PROCESSING
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sin (2°)</td>
+<td>.0348994967</td>
+<td></td>
+<td>A1</td>
+<td>Sin (2°) used to compute the estimated thrust (F/M) misalignment uncertainty term</td>
+</tr>
+<tr>
+<td>sin (6°)</td>
+<td>.1045284633</td>
+<td></td>
+<td>A1</td>
+<td>Sin (6°) used to compute the estimated thrust (F/M) misalignment uncertainty term if an S-IB engine out occurs</td>
+</tr>
+</tbody>
+</table>
+
+34------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+BOOST NAVIGATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MFK1</td>
+<td>0.0120948</td>
+<td></td>
+<td>D2</td>
+<td>(M/F)<sub>S</sub> filter coefficients for S-IVB stage</td>
+</tr>
+<tr>
+<td>MFK2</td>
+<td>0.0213339</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK3</td>
+<td>-0.0261577</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK4</td>
+<td>-0.00526684</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK5</td>
+<td>2.80483</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK6</td>
+<td>-2.85880</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK7</td>
+<td>1.24933</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK8</td>
+<td>-0.197360</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FM0</td>
+<td>12.7</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Initial (F/M) for S-IB burn (This pre-setting is valid at T1+T<sub>S1EO</sub> and is also used to initialize the S-IB engine out acceleration decrease table.)</td>
+</tr>
+<tr>
+<td>FM2</td>
+<td>21.0</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Constant (F/M) during Time Base 2</td>
+</tr>
+<tr>
+<td>FM4</td>
+<td>7.4</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Initial (F/M) for S-IVB burn</td>
+</tr>
+<tr>
+<td>(M/F)<sub>0</sub></td>
+<td>.135</td>
+<td>sec<sup>2</sup>/m</td>
+<td>B</td>
+<td>M/F at T3+T3FM used to initialize the S-IVB smoothing filter at T0+0</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>3.986032E+14</td>
+<td>m<sup>3</sup>/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Product of universal gravity constant and mass of the earth</td>
+</tr>
+</tbody>
+</table>
+
+35------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+FIRST STAGE GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B<sub>11</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>12</sub></td>
+<td>15.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>21</sub></td>
+<td>-.375</td>
+<td></td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>22</sub></td>
+<td>15.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>C<sub>arl</sub></td>
+<td>20.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Constant time bias used to modify <math>T_{ar}</math> in case of an S-IB engine failure prior to <math>T_{far}</math>.</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+36------------------------------------------------
+
+TABLE 1-1 PRESETTINGS
+
+TABULAR COMMANDED INERTIAL YAW ATTITUDE FOR  
+SL-1 OPEN LOOP GUIDANCE (TIME TILT YAW COMMANDS)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time from Time Base 1<br/>(Symbols)</th>
+<th>Presetting<br/>(sec)</th>
+<th>Inertial Yaw Command<br/>(Symbols)</th>
+<th>Presetting<br/>(Deg)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>TYAW01</td><td>12.0</td><td>YAWC01</td><td>1.57500</td></tr>
+<tr><td>TYAW02</td><td>46.0</td><td>YAWC02</td><td>1.57500</td></tr>
+<tr><td>TYAW03</td><td>47.0</td><td>YAWC03</td><td>1.54803</td></tr>
+<tr><td>TYAW04</td><td>49.0</td><td>YAWC04</td><td>1.41042</td></tr>
+<tr><td>TYAW05</td><td>51.0</td><td>YAWC05</td><td>1.24992</td></tr>
+<tr><td>TYAW06</td><td>55.0</td><td>YAWC06</td><td>0.83790</td></tr>
+<tr><td>TYAW07</td><td>57.0</td><td>YAWC07</td><td>0.60702</td></tr>
+<tr><td>TYAW08</td><td>61.0</td><td>YAWC08</td><td>0.08980</td></tr>
+<tr><td>TYAW09</td><td>66.0</td><td>YAWC09</td><td>-0.67683</td></tr>
+<tr><td>TYOW10</td><td>71.0</td><td>YAWC10</td><td>-1.52578</td></tr>
+<tr><td>TYAW11</td><td>73.0</td><td>YAWC11</td><td>-1.81980</td></tr>
+<tr><td>TYAW12</td><td>74.0</td><td>YAWC12</td><td>-1.95363</td></tr>
+<tr><td>TYAW13</td><td>76.0</td><td>YAWC13</td><td>-2.07927</td></tr>
+<tr><td>TYAW14</td><td>77.0</td><td>YAWC14</td><td>-2.08010</td></tr>
+<tr><td>TYAW15</td><td>79.0</td><td>YAWC15</td><td>-1.99646</td></tr>
+<tr><td>TYAW16</td><td>81.0</td><td>YAWC16</td><td>-1.77512</td></tr>
+<tr><td>TYAW17</td><td>84.0</td><td>YAWC17</td><td>-1.34329</td></tr>
+<tr><td>TYAW18</td><td>87.0</td><td>YAWC18</td><td>-0.81358</td></tr>
+<tr><td>TYAW19</td><td>89.0</td><td>YAWC19</td><td>-0.46485</td></tr>
+<tr><td>TYAW20</td><td>91.0</td><td>YAWC20</td><td>-0.22682</td></tr>
+<tr><td>TYAW21</td><td>93.0</td><td>YAWC21</td><td>-0.10701</td></tr>
+<tr><td>TYAW22</td><td>96.0</td><td>YAWC22</td><td>-0.04371</td></tr>
+<tr><td>TYAW23</td><td>102.0</td><td>YAWC23</td><td>-0.20853</td></tr>
+<tr><td>TYAW24</td><td>106.0</td><td>YAWC24</td><td>-0.18736</td></tr>
+<tr><td>TYAW25</td><td>111.0</td><td>YAWC25</td><td>-0.14727</td></tr>
+</tbody>
+</table>
+
+Note: The data in this table reflects the SL-1 Yaw Profile and is included for checkout purposes only. SL-2 data will be provided as soon as it becomes available.
+
+37------------------------------------------------
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY)
+
+38------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+FIRST STAGE GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F<sub>10</sub></td>
+<td>0.230773E+1</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>11</sub></td>
+<td>-0.186784E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>12</sub></td>
+<td>-0.524748E-2</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of first segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>13</sub></td>
+<td>0.140517E-4</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>20</sub></td>
+<td>0.117424E+2</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>21</sub></td>
+<td>-0.740514E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>22</sub></td>
+<td>0.451333E-2</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of second segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>23</sub></td>
+<td>-0.338949E-4</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>30</sub></td>
+<td>0.985854E+1</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>31</sub></td>
+<td>-0.658243E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>32</sub></td>
+<td>0.851123E-3</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of third segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>33</sub></td>
+<td>-0.733002E-6</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>T<sub>d</sub></td>
+<td>1.2375</td>
+<td>sec</td>
+<td>B</td>
+<td>Time tilt bias constant</td>
+</tr>
+<tr>
+<td>GANTRY</td>
+<td>138.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Height of gantry (LUT)</td>
+</tr>
+</tbody>
+</table>
+
+\* \* \* \* \*
+
+39------------------------------------------------
+
+TABLE 1-5 PRESETTINGS (CONTINUED)  
+ NOMINAL COMPUTATION CYCLE LENGTHS
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta T_{N1}</math></td>
+<td>.77</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T0+0 to T1+0</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N2}</math></td>
+<td>.75</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T1+0 to T3+T3<sub>IGM</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N3}</math></td>
+<td>1.6</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T3+T3<sub>IGM</sub> to S-IVB <math>\tilde{\chi}</math> steering</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N4}</math></td>
+<td>1.3</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from start of S-IVB <math>\tilde{\chi}</math> guidance until T4-T<sub>HSL</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N5}</math></td>
+<td>.98</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T4+0 to T4+BN<sub>5</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N6}</math></td>
+<td>1.0</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T4 + BN<sub>5</sub> to EOM</td>
+</tr>
+</tbody>
+</table>
+
+40------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+BOOST IGM
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>V_{ex1}</math></td>
+<td>4154.6328</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Exhaust velocity used in first phase for IGM computations</td>
+</tr>
+<tr>
+<td><math>T_{1i}</math></td>
+<td>298.5</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal IGM time-to-go from <math>T3+T3_{IGM}</math> to S-IVB EMRC</td>
+</tr>
+<tr>
+<td><math>T_{10}</math></td>
+<td>298.5</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal first phase burn time</td>
+</tr>
+<tr>
+<td><math>\tau_{10}</math></td>
+<td>538.5</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal value of <math>\tau_1</math> used in artificial <math>\tau</math> calculations</td>
+</tr>
+<tr>
+<td><math>M_{GR}</math></td>
+<td>128534.32</td>
+<td>kg</td>
+<td></td>
+<td>Estimated mass of S-IVB at IGM initiation</td>
+</tr>
+<tr>
+<td><math>V_{ex3}</math></td>
+<td>4181.4755</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Exhaust velocity used in second phase IGM computations</td>
+</tr>
+<tr>
+<td><math>\tau_3</math></td>
+<td>281.14</td>
+<td>sec</td>
+<td>C3</td>
+<td>Initial <math>\tau_3</math> for second phase IGM</td>
+</tr>
+<tr>
+<td><math>T_{3i}</math></td>
+<td>129.6</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal IGM time-to-go from S-IVB EMRC to <math>T4+0</math></td>
+</tr>
+</tbody>
+</table>
+
+\* \* \* \* \*
+
+41------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+BOOST IGM
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROV</td>
+<td>1.80</td>
+<td></td>
+<td>C3</td>
+<td>Bias constant for terminal range angle</td>
+</tr>
+<tr>
+<td><math>G_T</math></td>
+<td>-9.35</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal gravity for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dots X_{VgT}</math></td>
+<td>-9.35</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal X gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dots Y_{VgT}</math></td>
+<td>0.0</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal Y gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dots Z_{VgT}</math></td>
+<td>0.0</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal Z gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td>SQ1</td>
+<td>5494.275</td>
+<td>m/sec</td>
+<td>B</td>
+<td>First guess at <math>\sqrt{\Delta X_V^2 + \Delta Z_V^2}</math> for S-IVB burn</td>
+</tr>
+<tr>
+<td>SQ2</td>
+<td>1.0</td>
+<td></td>
+<td>B</td>
+<td>First guess at <math>\sqrt{1 - (F'_y)^2}</math></td>
+</tr>
+<tr>
+<td><math>\Delta V_b</math></td>
+<td>7.2381</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Thrust decay velocity bias for S-IVB burn</td>
+</tr>
+<tr>
+<td>YAWLIM</td>
+<td>45.0</td>
+<td>deg</td>
+<td>B</td>
+<td>Yaw guidance command limit</td>
+</tr>
+<tr>
+<td>SMCG</td>
+<td>0.03</td>
+<td>rad/sec</td>
+<td>D2</td>
+<td>SMC gain for Time Base 3</td>
+</tr>
+<tr>
+<td><math>V_{GRD}</math></td>
+<td>150.0</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Velocity guard for the high speed loop in S-IVB burn</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+\*
+
+\*
+
+42------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)
+
+TYPICAL TARGETING LOAD DATA FOR USE BY FLIGHT SIMULATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>V_T</math></td>
+<td>7835.13</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Desired insertion velocity for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>R_T</math></td>
+<td>6528178.0</td>
+<td>m</td>
+<td>C3</td>
+<td>Desired insertion radius for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\theta_T</math></td>
+<td>0.0</td>
+<td>deg</td>
+<td>C3</td>
+<td>Desired insertion flight path angle</td>
+</tr>
+<tr>
+<td><math>i</math></td>
+<td>50.0</td>
+<td>deg</td>
+<td>C3</td>
+<td>Inclination of parking orbit</td>
+</tr>
+<tr>
+<td><math>\lambda_0</math></td>
+<td>154.675</td>
+<td>deg</td>
+<td>C3</td>
+<td>Longitude of descending node</td>
+</tr>
+<tr>
+<td><math>\dot{\lambda}</math></td>
+<td>0.0</td>
+<td>deg/sec</td>
+<td>C3</td>
+<td>Time rate of change of the descending node</td>
+</tr>
+<tr>
+<td><math>A_z</math></td>
+<td>45.79968</td>
+<td>deg</td>
+<td>C3</td>
+<td>Platform Azimuth</td>
+</tr>
+</tbody>
+</table>
+
+\* \* \* \* \*
+
+43------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+ORBITAL GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C2</td>
+<td>Pitch<br/>Yaw<br/>Roll</td>
+</tr>
+<tr>
+<td>CP<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td>Attitude variables for<br/>Maneuver 1</td>
+</tr>
+<tr>
+<td>SY<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CY<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RA<sub>M1</sub></td>
+<td>0.0</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TYP<sub>M1</sub><br/>(NOTE*)</td>
+<td>0.0</td>
+<td></td>
+<td>B</td>
+<td>Type of maneuver indicator for Maneuver 1</td>
+</tr>
+<tr>
+<td>SP<sub>M2</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C2</td>
+<td>Pitch<br/>Yaw<br/>Roll</td>
+</tr>
+<tr>
+<td>CP<sub>M2</sub></td>
+<td>1.0</td>
+<td></td>
+<td></td>
+<td>Attitude variables for<br/>Maneuver 2</td>
+</tr>
+<tr>
+<td>SY<sub>M2</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>CY<sub>M2</sub></td>
+<td>1.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RA<sub>M2</sub></td>
+<td>0.0</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TYP<sub>M2</sub></td>
+<td>-1.0</td>
+<td></td>
+<td>B</td>
+<td>Type of maneuver indicator for Maneuver 2</td>
+</tr>
+</tbody>
+</table>
+
+\*NOTE: TYP<sub>M1</sub> -TYP<sub>M2</sub> indicate whether a maneuver is an inertial reference (+1), chi freeze (0), a local reference (-1), or an inertial hold of local reference (-2).
+
+44------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+GRAVITY
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>e</sub></td>
+<td>6378165.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Earth's semi-major axis</td>
+</tr>
+<tr>
+<td>b</td>
+<td>6356783.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Earth's semi-minor axis</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0.7875E-5</td>
+<td></td>
+<td>C3</td>
+<td>Fourth zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+<tr>
+<td>H</td>
+<td>0.575E-5</td>
+<td></td>
+<td>C3</td>
+<td>Third zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+<tr>
+<td>J</td>
+<td>1.62345E-3</td>
+<td></td>
+<td>C3</td>
+<td>Second zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+</tbody>
+</table>
+
+45------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+TELEMETRY ACQUISITION AND LOSS
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSTA</td>
+<td>6374932.0</td>
+<td>m</td>
+<td>D3</td>
+<td>Mean radius of the telemetry stations</td>
+</tr>
+<tr>
+<td><math>\omega_E</math></td>
+<td>.000023211523</td>
+<td>pirads/<br/>sec</td>
+<td>A1</td>
+<td>Earth's rotational rate</td>
+</tr>
+</tbody>
+</table>
+
+46------------------------------------------------
+
+TABLE 1-3 PRESETTINGS (CONTINUED)  
+DRAG
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\rho_0</math></td>
+<td>0.179142E-6</td>
+<td>kg/m<sup>3</sup></td>
+<td>C3</td>
+<td rowspan="8">Atmospheric density polynomial coefficients</td>
+</tr>
+<tr>
+<td><math>\rho_1</math></td>
+<td>-0.37213949E-11</td>
+<td>kg/m<sup>4</sup></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_2</math></td>
+<td>0.31057886E-16</td>
+<td>kg/m<sup>5</sup></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_3</math></td>
+<td>-0.12962178E-21</td>
+<td>kg/m<sup>6</sup></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_4</math></td>
+<td>0.26986419E-27</td>
+<td>kg/m<sup>7</sup></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_5</math></td>
+<td>-0.22388267E-33</td>
+<td>kg/m<sup>8</sup></td>
+<td></td>
+</tr>
+<tr>
+<td><math>K_D</math></td>
+<td>0.164311287E-2</td>
+<td>m<sup>2</sup>/kg</td>
+<td>C3</td>
+<td>Orbital drag model constant</td>
+</tr>
+<tr>
+<td><math>C_{D1}</math></td>
+<td>11.079923</td>
+<td></td>
+<td>C3</td>
+<td>Drag as a function of the cosine of the angle of attack polynomial coefficients</td>
+</tr>
+<tr>
+<td><math>C_{D2}</math></td>
+<td>0.17954281</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D3}</math></td>
+<td>-2.1771971</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D4}</math></td>
+<td>-0.28074902</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D5}</math></td>
+<td>-5.8764139</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+47------------------------------------------------
+
+TABLE 1-5 PRESETTINGS (CONTINUED)  
+DRAG
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>h_1</math></td>
+<td>1.5E5</td>
+<td>m</td>
+<td>C3</td>
+<td>Lower bound of atmospheric density polynomial</td>
+</tr>
+<tr>
+<td><math>h_2</math></td>
+<td>3.0E5</td>
+<td>m</td>
+<td>C3</td>
+<td>Upper bound of atmospheric density polynomial</td>
+</tr>
+<tr>
+<td><math>\rho_c</math></td>
+<td>0.5E-7</td>
+<td>kg/m<sup>3</sup></td>
+<td>C3</td>
+<td>Constant atmospheric density used when the altitude of the vehicle is less than <math>h_1</math></td>
+</tr>
+</tbody>
+</table>
+
+48------------------------------------------------
+
+## 1.6 FLIGHT SEQUENCING
+
+The flight sequencing requirements for AS-206 are established in Table VII of the current revision of the Flight Sequence Program ICD 68M00001 and the approved IRN's described in Table 1-4. The information to be obtained from the ICD are switch selector command title, stage, address, and time from base. No other information contained in the ICD is to be considered a program requirement.
+
+49------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>LIFTOFF - START OF TIME BASE NO. 1 (T1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T1 .0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SINGLE ENGINE CUTOFF ENABLE</td>
+<td>0101 1010</td>
+<td>S1B</td>
+<td>100 T1</td>
+<td>+ 5.8</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES CLOSE ON</td>
+<td>0110 1010</td>
+<td>S1VB</td>
+<td>79 T1</td>
+<td>+ 6.0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>MULTIPLE ENGINE CUTOFF ENABLE NO.1</td>
+<td>0001 0001</td>
+<td>S1B</td>
+<td>16 T1</td>
+<td>+ 10.0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>MULTIPLE ENGINE CUTOFF ENABLE NO.2</td>
+<td>0110 1111</td>
+<td>S1B</td>
+<td>15 T1</td>
+<td>+ 10.1</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.2 EXPULSION</td>
+<td>0111 0100</td>
+<td>IU</td>
+<td>54 T1</td>
+<td>+ 10.2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.2 EXPULSION RESET</td>
+<td>0110 1011</td>
+<td>IU</td>
+<td>59 T1</td>
+<td>+ 10.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETER CALIBRATION ON</td>
+<td>0101 1111</td>
+<td>S-1B</td>
+<td>2 T1</td>
+<td>+ 20.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETER CALIBRATION OFF</td>
+<td>0000 1111</td>
+<td>S-1B</td>
+<td>39 T1</td>
+<td>+ 25.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 T1</td>
+<td>+ 27.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 T1</td>
+<td>+ 32.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LAUNCH VEHICLE ENGINES EDS CUTOFF ENABLE</td>
+<td>0011 0001</td>
+<td>IU</td>
+<td>38 T1</td>
+<td>+ 40.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 T1</td>
+<td>+ 50.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 T1</td>
+<td>+ 55.2</td>
+</tr>
+</tbody>
+</table>
+
+50------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 1</td>
+<td>0111 1110</td>
+<td>IU</td>
+<td>43 T1</td>
+<td>+ 100.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 2</td>
+<td>0100 0001</td>
+<td>IU</td>
+<td>21 T1</td>
+<td>+ 100.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETER CALIBRATION ON</td>
+<td>0101 1111</td>
+<td>S-1B</td>
+<td>2 T1</td>
+<td>+ 119.8</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 3</td>
+<td>0101 0001</td>
+<td>IU</td>
+<td>22 T1</td>
+<td>+ 120.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>IU CONTROL ACCELEROMETER POWER OFF</td>
+<td>0111 0101</td>
+<td>IU</td>
+<td>106 T1</td>
+<td>+ 120.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETER CALIBRATION OFF</td>
+<td>0000 1111</td>
+<td>S-1B</td>
+<td>39 T1</td>
+<td>+ 124.8</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TM CALIBRATE ON</td>
+<td>0100 1010</td>
+<td>S1VB</td>
+<td>62 T1</td>
+<td>+ 127.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TM CALIBRATE OFF</td>
+<td>0000 0111</td>
+<td>S1VB</td>
+<td>63 T1</td>
+<td>+ 128.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>EXCESS RATE (P,Y,R) AUTO-ABORT INHIBIT ENABLE</td>
+<td>0110 1111</td>
+<td>IU</td>
+<td>15 T1</td>
+<td>+ 131.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>EXCESS RATE (P,Y,R) AUTO-ABORT INHIBIT AND<br/>SWITCH RATE GYROS SC INDICATION A</td>
+<td>0101 1111</td>
+<td>IU</td>
+<td>2 T1</td>
+<td>+ 131.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S-1B TWO ENGINES OUT AUTO-ABORT INHIBIT ENABLE</td>
+<td>0000 1110</td>
+<td>IU</td>
+<td>51 T1</td>
+<td>+ 131.6</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S-1B TWO ENGINES OUT AUTO-ABORT INHIBIT</td>
+<td>0001 1110</td>
+<td>IU</td>
+<td>35 T1</td>
+<td>+ 131.8</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>PROPELLANT LEVEL SENSORS ENABLE</td>
+<td>0111 0111</td>
+<td>S-1B</td>
+<td>104 T1</td>
+<td>+ 132.0</td>
+</tr>
+</tbody>
+</table>
+
+51------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-1B. PREPELLANT LEVEL SENSOR ACTUATION-START OF<br/>TIME BASE NO. 2 (T2)</td>
+<td></td>
+<td>S-1B</td>
+<td></td>
+<td>T2 .0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>EXCESS RATE (ROLL) AUTO-ABORT INHIBIT ENABLE</td>
+<td>0100 1111</td>
+<td>IU</td>
+<td>34</td>
+<td>T2 + .2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>EXCESS RATE (RCLL) AUTO-ABORT INHIBIT AND<br/>SWITCH RATE CYROS SC INDICATOR B</td>
+<td>0111 0001</td>
+<td>IU</td>
+<td>50</td>
+<td>T2 + .4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>INEGARD ENGINES CUTOFF</td>
+<td>0100 0100</td>
+<td>S-1B</td>
+<td>98</td>
+<td>T2 + 3.1</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>AUTO-ABORT ENABLE RELAYS RESET</td>
+<td>0001 0001</td>
+<td>IU</td>
+<td>16</td>
+<td>T2 + 3.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>CHARGE VOLTAGE IGNITION EBM FIRING UNITS</td>
+<td>0111 0100</td>
+<td>SIVB</td>
+<td>54</td>
+<td>T2 + 3.6</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>Q-BALL POWER OFF</td>
+<td>0111 1111</td>
+<td>IU</td>
+<td>1</td>
+<td>T2 + 4.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>PREVALVES OPEN</td>
+<td>0110 1001</td>
+<td>SIVB</td>
+<td>83</td>
+<td>T2 + 4.3</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LOX DEPLETION CUTOFF ENABLE</td>
+<td>0000 0110</td>
+<td>S-1B</td>
+<td>57</td>
+<td>T2 + 4.6</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FUEL DEPLETION CUTOFF ENABLE</td>
+<td>0110 1010</td>
+<td>S-1B</td>
+<td>79</td>
+<td>T2 + 5.6</td>
+</tr>
+</tbody>
+</table>
+
+52------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-1B OUTBOARD ENGINES CUTOFF - START OF TIME<br/>BASE NO. 3 (T3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T3 .0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S-1B CUTBOARD ENGINES CUTOFF</td>
+<td>C011 C011</td>
+<td>S-1B</td>
+<td>18</td>
+<td>T3 + .1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES OPEN</td>
+<td>0111 1010</td>
+<td>S1VB</td>
+<td>80</td>
+<td>T3 + .2</td>
+</tr>
+<tr>
+<td>1</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SYSTEM ON</td>
+<td>0111 1CC1</td>
+<td>S1VB</td>
+<td>103</td>
+<td>T3 + .3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>S-1VB ENGINE CUTOFF NO. 1 OFF</td>
+<td>C111 C010</td>
+<td>S1VB</td>
+<td>13</td>
+<td>T3 + .4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>S-1VB ENGINE CUTOFF NO. 2 OFF</td>
+<td>CC00 11C0</td>
+<td>S1VB</td>
+<td>49</td>
+<td>T3 + .5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.3 AND PANEL NO.2,<br/>COVERS NO.2 AND NO.4 EXPULSION</td>
+<td>0110 0100</td>
+<td>IU</td>
+<td>55</td>
+<td>T3 + C.6</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.3 AND PANEL NO.2,<br/>COVERS NO.2 AND NO.4 EXPULSION RESET</td>
+<td>01C1 01C0</td>
+<td>IU</td>
+<td>56</td>
+<td>T3 + C.8</td>
+</tr>
+<tr>
+<td>68M00C01</td>
+<td>ULLAGE ROCKETS IGNITION</td>
+<td>0101 0100</td>
+<td>S1VB</td>
+<td>56</td>
+<td>T3 + 1.1</td>
+</tr>
+<tr>
+<td>6EM00C01</td>
+<td>S-1B/S-1VB SEPARATION ON</td>
+<td>0C10 0010</td>
+<td>S-1B</td>
+<td>23</td>
+<td>T3 + 1.3</td>
+</tr>
+<tr>
+<td>6EM00CC01</td>
+<td>FLIGHT CONTROL COMPUTER S-1VB BURN MODE ON A</td>
+<td>0010 CC01</td>
+<td>IU</td>
+<td>53</td>
+<td>T3 + 1.5</td>
+</tr>
+</tbody>
+</table>
+
+53------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE ON B</td>
+<td>0010 1101 10</td>
+<td>10</td>
+<td>6 T3</td>
+<td>+ 1.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>ENGINE READY BYPASS ON</td>
+<td>0110 0011 SIVB</td>
+<td>SIVB</td>
+<td>10 T3</td>
+<td>+ 1.9</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LH2 CHILLDOWN PUMP OFF</td>
+<td>0110 1011 SIVB</td>
+<td>SIVB</td>
+<td>59 T3</td>
+<td>+ 2.1</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LOX CHILLDOWN PUMP OFF</td>
+<td>0010 0010 SIVB</td>
+<td>SIVB</td>
+<td>23 T3</td>
+<td>+ 2.3</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S-IVB ENGINE CUT INDICATION A ENABLE</td>
+<td>0001 0011 10</td>
+<td>10</td>
+<td>9 T3</td>
+<td>+ 2.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S-IVB ENGINE OUT INDICATION B ENABLE</td>
+<td>0011 1100 10</td>
+<td>10</td>
+<td>29 T3</td>
+<td>+ 2.6</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>ENGINE IGNITION SEQUENCE START</td>
+<td>0001 0011 SIVB</td>
+<td>SIVB</td>
+<td>9 T3</td>
+<td>+ 2.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>ENGINE IGNITION SEQUENCE START RELAY RESET</td>
+<td>0101 1101 SIVB</td>
+<td>SIVB</td>
+<td>27 T3</td>
+<td>+ 3.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FUEL INJECTION TEMPERATURE OK BYPASS</td>
+<td>0111 0011 SIVB</td>
+<td>SIVB</td>
+<td>11 T3</td>
+<td>+ 3.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LH2 TANK PRESSURIZATION CONTROL SWITCH ENABLE</td>
+<td>0001 1001 SIVB</td>
+<td>SIVB</td>
+<td>68 T3</td>
+<td>+ 5.3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>P.U. MIXTURE RATIO 5.5 ON</td>
+<td>0100 1111 SIVB</td>
+<td>SIVB</td>
+<td>34 T3</td>
+<td>+ 8.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>CHARGE ULLAGE JETTISON EBW FIRING UNITS</td>
+<td>0110 0100 SIVB</td>
+<td>SIVB</td>
+<td>55 T3</td>
+<td>+ 10.2</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>ULLAGE ROCKETS JETTISON</td>
+<td>0001 1010 SIVB</td>
+<td>SIVB</td>
+<td>57 T3</td>
+<td>+ 13.3</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FUEL INJECTION TEMPERATURE OK BYPASS RESET</td>
+<td>0001 0001 SIVB</td>
+<td>SIVB</td>
+<td>16 T3</td>
+<td>+ 13.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>ULLAGE EBW FIRING UNITS CHARGE RELAYS RESET</td>
+<td>0101 1100 SIVB</td>
+<td>SIVB</td>
+<td>68 T3</td>
+<td>+ 19.3</td>
+</tr>
+</tbody>
+</table>
+
+54------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001</td>
+<td>ULLAGE ROCKETS IGNITION AND JETTISON RELAYS<br/>RESET</td>
+<td>0010 1011</td>
+<td>SIVB</td>
+<td>73 T3</td>
+<td>+ 19.5</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>HEAT EXCHANGER BYPASS VALVE ENABLE ON</td>
+<td>0111 0001</td>
+<td>SIVB</td>
+<td>50 T3</td>
+<td>+ 24.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 T3</td>
+<td>+ 25.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 T3</td>
+<td>+ 30.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>WATER COOLANT VALVE OPEN</td>
+<td>0110 0101</td>
+<td>IL</td>
+<td>107 T3</td>
+<td>+ 38.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 4</td>
+<td>0110 0001</td>
+<td>IU</td>
+<td>4 T3</td>
+<td>+ 42.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 5</td>
+<td>0011 0010</td>
+<td>IU</td>
+<td>44 T3</td>
+<td>+ 203.7</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 T3</td>
+<td>+ 205.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 T3</td>
+<td>+ 210.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>LH2 TANK PRESSURIZATION CONTROL SWITCH DISABLE</td>
+<td>0010 1001</td>
+<td>SIVB</td>
+<td>69 T3</td>
+<td>+ 302.9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>P.U. MIXTURE RATIO 3.5 OFF</td>
+<td>0001 1110</td>
+<td>SIVB</td>
+<td>35 T3</td>
+<td>+ 327.9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>P.U. MIXTURE RATIO 4.8 ON</td>
+<td>0100 0011</td>
+<td>SIVB</td>
+<td>32 T3</td>
+<td>+ 328.1</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 T3</td>
+<td>+ 355.4</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 T3</td>
+<td>+ 360.4</td>
+</tr>
+</tbody>
+</table>
+
+55------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM EASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>PROPELLANT DEPLETION CUTOFF ARM</td>
+<td>0000 C110</td>
+<td>S1VB</td>
+<td>57</td>
+<td>T3 + 437.2</td>
+</tr>
+</tbody>
+</table>
+
+56------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IVB ENGINE CUTOFF - START OF TIME BASE 4 (T4)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T4 0.0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>S-IVB ENGINE CUTOFF NO. 1 ON</td>
+<td>0100 1101</td>
+<td>SIVB</td>
+<td>12</td>
+<td>T4 + .1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>S-IVB ENGINE CUTOFF NO. 2 ON</td>
+<td>CC10 1100</td>
+<td>SIVB</td>
+<td>43</td>
+<td>T4 + .2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE OPEN ON</td>
+<td>0101 1110</td>
+<td>SIVB</td>
+<td>42</td>
+<td>T4 + .3</td>
+</tr>
+<tr>
+<td>6EM00001</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN ON</td>
+<td>0101 0110</td>
+<td>SIVB</td>
+<td>55</td>
+<td>T4 + .4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PREVALVES CLOSE ON</td>
+<td>CCC1 C110</td>
+<td>SIVB</td>
+<td>82</td>
+<td>T4 + .5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CHILLDOWN SHUTOFF VALVES CLOSE</td>
+<td>0101 0101</td>
+<td>SIVB</td>
+<td>91</td>
+<td>T4 + .6</td>
+</tr>
+<tr>
+<td>6EM00001</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SHUTOFF VALVES<br/>CLOSE</td>
+<td>C110 1010</td>
+<td>SIVB</td>
+<td>75</td>
+<td>T4 + .8</td>
+</tr>
+<tr>
+<td>1</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SYSTEM OFF</td>
+<td>0111 0111</td>
+<td>SIVB</td>
+<td>104</td>
+<td>T4 + 1.0</td>
+</tr>
+<tr>
+<td>6EM00001</td>
+<td>PROPPELLANT DEPLETION CUTOFF DISARM</td>
+<td>C100 0100</td>
+<td>SIVB</td>
+<td>98</td>
+<td>T4 + 1.8</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>P.U. MIXTURE RATIO 4.7 OFF</td>
+<td>0C01 1100</td>
+<td>SIVB</td>
+<td>33</td>
+<td>T4 + 2.2</td>
+</tr>
+<tr>
+<td>6EM00001</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE OFF A</td>
+<td>0100 1101</td>
+<td>IU</td>
+<td>12</td>
+<td>T4 + 3.5</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE OFF B</td>
+<td>0000 CC10</td>
+<td>IU</td>
+<td>5</td>
+<td>T4 + 3.7</td>
+</tr>
+</tbody>
+</table>
+
+57------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 3.9</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>S/C CONTROL OF SATURN ENABLE</td>
+<td>0011 0011</td>
+<td>IU</td>
+<td>18</td>
+<td>T4 + 5.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>RATE MEASUREMENTS SWITCH</td>
+<td>0001 1111</td>
+<td>IU</td>
+<td>17</td>
+<td>T4 + 6.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>S-IVB ENGINE EDS CUTOFFS DISABLE</td>
+<td>0110 0010</td>
+<td>IU</td>
+<td>3</td>
+<td>T4 + 10.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE OPEN OFF</td>
+<td>0000 0001</td>
+<td>SIVB</td>
+<td>37</td>
+<td>T4 + 200.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LOX TANK VENT AND NPV VALVES BOOST CLOSE ON</td>
+<td>0011 1011</td>
+<td>SIVB</td>
+<td>95</td>
+<td>T4 + 203.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LOX TANK VENT AND NPV VALVES BOOST CLOSE OFF</td>
+<td>0001 1011</td>
+<td>SIVB</td>
+<td>96</td>
+<td>T4 + 205.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>P.U. INVERTER AND DC POWER OFF</td>
+<td>0011 1111</td>
+<td>SIVB</td>
+<td>8</td>
+<td>T4 + 240.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN OFF</td>
+<td>0101 1010</td>
+<td>SIVB</td>
+<td>100</td>
+<td>T4 + 320.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LH2 TANK VENT AND LATCHING RELIEF VALVES BOOST<br/>CLOSE ON</td>
+<td>0110 0110</td>
+<td>SIVB</td>
+<td>77</td>
+<td>T4 + 323.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LH2 TANK VENT AND LATCHING RELIEF VALVES BOOST<br/>CLOSE OFF</td>
+<td>0111 0110</td>
+<td>SIVB</td>
+<td>78</td>
+<td>T4 + 325.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN ON</td>
+<td>0101 0110</td>
+<td>SIVB</td>
+<td>55</td>
+<td>T4 + 900.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE OPEN ON</td>
+<td>0101 1110</td>
+<td>SIVB</td>
+<td>42</td>
+<td>T4 + 900.2</td>
+</tr>
+</tbody>
+</table>
+
+58------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH ON</td>
+<td>0010 1110</td>
+<td>SIVB</td>
+<td>52</td>
+<td>T4 + 902.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE LATCH OPEN ON</td>
+<td>0011 0110</td>
+<td>SIVB</td>
+<td>101</td>
+<td>T4 + 902.2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN OFF</td>
+<td>0101 1010</td>
+<td>SIVB</td>
+<td>100</td>
+<td>T4 + 903.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE OPEN OFF</td>
+<td>0000 0001</td>
+<td>SIVB</td>
+<td>37</td>
+<td>T4 + 903.2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH OFF</td>
+<td>0101 0010</td>
+<td>SIVB</td>
+<td>19</td>
+<td>T4 + 904.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK NPV VALVE LATCH OPEN OFF</td>
+<td>0010 0110</td>
+<td>SIVB</td>
+<td>102</td>
+<td>T4 + 904.2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.4 AND PANEL NO.2,<br/>COVER NO. 3 EXPULSION</td>
+<td>0100 1011</td>
+<td>IU</td>
+<td>112</td>
+<td>T4 + 2752.0</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SENSOR PANEL NO.1, COVER NO.4 AND PANEL NO.2,<br/>COVER NO. 3 EXPULSION RESET</td>
+<td>0101 1011</td>
+<td>IU</td>
+<td>60</td>
+<td>T4 + 2752.2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>PASSIVATION ENABLE</td>
+<td>0110 0111</td>
+<td>SIVB</td>
+<td>85</td>
+<td>T4 + 4990.2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SHUTOFF VALVES<br/>CLOSE OFF</td>
+<td>0111 1010</td>
+<td>SIVB</td>
+<td>80</td>
+<td>T4 + 5000.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ENGINE HELIUM CONTROL VALVE OPEN ON</td>
+<td>0001 0101</td>
+<td>SIVB</td>
+<td>109</td>
+<td>T4 + 5000.2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ENGINE HELIUM CONTROL VALVE OPEN OFF</td>
+<td>0011 0100</td>
+<td>SIVB</td>
+<td>110</td>
+<td>T4 + 6000.0</td>
+</tr>
+</tbody>
+</table>
+
+59------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICC/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>PASSIVATION DISABLE</td>
+<td>0101 0111</td>
+<td>SIVB</td>
+<td>86</td>
+<td>T4 + 6001.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SHUTOFF VALVES<br/>CLOSE ON</td>
+<td>0110 1010</td>
+<td>SIVB</td>
+<td>79</td>
+<td>T4 + 7800.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ENGINE PUMP PURGE CONTROL VALVE ENABLE ON</td>
+<td>0001 0010</td>
+<td>SIVB</td>
+<td>24</td>
+<td>T4 + 11200.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES OPEN</td>
+<td>0111 1010</td>
+<td>SIVB</td>
+<td>80</td>
+<td>T4 + 15600.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ENGINE PUMP PURGE CONTROL VALVE ENABLE OFF</td>
+<td>0011 1101</td>
+<td>SIVB</td>
+<td>25</td>
+<td>T4 + 16200.0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LOX TANK FLIGHT PRESSURATION SHUTOFF VALVES<br/>CLOSE ON</td>
+<td>0110 1010</td>
+<td>SIVB</td>
+<td>79</td>
+<td>T4 + 16600.0</td>
+</tr>
+</tbody>
+</table>
+
+60------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>WATER COOLANT VALVE SWITCHING (SEE NOTE 1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>WATER COOLANT VALVE OPEN</td>
+<td>0110 0101</td>
+<td>IU</td>
+<td>107</td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>WATER COOLANT VALVE CLOSED</td>
+<td>0100 0101</td>
+<td>IU</td>
+<td>108</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>SPECIAL SEQUENCE FOR VEHICLE TELEMETRY<br/>CALIBRATION (SEE NOTE 2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23 ACC +</td>
+<td>60.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TM CALIBRATE ON</td>
+<td>0100 1010</td>
+<td>SIVB</td>
+<td>62 ACC +</td>
+<td>63.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TM CALIBRATE OFF</td>
+<td>0000 0111</td>
+<td>SIVB</td>
+<td>63 ACC +</td>
+<td>64.0</td>
+</tr>
+<tr>
+<td>68M00001</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE, OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24 ACC +</td>
+<td>65.0</td>
+</tr>
+</tbody>
+</table>
+
+61------------------------------------------------
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IVB CUTOFF SEQUENCE (SEE NOTE 3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>SIVB ENGINE CUTOFF NO. 1 ON</td>
+<td>0100 1101</td>
+<td>SIVB</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>SIVB ENGINE CUTOFF NO. 2 ON</td>
+<td>0010 1100</td>
+<td>SIVB</td>
+<td>48</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+62------------------------------------------------
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+63------------------------------------------------
+
+Notes on Table 1-4:
+
+Note 1:
+
+Each of these switch selector commands must be programmed as an alternate switch selector sequence. Requirements for issuance of these alternate sequences are detailed in Section 7.4.10.
+
+Note 2:
+
+The IU telemetry and S-IVB telemetry shall be calibrated after orbital insertion by using a special sequence. This special sequence of events consists of IU and S-IVB telemetry calibration commands and shall be initiated by the LVDC using special tracking station acquisition logic. The first telemetry calibrate command shall be issued 60.0 seconds after station acquisition as determined by the LVDC.
+
+Note 3:
+
+This switch selector sequence must be issued in response to S-IVB velocity cutoff or Spacecraft initiated S-IVB cutoff. It should be noted that if Time Base 4 is initiated prior to the completion of this sequence, the sequence must be terminated. The second command of this sequence must be checked immediately after the first command.
+
+64------------------------------------------------
+
+## 1.7 DIGITAL COMMAND SYSTEM (DCS) MODE COMMAND SUMMARY
+
+Table 1-5 defines the only DCS commands which are accepted by the AS-206 flight program and the interval during which each command is accepted. The required program response to each command is defined in Section 10 of Part I.
+
+65------------------------------------------------
+
+TABLE 1-5 DCS MODE COMMAND FORMAT
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">Octal<br/>Rep. of<br/>LVDC Bit<br/>Position<br/>S-5</th>
+<th colspan="2">Binary Rep. of<br/>LVDC Bit<br/>Position</th>
+<th rowspan="2">Definition</th>
+<th rowspan="2">Acceptance<br/>Times</th>
+</tr>
+<tr>
+<th>S-6</th>
+<th>7-13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>0010000</td>
+<td rowspan="9" style="writing-mode: vertical-rl; transform: rotate(180deg); text-align: center;">Complement of Bits S-6</td>
+<td>Time Base Update</td>
+<td>T4+ 0→End of Mission (EOM)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>0010010</td>
+<td>Navigation Update</td>
+<td>T4+ 15→EOM</td>
+</tr>
+<tr>
+<td>12</td>
+<td>0010100</td>
+<td>Generalized Switch Selector</td>
+<td>T4+ 0→EOM</td>
+</tr>
+<tr>
+<td>13</td>
+<td>0010110</td>
+<td>Memory Dump</td>
+<td>Prelaunch Command Mode<br/>T4+ 15→EOM</td>
+</tr>
+<tr>
+<td>20</td>
+<td>0100000</td>
+<td>Terminate</td>
+<td>When any other DCS command is allowed</td>
+</tr>
+<tr>
+<td>32</td>
+<td>0110100</td>
+<td>Targeting Load</td>
+<td>Prelaunch Command Mode</td>
+</tr>
+<tr>
+<td>35</td>
+<td>0111010</td>
+<td>Execute Generalized Maneuver</td>
+<td>T4+ 0→EOM</td>
+</tr>
+<tr>
+<td>36</td>
+<td>0111100</td>
+<td>Return to Nominal Timeline</td>
+<td>T4+ 0→EOM</td>
+</tr>
+<tr>
+<td>45</td>
+<td>1001010</td>
+<td>Inhibit Water Control Valve Logic</td>
+<td>T4+ 0→EOM</td>
+</tr>
+</tbody>
+</table>
+
+66------------------------------------------------
+
+### 1.8 FLIGHT SIMULATION LADDER PROFILES
+
+Figure 1-2 depicts the signal profiles required on the ladder outputs during flight simulation tests. These ladder profiles must be issued as specified in Section 12.2.2.5 of Part I.
+
+FIGURE 1-2 LADDER SIGNAL PROFILES
+
+![Three vertical signal profile graphs for ladder outputs: STOP CAN, REACH, and TEACH. Each graph shows a signal level over time, with specific pulse widths and levels indicated.](849e5951073566be50dce8c5f0e0ad05_4_img.webp)
+
+The figure contains three vertical signal profile graphs, each representing a different ladder output signal over time. The y-axis for all three graphs is labeled 'VOLTAGE' and ranges from 0 to 12.0. The x-axis for all three graphs is labeled 'TIME' and ranges from 0 to 100.
+
+- **STOP CAN:** The signal is at 0V until approximately time 10. It then steps up to 1.0V and remains at this level until approximately time 20. It then steps down to 0V and remains at 0V until time 100.
+- **REACH:** The signal is at 0V until approximately time 10. It then steps up to 1.0V and remains at this level until approximately time 20. It then steps down to 0V and remains at 0V until time 100.
+- **TEACH:** The signal is at 0V until approximately time 10. It then steps up to 1.0V and remains at this level until approximately time 20. It then steps down to 0V and remains at 0V until time 100.
+
+67------------------------------------------------
+
+![Flight simulation ladder profile S-IB T1+0 showing ROLL 5° and PITCH AND YAW 3° phases with switch points 1, 2, and 3.](7939fb3b26db40ae4db1cd66a975d051_1_img.webp)
+
+S-IB T1+0
+
+ROLL 5°
+
+PITCH AND YAW 3°
+
+SWITCH PT 1 AND 2
+
+SWITCH PT 3
+
+<table border="1">
+<thead>
+<tr>
+<th>Time (T)</th>
+<th>Attitude</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22</td>
+<td>ROLL 5°</td>
+</tr>
+<tr>
+<td>63</td>
+<td>ROLL 5°</td>
+</tr>
+<tr>
+<td>68</td>
+<td>ROLL 5°</td>
+</tr>
+<tr>
+<td>71</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+<tr>
+<td>74</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+<tr>
+<td>100</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+<tr>
+<td>120</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+<tr>
+<td>125</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+<tr>
+<td>128</td>
+<td>PITCH AND YAW 3°</td>
+</tr>
+</tbody>
+</table>
+
+![Flight simulation ladder profile S-IVB T3+0 showing ROLL 2° and PITCH AND YAW 5° phases with switch points 4 and 5.](7939fb3b26db40ae4db1cd66a975d051_2_img.webp)
+
+S-IVB T3+0
+
+ROLL 2°
+
+PITCH AND YAW 5°
+
+SWITCH PT 4
+
+SWITCH PT 5
+
+<table border="1">
+<thead>
+<tr>
+<th>Time (T)</th>
+<th>Attitude</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>42</td>
+<td>MAX RATE</td>
+</tr>
+<tr>
+<td>60</td>
+<td>ROLL 2°</td>
+</tr>
+<tr>
+<td>64</td>
+<td>ROLL 2°</td>
+</tr>
+<tr>
+<td>132</td>
+<td>PITCH AND YAW 5°</td>
+</tr>
+<tr>
+<td>137</td>
+<td>PITCH AND YAW 5°</td>
+</tr>
+<tr>
+<td>150</td>
+<td>PITCH AND YAW 5°</td>
+</tr>
+<tr>
+<td>155</td>
+<td>PITCH AND YAW 5°</td>
+</tr>
+<tr>
+<td>203.7</td>
+<td>SWITCH PT 5</td>
+</tr>
+</tbody>
+</table>
+
+![Flight simulation ladder profile T4+0 showing PITCH 2°, YAW 2°, and ROLL 2° phases with a COAST segment.](7939fb3b26db40ae4db1cd66a975d051_3_img.webp)
+
+T4+0
+
+PITCH 2°
+
+YAW 2°
+
+ROLL 2°
+
+COAST
+
+<table border="1">
+<thead>
+<tr>
+<th>Time (T)</th>
+<th>Attitude</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>60</td>
+<td>PITCH 2°</td>
+</tr>
+<tr>
+<td>64</td>
+<td>PITCH 2°</td>
+</tr>
+<tr>
+<td>70</td>
+<td>YAW 2°</td>
+</tr>
+<tr>
+<td>74</td>
+<td>YAW 2°</td>
+</tr>
+<tr>
+<td>80</td>
+<td>ROLL 2°</td>
+</tr>
+<tr>
+<td>84</td>
+<td>ROLL 2°</td>
+</tr>
+</tbody>
+</table>
+
+FIGURE 12. FLIGHT SIMULATION LADDER PROFILES
+
+68------------------------------------------------
+
+![IBM logo](c2bd56ac71ff4600d11dc99b77f08a60_1_img.webp)The IBM logo, consisting of the letters "IBM" in a bold, sans-serif font, with horizontal lines running through the letters. A small registered trademark symbol (®) is located at the top right of the letter "M".
+
+Printed in USA
+
+Federal Systems Division  
+Electronics Systems Center  
+Huntsville, Alabama
+
+![IU logo](c2bd56ac71ff4600d11dc99b77f08a60_4_img.webp)A circular logo featuring the letters "IU" in a bold, sans-serif font. The letters are white and set against a dark background. The circle is also dark, with a small gap at the top.
+
+Apollo Saturn Team

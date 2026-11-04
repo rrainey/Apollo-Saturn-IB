@@ -1,0 +1,3463 @@
+## SECTION 15
+
+### DEFINITIONS
+
+#### 15.1 INTRODUCTION
+
+This section contains two reference listings for use with the text and equations of Parts I and II of this document. The first listing is a summary of all abbreviations; the second listing contains descriptions of all variables in this document.
+
+#### 15.2 ABBREVIATIONS
+
+Abbreviations for terms related to the Saturn Program, vehicle hardware, flight program software, etc., are listed alphabetically in Table 15-1.
+
+#### 15.3 VARIABLE DICTIONARY
+
+The variable dictionary, contained in Table 15-2, defines the variables used in the text and equations of this document.
+
+For each variable there is an identifying symbol, a definition, and, where appropriate, the dimensional unit to be used in the flight program. (Variables used in Eq. 5.4.2 through 5.4.7 and in Section 13 are dummy variables and are not defined in this listing. Their meaning is conveyed by the appropriate discussion in the text.)
+
+Symbols with vincula identify mathematically defined vectors. In general, only this symbol is given in the dictionary. The identical symbol, without the vinculum, denotes the magnitude of the vector. Unless otherwise noted, any of the subscripts A, B, E, G, S, V, or 4 may be added to a vector symbol to
+
+1------------------------------------------------
+
+indicate the appropriate coordinate system to which the vector is referenced (see Section 2). A component of a vector is denoted by adding the additional subscripts x, y, or z, corresponding to the coordinate system axis.
+
+Note 1: The definition provided by the dictionary consists only of the primary event which occurs at the corresponding time. Refer to the Event Sequence Timeline Table in Part II.
+
+#### 15.4 MAXIMUM VALUES OF SELECTED VARIABLES
+
+Table 15-3 contains the maximum expected values of selected variables. These maxima were derived from a series of simulations designed to force each variable to its maximum value.
+
+The flight program scaling of these variables and the associated quantities must be capable of accommodating the values given in the table.
+
+2------------------------------------------------
+
+TABLE 15-1 ABBREVIATIONS
+
+<table>
+<tr>
+<td>AP</td>
+<td>Accelerometer Processing</td>
+</tr>
+<tr>
+<td>BML</td>
+<td>Boost Major Loop</td>
+</tr>
+<tr>
+<td>BR</td>
+<td>Buffer Register</td>
+</tr>
+<tr>
+<td>BTC</td>
+<td>Beginning of Telemetry Cycle</td>
+</tr>
+<tr>
+<td>CCS</td>
+<td>Command Communications System</td>
+</tr>
+<tr>
+<td>CIU</td>
+<td>Computer Interface Unit</td>
+</tr>
+<tr>
+<td>CM</td>
+<td>Command Module</td>
+</tr>
+<tr>
+<td>CO</td>
+<td>Cutoff</td>
+</tr>
+<tr>
+<td>COD</td>
+<td>Crossover Detector</td>
+</tr>
+<tr>
+<td>CRP</td>
+<td>Computer Reset Pulse</td>
+</tr>
+<tr>
+<td>CSM</td>
+<td>Command and Service Modules</td>
+</tr>
+<tr>
+<td>D/A</td>
+<td>Digital to Analog Conversion</td>
+</tr>
+<tr>
+<td>DB</td>
+<td>Disagreement Bit</td>
+</tr>
+<tr>
+<td>DCS</td>
+<td>Digital Command System</td>
+</tr>
+<tr>
+<td>DI</td>
+<td>Discrete Input (may have numerical suffix)</td>
+</tr>
+<tr>
+<td>DIR</td>
+<td>Discrete Input Register</td>
+</tr>
+<tr>
+<td>DIS</td>
+<td>Discrete Input Spares (may have numerical suffix)</td>
+</tr>
+<tr>
+<td>DO</td>
+<td>Discrete Output (may have numerical suffix)</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>Data Output Multiplexer</td>
+</tr>
+<tr>
+<td>DOR</td>
+<td>Discrete Output Register</td>
+</tr>
+<tr>
+<td>EBW</td>
+<td>Exploding Bridge Wire</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>Expected Change</td>
+</tr>
+<tr>
+<td>ECS</td>
+<td>Environmental Control System</td>
+</tr>
+<tr>
+<td>EDD</td>
+<td>Equation Defining Document</td>
+</tr>
+<tr>
+<td>EDS</td>
+<td>Emergency Detection System</td>
+</tr>
+<tr>
+<td>EMR</td>
+<td>Error Monitor Register</td>
+</tr>
+<tr>
+<td>EMRC</td>
+<td>Engine Mixture Ratio Change</td>
+</tr>
+<tr>
+<td>EOM</td>
+<td>End of Mission</td>
+</tr>
+<tr>
+<td>ESE</td>
+<td>Electrical Support Equipment</td>
+</tr>
+<tr>
+<td>ETC</td>
+<td>End of Telemetry Cycle</td>
+</tr>
+<tr>
+<td>ETW</td>
+<td>Error Time Word</td>
+</tr>
+<tr>
+<td>FCC</td>
+<td>Flight Control Computer</td>
+</tr>
+<tr>
+<td>G&amp;C</td>
+<td>Guidance and Control</td>
+</tr>
+<tr>
+<td>GFP</td>
+<td>Generalized Flight Program</td>
+</tr>
+</table>
+
+\*
+
+3------------------------------------------------
+
+TABLE 15-1 ABBREVIATIONS (CONTINUED)
+
+<table>
+<tr>
+<td>GMT</td>
+<td>Greenwich Mean Time</td>
+</tr>
+<tr>
+<td>GRF</td>
+<td>Guidance Reference Failure</td>
+</tr>
+<tr>
+<td>GRR</td>
+<td>Guidance Reference Release</td>
+</tr>
+<tr>
+<td>GRRA</td>
+<td>Guidance Reference Release Alert</td>
+</tr>
+<tr>
+<td>HOP</td>
+<td>Transfer of program flow in LVDC</td>
+</tr>
+<tr>
+<td>HSL</td>
+<td>High Speed (Cutoff) Loop</td>
+</tr>
+<tr>
+<td>IA</td>
+<td>Input Axis</td>
+</tr>
+<tr>
+<td>ICD</td>
+<td>Interface Control Document</td>
+</tr>
+<tr>
+<td>ICR</td>
+<td>Internal Control Register</td>
+</tr>
+<tr>
+<td>ID</td>
+<td>Identification</td>
+</tr>
+<tr>
+<td>IGM</td>
+<td>Iterative Guidance Mode</td>
+</tr>
+<tr>
+<td>INT</td>
+<td>Interrupt (may have numerical suffix)</td>
+</tr>
+<tr>
+<td>IR</td>
+<td>Interrupt Register</td>
+</tr>
+<tr>
+<td>IRN</td>
+<td>Interface Revision Notice</td>
+</tr>
+<tr>
+<td>ISR</td>
+<td>Interrupt Storage Register</td>
+</tr>
+<tr>
+<td>IU</td>
+<td>Instrument Unit</td>
+</tr>
+<tr>
+<td>KSC</td>
+<td>Kennedy Space Center</td>
+</tr>
+<tr>
+<td>LCC</td>
+<td>Launch Control Computer</td>
+</tr>
+<tr>
+<td>LES</td>
+<td>Launch Escape System</td>
+</tr>
+<tr>
+<td>LH2</td>
+<td>Liquid Hydrogen</td>
+</tr>
+<tr>
+<td>LM</td>
+<td>Lunar Module</td>
+</tr>
+<tr>
+<td>L.N.</td>
+<td>Line of Nodes</td>
+</tr>
+<tr>
+<td>LO</td>
+<td>Liftoff</td>
+</tr>
+<tr>
+<td>LOX</td>
+<td>Liquid Oxygen</td>
+</tr>
+<tr>
+<td>LSB</td>
+<td>Least Significant Bit</td>
+</tr>
+<tr>
+<td>LUT</td>
+<td>Launch Umbilical Tower</td>
+</tr>
+<tr>
+<td>LV</td>
+<td>Launch Vehicle</td>
+</tr>
+<tr>
+<td>LVDA</td>
+<td>Launch Vehicle Data Adapter</td>
+</tr>
+<tr>
+<td>LVDC</td>
+<td>Launch Vehicle Digital Computer</td>
+</tr>
+<tr>
+<td>MCC</td>
+<td>Mission Control Center (Houston, Texas)</td>
+</tr>
+<tr>
+<td>MC24</td>
+<td>Mode Code 24</td>
+</tr>
+<tr>
+<td>MC25</td>
+<td>Mode Code 25</td>
+</tr>
+<tr>
+<td>MC27</td>
+<td>Mode Code 27</td>
+</tr>
+</table>
+
+\*
+
+4------------------------------------------------
+
+TABLE 15-1 ABBREVIATIONS (CONTINUED)
+
+<table>
+<tr>
+<td>ML</td>
+<td>Minor Loop</td>
+</tr>
+<tr>
+<td>MLC</td>
+<td>Mobile Launch Computer</td>
+</tr>
+<tr>
+<td>MLS</td>
+<td>Minor Loop Support</td>
+</tr>
+<tr>
+<td>MSB</td>
+<td>Most Significant Bit</td>
+</tr>
+<tr>
+<td>MSFC</td>
+<td>Marshall Space Flight Center (Huntsville, Alabama)</td>
+</tr>
+<tr>
+<td>NM</td>
+<td>Nautical Mile</td>
+</tr>
+<tr>
+<td>N.P.</td>
+<td>North Pole</td>
+</tr>
+<tr>
+<td>NPV</td>
+<td>Non-Propulsive Vent</td>
+</tr>
+<tr>
+<td>OA</td>
+<td>Output Axis</td>
+</tr>
+<tr>
+<td>OM/D</td>
+<td>Orbital Mode-Data Bit in DCS word transmitted from ground</td>
+</tr>
+<tr>
+<td>OML</td>
+<td>Orbital Major Loop</td>
+</tr>
+<tr>
+<td>ON</td>
+<td>Orbital Navigation</td>
+</tr>
+<tr>
+<td>PCM</td>
+<td>Pulse Code Modulation</td>
+</tr>
+<tr>
+<td>PIO</td>
+<td>Process Input-Output</td>
+</tr>
+<tr>
+<td>PTL</td>
+<td>Prepare to Launch</td>
+</tr>
+<tr>
+<td>PU</td>
+<td>Propellant Utilization</td>
+</tr>
+<tr>
+<td>QMS</td>
+<td>(qms) Quarter Milliseconds</td>
+</tr>
+<tr>
+<td>RCA-110A</td>
+<td>Designation for ground computer used in checkout and prelaunch</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td>Real Time Clock (as used in Parts III &amp; IV)</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td>Reasonableness Test Constant (as used in Parts I &amp; II)</td>
+</tr>
+<tr>
+<td>S-IB</td>
+<td>Designation for Saturn IB vehicle first stage</td>
+</tr>
+<tr>
+<td>S-IVB</td>
+<td>Designation for Saturn IB vehicle second stage</td>
+</tr>
+<tr>
+<td>S/C, SC</td>
+<td>Spacecraft</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>Spacecraft Lunar Module Adapter</td>
+</tr>
+<tr>
+<td>SM</td>
+<td>Service Module</td>
+</tr>
+<tr>
+<td>SMC</td>
+<td>Steering Misalignment Correction</td>
+</tr>
+<tr>
+<td>SRA</td>
+<td>Spin Reference Axis</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>Switch Selector Command</td>
+</tr>
+<tr>
+<td>ST-124M</td>
+<td>Designation for the launch vehicle inertial platform</td>
+</tr>
+<tr>
+<td>TBD</td>
+<td>To be determined</td>
+</tr>
+</table>
+
+\*
+
+\*
+
+5------------------------------------------------
+
+TABLE 15-1 ABBREVIATIONS (CONTINUED)
+
+<table><tr><td>TB0</td><td>Time Base 0</td></tr><tr><td>TB1</td><td>Time Base 1</td></tr><tr><td>TB2</td><td>Time Base 2</td></tr><tr><td>TB3</td><td>Time Base 3</td></tr><tr><td>TB4</td><td>Time Base 4</td></tr><tr><td>TLC</td><td>Temporary Loss of Control (LVDC simultaneous memory error)</td></tr><tr><td>TM</td><td>Telemetry *</td></tr></table>
+
+6------------------------------------------------
+
+TABLE 15-2 DEFINITIONS
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\bar{A}</math> (<math>\bar{A}_p</math>)</td>
+<td>Vehicle acceleration vector (predicted) [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>A'</math></td>
+<td>Intermediate parameter used in HSL time-to-go calculations [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>A''</math></td>
+<td>Intermediate parameter used in HSL time-to-go calculations [m/sec<sup>3</sup>]</td>
+</tr>
+<tr>
+<td><math>A_{c0}</math></td>
+<td>Estimated uncertainty in the expected velocity change computation [m/sec]</td>
+</tr>
+<tr>
+<td><math>\bar{A}_D</math> (<math>\bar{A}_{Dp}</math>)</td>
+<td>Drag acceleration vector (predicted) [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>a_e</math></td>
+<td>Semi-major axis of the earth-model ellipsoid [m]</td>
+</tr>
+<tr>
+<td><math>A_z</math></td>
+<td>Platform azimuth, computed in Preflight routines [pirads]</td>
+</tr>
+<tr>
+<td><math>A_{zL}</math></td>
+<td>Position I azimuth at launch [pirads]</td>
+</tr>
+<tr>
+<td><math>A_{00}</math></td>
+<td>Constant term of variable azimuth polynomial, used by Preflight routines [deg]</td>
+</tr>
+<tr>
+<td><math>A_{01}</math></td>
+<td>Coefficient of inclination <math>i</math> in variable azimuth polynomial, used by Preflight routines</td>
+</tr>
+<tr>
+<td><math>A_{10}</math></td>
+<td>Coefficient of descending node angle <math>\lambda</math> in variable azimuth polynomial, used by Preflight routines</td>
+</tr>
+</tbody>
+</table>
+
+7------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="92 116 170 135"><u>Symbol</u></th>
+<th data-bbox="328 116 605 135"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="92 208 135 228"><math>A_{11}</math></td>
+<td data-bbox="199 208 740 270">Coefficient of product of inclination <math>i</math> and descending node angle <math>\lambda</math> in variable azimuth polynomial, used by Preflight routines [<math>\text{deg}^{-1}</math>]</td>
+</tr>
+<tr>
+<td data-bbox="92 298 155 318"><math>A_1-A_6</math></td>
+<td data-bbox="199 298 778 335">Coefficients used to compute pitch, yaw, and roll attitude correction commands</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+  
+\*  
+\*  
+\*
+
+8------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>B</u></td>
+<td></td>
+</tr>
+<tr>
+<td>b</td>
+<td>Semi-minor axis of the earth-model ellipsoid [m]</td>
+</tr>
+<tr>
+<td>B<sub>11</sub></td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval *</td>
+</tr>
+<tr>
+<td>B<sub>12</sub></td>
+<td>Coefficient to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval [sec] *</td>
+</tr>
+<tr>
+<td>B<sub>21</sub></td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval *</td>
+</tr>
+<tr>
+<td>B<sub>22</sub></td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval [sec] *</td>
+</tr>
+<tr>
+<td>BN<sub>1</sub></td>
+<td>The time (referenced to T*) to start building velocity history for S-IVB cutoff [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>BN<sub>5</sub></td>
+<td>Time in TB4 to begin orbital navigation [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>BU1</td>
+<td>Time in TB3 to start checking DI22 and release inhibit on INT6 [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>BU2</td>
+<td>Time in TB0 to begin search for liftoff acceleration [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>BU3</td>
+<td>Time in TB0 to prevent TB1 initiation if liftoff has not been detected [sec] (see note 1)</td>
+</tr>
+</tbody>
+</table>
+
+9------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="74 128 144 141">Symbol</th>
+<th data-bbox="348 128 616 141">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="74 181 94 194"><u>C</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="74 221 88 234"><math>\bar{C}</math></td>
+<td data-bbox="206 224 614 237">Telemetry station radius vector [m]</td>
+</tr>
+<tr>
+<td data-bbox="74 271 118 284"><math>C_{ar1}</math></td>
+<td data-bbox="206 271 780 308">Constant time bias used to modify <math>T_{ar}</math> for an S-IB engine failure during Time Base 1 [sec]</td>
+</tr>
+<tr>
+<td data-bbox="74 341 101 354"><math>C_D</math></td>
+<td data-bbox="206 341 651 354">Computed vehicle ballistic coefficient</td>
+</tr>
+<tr>
+<td data-bbox="74 391 158 404"><math>C_{D1}-C_{D5}</math></td>
+<td data-bbox="206 391 760 428">Coefficients for the polynomial used to compute <math>C_D</math></td>
+</tr>
+<tr>
+<td data-bbox="74 461 101 474"><math>C_2</math></td>
+<td data-bbox="206 461 780 498">IGM intermediate parameter used in calculation of position correction terms</td>
+</tr>
+<tr>
+<td data-bbox="74 531 101 544"><math>C_4</math></td>
+<td data-bbox="206 531 780 568">IGM intermediate parameter used in calculation of position correction terms</td>
+</tr>
+<tr>
+<td data-bbox="74 601 134 644"><math>C_{PM1-5}</math></td>
+<td data-bbox="206 601 770 644">Orbital attitude (pitch) variables for maneuvers 1 thru 5</td>
+</tr>
+<tr>
+<td data-bbox="74 681 144 694">CPITCH</td>
+<td data-bbox="206 681 818 694">In-plane attitude parameter used in orbital guidance</td>
+</tr>
+<tr>
+<td data-bbox="74 731 134 774"><math>C_{YM1-5}</math></td>
+<td data-bbox="206 731 746 768">Orbital attitude (yaw) variables for maneuvers 1 thru 5</td>
+</tr>
+<tr>
+<td data-bbox="74 801 121 814">CYAW</td>
+<td data-bbox="206 801 758 837">Out-of-plane attitude parameter used in orbital guidance</td>
+</tr>
+</tbody>
+</table>
+
+10------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table><thead><tr><th><u>Symbol</u></th><th><u>Definition and Comments</u></th></tr></thead><tbody><tr><td><u>D</u></td><td></td></tr><tr><td>D</td><td>Coefficient of fourth zonal harmonic in expansion of earth's gravitational potential</td></tr><tr><td><math>d_A</math></td><td>Altitude of the vehicle above the horizon of a telemetry station [m]</td></tr><tr><td><math>D_p</math></td><td>IGM parameter used in calculation of pitch attitude correction term</td></tr><tr><td><math>D_y</math></td><td>IGM parameter used in calculation of yaw attitude correction term</td></tr><tr><td>DCRTC</td><td>Real time clock reading associated with <math>\Delta\chi</math> updating [qms]</td></tr></tbody></table>
+
+11------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u><b>F</b></u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\bar{F}</math></td>
+<td>Thrust Vector</td>
+</tr>
+<tr>
+<td><math>\bar{F}'</math></td>
+<td>Unit thrust vector</td>
+</tr>
+<tr>
+<td><math>F_k</math></td>
+<td>Current predicted average thrust; used to compute <math>(F/M)_c</math> [kg]</td>
+</tr>
+<tr>
+<td><math>F_1</math></td>
+<td>Predicted average S-IB thrust; used to compute <math>(F/M)_c</math> [kg] *</td>
+</tr>
+<tr>
+<td><math>F_2</math></td>
+<td>Predicted average S-IVB thrust before EMRC; used to compute <math>(F/M)_c</math> [kg]</td>
+</tr>
+<tr>
+<td><math>F_{2I}</math></td>
+<td>Predicted average S-IVB buildup thrust; used to compute <math>(F/M)_c</math> [kg]</td>
+</tr>
+<tr>
+<td><math>F_3</math></td>
+<td>Predicted average S-IVB thrust after EMRC; used to compute <math>(F/M)_c</math> [kg]</td>
+</tr>
+<tr>
+<td><math>F_{10}-F_{13}</math></td>
+<td>Coefficients of first segment time tilt polynomial [pirads, pirads/sec, pirads/sec<sup>2</sup>, pirads/sec<sup>3</sup>]</td>
+</tr>
+<tr>
+<td><math>F_{20}-F_{23}</math></td>
+<td>Coefficients of second segment time tilt polynomial. [pirads, pirads/sec, pirads/sec<sup>2</sup>, pirads/sec<sup>3</sup>]</td>
+</tr>
+<tr>
+<td><math>F_{30}-F_{33}</math></td>
+<td>Coefficients of third segment time tilt polynomial [pirads, pirads/sec, pirads/sec<sup>2</sup>, pirads/sec<sup>3</sup>]</td>
+</tr>
+</tbody>
+</table>
+
+12------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table><thead><tr><th><u>Symbol</u></th><th><u>Definition and Comments</u></th></tr></thead><tbody><tr><td>(F/M)</td><td>Total measured vehicle acceleration computed from accelerometer readings <math>[m/sec^2]</math></td></tr><tr><td>(F/M)<sub>c</sub></td><td>Backup acceleration computed from prestored values <math>[m/sec^2]</math></td></tr><tr><td>FM0</td><td>Initial (F/M) for S-IB burn <math>[m/sec^2]</math></td></tr><tr><td>FM2</td><td>Constant (F/M) during TB2 <math>[m/sec^2]</math></td></tr><tr><td>FM4</td><td>Initial (F/M) for S-IVB burn <math>[m/sec^2]</math></td></tr></tbody></table>
+
+13------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="91 128 164 143">Symbol</th>
+<th data-bbox="338 128 604 143">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="91 174 118 191"><u>G</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="91 214 174 238"><math>\bar{G}</math> (<math>\bar{G}_p</math>)</td>
+<td data-bbox="198 214 824 238">Gravitational acceleration vector (predicted) [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="91 258 118 273"><math>\bar{G}^*</math></td>
+<td data-bbox="198 258 778 278">Average <math>\bar{G}</math> for remaining boost flight path [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="91 306 118 321"><math>G_H</math></td>
+<td data-bbox="198 306 778 341">Huntsville gravity value used in flight simulation [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="91 371 118 391"><math>\bar{G}_L</math></td>
+<td data-bbox="198 371 744 406">Gravitational acceleration vector at the launch site [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="91 436 118 456"><math>\bar{G}_T</math></td>
+<td data-bbox="198 436 788 456">Terminal gravitational acceleration vector [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="91 481 164 496">GANTRY</td>
+<td data-bbox="198 481 664 496">Height of the launch umbilical tower [m]</td>
+</tr>
+<tr>
+<td data-bbox="91 526 164 541">GOMTYP</td>
+<td data-bbox="198 526 814 587">Parameter used by execute generalized maneuver, execute special maneuver, and return to nominal time-line DCS commands, indicating orbital maneuver type. *</td>
+</tr>
+</tbody>
+</table>
+
+14------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table><thead><tr><th><u>Symbol</u></th><th><u>Definition and Comments</u></th></tr></thead><tbody><tr><td><u>H</u></td><td></td></tr><tr><td>h</td><td>Altitude of the vehicle above the oblate spheroid of the earth [m]</td></tr><tr><td>H</td><td>Coefficient of third zonal harmonic in the expansion of earth's gravitational potential</td></tr><tr><td><math>h_1</math></td><td>Lower limit of h for atmospheric density polynomial [m]</td></tr><tr><td><math>h_2</math></td><td>Upper limit of h for atmospheric density polynomial [m]</td></tr></tbody></table>
+
+15------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table>
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>I</u></td>
+<td></td>
+</tr>
+<tr>
+<td>i</td>
+<td>Inclination of the orbit [pirads]</td>
+</tr>
+<tr>
+<td><math>i_s</math></td>
+<td>Unit vector along <math>X_s</math> axis</td>
+</tr>
+</tbody>
+</table>
+
+16------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>J</u></td>
+<td></td>
+</tr>
+<tr>
+<td>J</td>
+<td>Coefficient of second zonal harmonic in the expansion of earth's gravitational potential</td>
+</tr>
+<tr>
+<td>J<sub>p</sub></td>
+<td>IGM parameter used in calculation of pitch attitude correction term</td>
+</tr>
+<tr>
+<td>j<sub>s</sub></td>
+<td>Unit vector along Y<sub>s</sub> axis [m]</td>
+</tr>
+<tr>
+<td>J<sub>y</sub></td>
+<td>IGM parameter used in calculation of yaw attitude correction term</td>
+</tr>
+<tr>
+<td>J<sub>1</sub></td>
+<td>Estimated position-to-be-gained in first IGM phase used in calculation of total IGM position-to-be-gained [m]</td>
+</tr>
+<tr>
+<td>J<sub>3</sub></td>
+<td>Corrected position-to-be-gained in second IGM phase used in calculation of total IGM position-to-be-gained [m]</td>
+</tr>
+<tr>
+<td>J'<sub>3</sub></td>
+<td>Estimated position-to-be-gained in second IGM phase used in the calculations of J<sub>3</sub> and the predicted terminal range angle <math>\phi_T</math> [m]</td>
+</tr>
+</tbody>
+</table>
+
+17------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>K</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>K_D</math></td>
+<td>Orbital drag model constant, dependent on the mass and average presentation area of the vehicle [<math>m^2/kg</math>]</td>
+</tr>
+<tr>
+<td><math>K_P</math></td>
+<td>IGM parameter used in calculation of pitch attitude correction term</td>
+</tr>
+<tr>
+<td><math>k_S</math></td>
+<td>Unit vector along <math>Z_S</math> axis</td>
+</tr>
+<tr>
+<td><math>K_y</math></td>
+<td>IGM parameter used in calculation of yaw attitude correction term</td>
+</tr>
+<tr>
+<td><math>K_1</math></td>
+<td>Altitude constraint for determining pitch steering angle [radians]</td>
+</tr>
+<tr>
+<td><math>K_2</math></td>
+<td>Altitude rate constraint for determining pitch steering angle [radians/sec]</td>
+</tr>
+<tr>
+<td><math>K_3</math></td>
+<td>Altitude constraint for determining yaw steering angle [radians]</td>
+</tr>
+<tr>
+<td><math>K_4</math></td>
+<td>Altitude rate constraint for determining yaw steering angle [radians/sec]</td>
+</tr>
+</tbody>
+</table>
+
+18------------------------------------------------
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY)
+
+19------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="84 120 154 135">Symbol</th>
+<th data-bbox="344 120 614 135">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="84 168 108 183"><u>L</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="84 211 108 231"><math>L_p</math></td>
+<td data-bbox="214 211 814 271">Component in the pitch plane of the total corrected velocity-to-be-gained by IGM, used in the calculation of position correction terms <math>K_1</math> and <math>K_2</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 301 108 321"><math>L_y</math></td>
+<td data-bbox="214 301 804 336">Total corrected velocity-to-be-gained by IGM, used in calculation of position correction term [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 366 108 386"><math>L'_y</math></td>
+<td data-bbox="214 366 828 426">Total estimated velocity-to-be-gained by IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 456 108 476"><math>L_1</math></td>
+<td data-bbox="214 456 794 516">Velocity-to-be-gained in first phase IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 546 108 566"><math>L_3</math></td>
+<td data-bbox="214 546 824 606">Corrected velocity-to-be-gained in second phase IGM, used in calculation of the pitch guidance command <math>\chi_y</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 636 108 656"><math>L'_3</math></td>
+<td data-bbox="214 636 824 696">Estimated velocity-to-be-gained in second phase IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+20------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><b><u>M</u></b></td>
+<td></td>
+</tr>
+<tr>
+<td>M</td>
+<td>Current mass of the vehicle [kg-sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>\dot{M}</math></td>
+<td>Current mass flow rate used in computing <math>(F/M)_c</math> [kg-sec/m]</td>
+</tr>
+<tr>
+<td><math>M_{cb}</math></td>
+<td>Current total backup mass used in computing <math>(F/M)_c</math> [kg-sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>M_{GR}</math></td>
+<td>Estimated mass of S-IVB at IGM initiation [kg-sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>M_1</math></td>
+<td>Mass of the vehicle at liftoff; used to compute <math>(F/M)_c</math> [kg-sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>\dot{M}_1</math></td>
+<td>S-IB backup mass flow rate used to compute <math>(F/M)_c</math> [kg-sec/m]</td>
+</tr>
+<tr>
+<td><math>M_2</math></td>
+<td>Mass of the vehicle (not including LES) at T3+T3<sub>PMC</sub>; used to compute <math>(F/M)_c</math> [kg-sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>\dot{M}_2</math></td>
+<td>S-IVB backup mass flow rate prior to EMRC; used to compute <math>(F/M)_c</math> [kg-sec/m]</td>
+</tr>
+<tr>
+<td><math>\dot{M}_3</math></td>
+<td>S-IVB backup mass flow rate after EMRC; used to compute <math>(F/M)_c</math> [kg-sec/m]</td>
+</tr>
+<tr>
+<td><math>(M/F)</math></td>
+<td>Reciprocal of the total measured acceleration <math>(1/(F/M))</math> [sec<sup>2</sup>/m]</td>
+</tr>
+<tr>
+<td><math>(M/F)_s</math></td>
+<td>Current smoothed (filtered) value of <math>(M/F)</math> [sec<sup>2</sup>/m]</td>
+</tr>
+</tbody>
+</table>
+
+21------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="95 77 175 95">Symbol</th>
+<th data-bbox="345 77 620 95">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="100 165 195 210"><math>(M/F)_{S1}</math><br/><math>(M/F)_{S4}</math></td>
+<td data-bbox="215 165 740 210">First through fourth consecutive past values of <math>(M/F)_S</math> [<math>\text{sec}^2/\text{m}</math>]</td>
+</tr>
+<tr>
+<td data-bbox="100 230 195 275"><math>(M/F)_1</math><br/><math>(M/F)_4</math></td>
+<td data-bbox="215 230 790 275">Present through third past consecutive values of <math>(M/F)</math> [<math>\text{sec}^2/\text{m}</math>]</td>
+</tr>
+<tr>
+<td data-bbox="100 295 175 320"><math>(M/F)_0</math></td>
+<td data-bbox="215 295 790 340">Predicted M/F at <math>T3+T3_{FM}</math>: used to initialize the smoothing filter at <math>T0+0</math> [<math>\text{sec}^2/\text{m}</math>]</td>
+</tr>
+<tr>
+<td data-bbox="100 365 160 385">[MBS]</td>
+<td data-bbox="215 365 775 385">Transformation matrix from B-system to S-system</td>
+</tr>
+<tr>
+<td data-bbox="100 410 160 430">[MEG]</td>
+<td data-bbox="215 410 775 430">Transformation matrix from E-system to G-system *</td>
+</tr>
+<tr>
+<td data-bbox="100 455 160 475">[MES]</td>
+<td data-bbox="215 455 775 475">Transformation matrix from E-system to S-system *</td>
+</tr>
+<tr>
+<td data-bbox="100 500 525 520">MFK1-MFK8 <math>(M/F)_S</math> filter coefficients</td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="100 545 160 565">[MGA]</td>
+<td data-bbox="215 545 775 565">Transformation matrix from G-system to A-system</td>
+</tr>
+<tr>
+<td data-bbox="100 590 160 610">[MG4]</td>
+<td data-bbox="215 590 775 610">Transformation matrix from G-system to 4-system</td>
+</tr>
+<tr>
+<td data-bbox="100 635 175 655">MLKRC1</td>
+<td data-bbox="215 635 800 675">Gimbal angle RTC used on first pass on the backup gimbal only (all channels) [deg]</td>
+</tr>
+<tr>
+<td data-bbox="100 700 175 720">MLKRC3</td>
+<td data-bbox="215 700 835 740">Gimbal angle RTC used after first pass on the backup gimbal (pitch and yaw channels) [deg/ML]</td>
+</tr>
+<tr>
+<td data-bbox="100 765 175 785">MLKRC5</td>
+<td data-bbox="215 765 835 805">Gimbal angle RTC used after first pass on the backup gimbal (roll channel) [deg/ML]</td>
+</tr>
+<tr>
+<td data-bbox="100 830 150 850">MLK2</td>
+<td data-bbox="215 830 765 875">Fine gimbal angle RTC (pitch and yaw channels) [deg/ML]</td>
+</tr>
+</tbody>
+</table>
+
+22------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MLK12</td>
+<td>Fine gimbal angle RTC (roll channel) [deg/ML]</td>
+</tr>
+<tr>
+<td>MLR</td>
+<td>Minor Loop rate [<math>\text{sec}^{-1}</math>]</td>
+</tr>
+<tr>
+<td>ML6HUN</td>
+<td>Zero gimbal angle test constant (all channels) [deg]</td>
+</tr>
+<tr>
+<td>[MSA]</td>
+<td>Transformation matrix from S-system to A-system</td>
+</tr>
+<tr>
+<td>[MSG]</td>
+<td>Transformation matrix from S-system to G-system</td>
+</tr>
+<tr>
+<td>MSK5</td>
+<td>Ladder rate limit (all channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>MSK6</td>
+<td>Ladder magnitude limit (pitch and yaw channels) [deg]</td>
+</tr>
+<tr>
+<td>MSK16</td>
+<td>Ladder magnitude limit (roll channel) [deg]</td>
+</tr>
+<tr>
+<td>MSLIM1</td>
+<td>Attitude command (<math>\chi</math>) rate limit (roll channel)<br/>[deg/ML]</td>
+</tr>
+<tr>
+<td>MSLIM2</td>
+<td>Attitude command (<math>\chi</math>) rate limit (pitch and yaw<br/>channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>[MSV]</td>
+<td>Transformation matrix from S-system to V-system</td>
+</tr>
+<tr>
+<td>MS04DT</td>
+<td>The reciprocal of MS25DT</td>
+</tr>
+<tr>
+<td>MS15DT</td>
+<td>Number of permissible unreasonable backup resolver read-<br/>ings per computation cycle before setting D04 and D06</td>
+</tr>
+</tbody>
+</table>
+
+23------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table>
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MS25DT</td>
+<td>Number of minor loops per <math>\Delta T_N</math> through minor loop support</td>
+</tr>
+<tr>
+<td>[MS4]</td>
+<td>Transformation matrix from S-system to 4-system</td>
+</tr>
+<tr>
+<td>[M4V]</td>
+<td>Transformation matrix from 4-system to V-system</td>
+</tr>
+</tbody>
+</table>
+
+24------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="154 133 226 146"><u>Symbol</u></th>
+<th data-bbox="403 133 671 146"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="154 179 181 196"><u>N</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="154 221 166 234"><math>\bar{N}</math></td>
+<td data-bbox="274 224 814 237">Unit vector perpendicular to the orbital plane</td>
+</tr>
+<tr>
+<td data-bbox="154 271 226 284">NTSTB2</td>
+<td data-bbox="274 271 838 308">Nominal time in Time Base 1 to start Time Base 2<br/>in repeatable flight simulation [sec]</td>
+</tr>
+<tr>
+<td data-bbox="911 271 923 284">*</td>
+<td data-bbox="911 294 923 307">*</td>
+</tr>
+<tr>
+<td data-bbox="154 339 226 352">NTSTB3</td>
+<td data-bbox="274 339 838 376">Nominal time in Time Base 2 to start Time Base 3<br/>in repeatable flight simulation [sec]</td>
+</tr>
+<tr>
+<td data-bbox="911 339 923 352">*</td>
+<td data-bbox="911 362 923 375">*</td>
+</tr>
+<tr>
+<td data-bbox="154 407 226 420">NUPTIM</td>
+<td data-bbox="274 407 848 444">Time from GRR at which a DCS Navigation Update is<br/>to be implemented [sec]</td>
+</tr>
+</tbody>
+</table>
+
+25------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u><b>P</b></u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\bar{P}</math></td>
+<td>Pointing vector along the longitudinal axis of the vehicle</td>
+</tr>
+<tr>
+<td>P</td>
+<td>Parameter used in calculation of gravitational acceleration vector</td>
+</tr>
+<tr>
+<td><math>P_C</math></td>
+<td>Elapsed time in artificial <math>\tau</math> mode at EMRC [sec]</td>
+</tr>
+<tr>
+<td><math>P_{CMR}</math></td>
+<td>Preset length of artificial <math>\tau</math> mode after EMRC [sec]</td>
+</tr>
+<tr>
+<td><math>\bar{P}_1</math></td>
+<td>Unit vector perpendicular to plane of <math>\bar{N}</math> and <math>\bar{R}_1</math></td>
+</tr>
+<tr>
+<td><math>P_1</math></td>
+<td>IGM parameter used in calculation of range angle</td>
+</tr>
+<tr>
+<td><math>P_3</math></td>
+<td>IGM parameter used in calculation of pitch attitude correction term</td>
+</tr>
+<tr>
+<td><math>P_{34}</math></td>
+<td>Parameter in harmonic expansion of earth's gravitational potential</td>
+</tr>
+<tr>
+<td>PITCH</td>
+<td>Pitch attitude error correction command [ladder bits]</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+26------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="151 120 235 136"><u>Symbol</u></th>
+<th data-bbox="411 120 681 136"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="151 168 181 184"><u>Q</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="151 214 176 230"><math>Q_p</math></td>
+<td data-bbox="271 214 801 248">IGM parameter used in calculation of position correction term *</td>
+</tr>
+<tr>
+<td data-bbox="151 281 176 297"><math>Q_y</math></td>
+<td data-bbox="271 281 801 315">IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td data-bbox="151 348 176 364"><math>Q_1</math></td>
+<td data-bbox="271 348 801 382">IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td data-bbox="151 415 176 431"><math>Q_3</math></td>
+<td data-bbox="271 415 801 449">IGM parameter used in calculation of position correction term</td>
+</tr>
+</tbody>
+</table>
+
+27------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u><b>R</b></u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\bar{R}</math> (<math>\bar{R}_p</math>)</td>
+<td>Vehicle geocentric radius vector (predicted) [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_L</math></td>
+<td>Geocentric radius to the center of the IU on the launch pad. Used to calculate initial conditions [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_{OG}</math></td>
+<td>Radius vector for use in orbital guidance [m]</td>
+</tr>
+<tr>
+<td><math>R_{STA}</math></td>
+<td>Mean radius of telemetry stations [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_T</math></td>
+<td>Terminal radius vector [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_1</math></td>
+<td>Unit vector along <math>\bar{R}</math></td>
+</tr>
+<tr>
+<td><math>RA_{M1-5}</math></td>
+<td>Roll angle for orbital guidance maneuvers 1-5 [pirads]</td>
+</tr>
+<tr>
+<td>ROLL</td>
+<td>Roll attitude error correction command [ladder bits] *</td>
+</tr>
+<tr>
+<td>ROLLA</td>
+<td>Presetting for <math>\chi_x</math> for orbital guidance [pirads]</td>
+</tr>
+<tr>
+<td>ROV</td>
+<td>Constant used to bias terminal range angle prediction</td>
+</tr>
+<tr>
+<td>RTCX</td>
+<td>Reasonableness test constant (RTC) for X accelerometer channel [m/sec<sup>2</sup>] *</td>
+</tr>
+</tbody>
+</table>
+
+28------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table>
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTCY</td>
+<td>RTC for Y accelerometer channel <math>[m/sec^2]</math></td>
+</tr>
+<tr>
+<td>RTCZ</td>
+<td>RTC for Z accelerometer channel <math>[m/sec^2]</math></td>
+</tr>
+</tbody>
+</table>
+
+29------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>S</u></td>
+<td></td>
+</tr>
+<tr>
+<td>S</td>
+<td>Parameter used in calculation of gravitational acceleration vector</td>
+</tr>
+<tr>
+<td><math>S_p</math></td>
+<td>IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td><math>S_y</math></td>
+<td>IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td><math>S_1</math></td>
+<td>IGM parameter used in intermediate calculation of position correction term</td>
+</tr>
+<tr>
+<td><math>S_3</math></td>
+<td>IGM parameter used in calculation of position correction terms</td>
+</tr>
+<tr>
+<td><math>S_{34}</math></td>
+<td>Parameter representing the third and fourth zonal harmonics in the expansion of earth's gravitational potential</td>
+</tr>
+<tr>
+<td>SEQNUM</td>
+<td>Four bit indicator selecting one of fifteen different preprogrammed DCS alternate sequences *</td>
+</tr>
+<tr>
+<td>SF</td>
+<td>Scale factor (which includes conversion from pirads to ladder bits and multiplication by attitude error gain)</td>
+</tr>
+<tr>
+<td>SMCG</td>
+<td>Steering misalignment correction (SMC) gain [rad/sec] *</td>
+</tr>
+<tr>
+<td>SMCY</td>
+<td>Pitch SMC term [pirads]</td>
+</tr>
+<tr>
+<td>SMCZ</td>
+<td>Yaw SMC term [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+30------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP<sub>M1</sub>-<br/>SP<sub>M5</sub></td>
+<td>In-plane attitude parameters of orbital guidance maneuvers 1-5</td>
+</tr>
+<tr>
+<td>SPITCH</td>
+<td>Pitch angle presetting for orbital guidance</td>
+</tr>
+<tr>
+<td>SQ1</td>
+<td>First guess at <math>\sqrt{(\Delta \dot{z}_v)^2 + (\Delta \dot{x}_v)^2}</math> for S-IVB burn [m/sec]</td>
+</tr>
+<tr>
+<td>SQ2</td>
+<td>First guess at <math>\sqrt{1 - (F'_{Sy})^2}</math></td>
+</tr>
+<tr>
+<td>SY<sub>M1</sub>-<br/>SY<sub>M5</sub></td>
+<td>Out-of-plane attitude parameters for orbital guidance maneuvers 1-5</td>
+</tr>
+<tr>
+<td>SYAW</td>
+<td>Current maneuver yaw angle presetting used in orbital guidance</td>
+</tr>
+<tr>
+<td>S4IGTM</td>
+<td>Time in TB3 to look for S-IVB cutoff conditions (see note 1) [sec]</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+31------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>T</u></td>
+<td></td>
+</tr>
+<tr>
+<td>T*</td>
+<td>Predicted IGM total time-to-go to reach insertion conditions [sec]</td>
+</tr>
+<tr>
+<td>T<sub>ar</sub></td>
+<td>Tilt arrest time (based on T<sub>c</sub>) [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>T<sub>as</sub></td>
+<td>Time (from T0) of last accelerometer sampling in boost mode or of initiation of orbit navigation pass in orbit [sec]</td>
+</tr>
+<tr>
+<td>T<sub>c</sub></td>
+<td>Time (from T1) biased by T<sub>d</sub> [sec]</td>
+</tr>
+<tr>
+<td>T<sub>CO</sub></td>
+<td>Time (from T1) for S-IVB cutoff [sec]</td>
+</tr>
+<tr>
+<td>T<sub>d</sub></td>
+<td>Time bias to compensate for delays between computing and commanding attitude (used to compute T<sub>c</sub>) [sec]</td>
+</tr>
+<tr>
+<td>T<sub>D</sub></td>
+<td>Difference between T<sub>GRR</sub> and T<sub>GRR0</sub> used to compute <math>\lambda</math> [sec]</td>
+</tr>
+<tr>
+<td>T<sub>EO</sub></td>
+<td>Time (from T1) of engine failure [sec]</td>
+</tr>
+<tr>
+<td>T<sub>far</sub></td>
+<td>Partition time constant used to determine a time bias for T<sub>ar</sub> in case of an S-IB engine failure [sec]</td>
+</tr>
+<tr>
+<td>T<sub>f1</sub>-T<sub>f2</sub></td>
+<td>Partition times for time tilt freeze time polynomial [sec]</td>
+</tr>
+<tr>
+<td>T<sub>GMT</sub></td>
+<td>Universal time or Greenwich mean time (GMT) [sec]</td>
+</tr>
+<tr>
+<td>T<sub>GRR</sub></td>
+<td>Time of GRR in universal time (T<sub>GMT</sub>) [sec]</td>
+</tr>
+<tr>
+<td>T<sub>GRR0</sub></td>
+<td>Nominal value of T<sub>GRR</sub> [sec]</td>
+</tr>
+</tbody>
+</table>
+
+32------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>T_{HSL}</math></td>
+<td>Time (referenced to <math>T^*</math>) to begin HSL calculations [sec]</td>
+</tr>
+<tr>
+<td><math>T'_L</math></td>
+<td>Predicted time of liftoff (in GMT) as transmitted to the LVDC from the RCA-110A [sec] *</td>
+</tr>
+<tr>
+<td><math>T_{RNTL}</math></td>
+<td>Time in current time base to implement the DCS return to nominal timeline [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{RTC}</math></td>
+<td>Time in TB1 to change accelerometer RTC's [sec]</td>
+</tr>
+<tr>
+<td><math>T_{SEQ}</math></td>
+<td>Time in current time base to start a DCS alternate sequence; referenced to TBB, the current time base time biased by any time base updates received [sec] (see note 1) *</td>
+</tr>
+<tr>
+<td><math>T_{SMC}</math></td>
+<td>Time in TB3 to enable SMC calculations [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{SOM}</math></td>
+<td>Time in current time base to start the DCS generalized maneuver or DCS special maneuver [sec] (see note 1) *</td>
+</tr>
+<tr>
+<td><math>T_{SON}</math></td>
+<td>Time since last orbital navigation pass [sec]</td>
+</tr>
+<tr>
+<td><math>T_{SO}</math></td>
+<td>Backup time (based on <math>T_c</math>) to start roll maneuver and begin using first segment of time tilt coefficients [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{S1}</math></td>
+<td>Time (based on <math>T_c</math>) to begin using second segment of time tilt coefficients [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{S1EO}</math></td>
+<td>Time in TB1 to enable DI14 and DI15 check for S-IB engine out [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{S2}</math></td>
+<td>Time (based on <math>T_c</math>) to begin using third segment of time tilt coefficients [sec] (see note 1)</td>
+</tr>
+</tbody>
+</table>
+
+33------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>T_{T2}</math></td>
+<td>Earliest time (based on <math>T_c</math>) for <math>\chi</math> freeze initiation if S-IB engine failure is detected [sec] (see note 1)</td>
+</tr>
+<tr>
+<td><math>T_{1i}</math></td>
+<td>Time-to-go in first phase of IGM [sec]</td>
+</tr>
+<tr>
+<td><math>T_{10}</math></td>
+<td>Nominal duration of first phase IGM [sec]</td>
+</tr>
+<tr>
+<td><math>T_{3i}</math></td>
+<td>Time-to-go in second phase of IGM [sec]</td>
+</tr>
+<tr>
+<td><math>T_{4M2-}</math></td>
+<td>Preset times in TB4 to execute maneuver 2-5 [sec]</td>
+</tr>
+<tr>
+<td><math>T_{4M5}</math></td>
+<td>(see note 1)</td>
+</tr>
+<tr>
+<td>TB</td>
+<td>Elapsed time in prevailing time base [sec]</td>
+</tr>
+<tr>
+<td>TBA</td>
+<td>Time of station acquisition in TB4 [sec]</td>
+</tr>
+<tr>
+<td>TBB</td>
+<td>Value of TB biased by any time base updates received [sec]</td>
+</tr>
+<tr>
+<td>TBL</td>
+<td>Time of station loss in TB4 [sec]</td>
+</tr>
+<tr>
+<td>TI</td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of the current time base [sec]</td>
+</tr>
+<tr>
+<td>TLCK</td>
+<td>Target load checksum factor set to the two's complement of the sum of the other seven target load variables</td>
+</tr>
+<tr>
+<td>TLPAST</td>
+<td>Extrapolated real time clock value during orbit for telemetry [qms]</td>
+</tr>
+</tbody>
+</table>
+
+34------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TLTSEC</td>
+<td>Time of the once per second position extrapolation during orbit mode, measured from GRR [sec]</td>
+</tr>
+<tr>
+<td>TM</td>
+<td>Time (from T0) to activate ECS water valve logic [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>TMEFRZ</td>
+<td>Time (based on <math>T_c</math>) to end <math>\chi_y</math> freeze following an S-IB engine failure [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>TYAW01-</td>
+<td>Table of times associated with the S-IB stage *</td>
+</tr>
+<tr>
+<td>TYAW25</td>
+<td>yaw guidance commands [sec] *</td>
+</tr>
+<tr>
+<td>TYP<sub>M1</sub>-</td>
+<td>The type of orbital maneuver to be executed (for maneuvers 1-5) (+1: inertial reference, 0: chi freeze, -1: local reference, -2: inertial hold *</td>
+</tr>
+<tr>
+<td>TYP<sub>M5</sub></td>
+<td>of local reference) *</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of TB0 [sec]</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of TB1 [sec]</td>
+</tr>
+<tr>
+<td>T1BIAS</td>
+<td>Bias by which T1 is adjusted if TB1 was initiated by the backup criteria [sec]</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of TB2 [sec]</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of TB3 [sec]</td>
+</tr>
+<tr>
+<td>T3<sub>FM</sub></td>
+<td>Time in TB3 to begin (F/M) computations [sec] (see note 1)</td>
+</tr>
+<tr>
+<td>T3<sub>FMC</sub></td>
+<td>Time in TB3 to begin (F/M)<sub>c</sub> computations [sec] (see note 1)</td>
+</tr>
+</tbody>
+</table>
+
+35------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table>
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>T3_{IGM}</math></td>
+<td>Time in TB3 to initiate IGM guidance [sec]<br/>(see note 1)</td>
+</tr>
+<tr>
+<td><math>T4</math></td>
+<td>Time (from <math>T_{GRR}</math>) of initiation of TB4 [sec]</td>
+</tr>
+</tbody>
+</table>
+
+36------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table><thead><tr><th><u>Symbol</u></th><th><u>Definition and Comments</u></th></tr></thead><tbody><tr><td><u>U</u></td><td></td></tr><tr><td><math>U_1</math></td><td>IGM parameter used in calculation of position correction term</td></tr><tr><td><math>U_3</math></td><td>IGM parameter used in calculation of position correction term</td></tr></tbody></table>
+
+37------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>V</u></td>
+<td></td>
+</tr>
+<tr>
+<td>V</td>
+<td>Total space-fixed velocity [m/sec] *</td>
+</tr>
+<tr>
+<td><math>\bar{V}</math> (<math>\bar{V}_p</math>)</td>
+<td>Vehicle velocity vector (predicted) [m/sec]</td>
+</tr>
+<tr>
+<td>V'</td>
+<td>Velocity at end of past computation cycle, used in HSL time-to-go calculations [m/sec]</td>
+</tr>
+<tr>
+<td>V''</td>
+<td>Velocity at end of second past computation cycle, used in HSL time-to-go calculations [m/sec]</td>
+</tr>
+<tr>
+<td>V<sub>ex1</sub></td>
+<td>Engine exhaust velocity during first IGM phase [m/sec]</td>
+</tr>
+<tr>
+<td>V<sub>ex3</sub></td>
+<td>Engine exhaust velocity during second IGM phase [m/sec]</td>
+</tr>
+<tr>
+<td>V<sub>GRD</sub></td>
+<td>Velocity guard for HSL [m/sec]</td>
+</tr>
+<tr>
+<td><math>\bar{V}_r</math></td>
+<td>Velocity vector relative to the earth's atmosphere [m/sec]</td>
+</tr>
+<tr>
+<td><math>\bar{V}_T</math></td>
+<td>Terminal velocity vector [m/sec]</td>
+</tr>
+<tr>
+<td>VENT<sub>1A</sub>-<br/>VENT<sub>8A</sub></td>
+<td>First through eighth vent accelerations [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td>VENTNO</td>
+<td>Number of vent accelerations</td>
+</tr>
+<tr>
+<td>VTIM2-<br/>VTIM8</td>
+<td>Time (from T4) to start using second through eighth vent acceleration [sec]</td>
+</tr>
+</tbody>
+</table>
+
+38------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="144 115 225 135">Symbol</th>
+<th data-bbox="395 115 670 135">Definition and Comments</th>
+<th data-bbox="915 635 933 665"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="144 165 185 185"><u>X</u></td>
+<td data-bbox="264 165 670 185"></td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 205 185 225"><math>X_A</math></td>
+<td data-bbox="264 205 670 225">Component of <math>\bar{R}</math> along <math>X_A</math> axis [m]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 245 185 265"><math>X_B</math></td>
+<td data-bbox="264 245 670 265">Component of <math>\bar{R}</math> along <math>X_B</math> axis [m]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 285 185 305"><math>\ddot{X}_{DS}</math></td>
+<td data-bbox="264 285 670 305">Component of <math>\bar{A}_D</math> along <math>X_S</math> axis [m/sec<sup>2</sup>]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 325 185 345"><math>X_G</math></td>
+<td data-bbox="264 325 670 345">Component of <math>\bar{R}</math> along <math>X_G</math> axis [m]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 365 185 385"><math>\ddot{X}_{Gg}</math></td>
+<td data-bbox="264 365 670 385">Component of <math>\bar{G}</math> along <math>X_G</math> axis [m/sec<sup>2</sup>]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 405 185 425"><math>X_{LS}</math></td>
+<td data-bbox="264 405 670 425">Component of <math>\bar{R}_L</math> along <math>X_S</math> axis [m]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 445 185 465"><math>\dot{X}_m</math></td>
+<td data-bbox="264 445 670 465">Measured platform velocity along <math>X_S</math> axis [m/sec]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 485 185 505"><math>\ddot{X}_m</math></td>
+<td data-bbox="264 485 670 505">Average platform acceleration along <math>X_S</math> axis [m/sec<sup>2</sup>]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 525 185 545"><math>\dot{X}_0</math></td>
+<td data-bbox="264 525 670 545">Initial value of <math>\dot{X}_S</math> [m/sec]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 565 185 585"><math>X_P</math></td>
+<td data-bbox="264 565 670 585">Component of the non-orthogonal inertial platform gimbal system, identical to the <math>X_B</math> axis [m]</td>
+<td data-bbox="915 635 933 665">*<br/>*</td>
+</tr>
+<tr>
+<td data-bbox="144 605 185 625"><math>X_{ref}</math></td>
+<td data-bbox="264 605 670 625">X reference angle of execute generalized maneuver commanded attitude [pirads]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 645 185 665"><math>X_S</math></td>
+<td data-bbox="264 645 670 665">Component of <math>\bar{R}</math> along <math>X_S</math> axis [m]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 685 185 705"><math>\dot{X}_S</math></td>
+<td data-bbox="264 685 670 705">Component of <math>\bar{V}</math> along <math>X_S</math> axis [m/sec]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+<tr>
+<td data-bbox="144 725 185 745"><math>\ddot{X}_S</math></td>
+<td data-bbox="264 725 670 745">Component of <math>\bar{A}</math> along <math>X_S</math> axis [m/sec<sup>2</sup>]</td>
+<td data-bbox="915 635 933 665"></td>
+</tr>
+</tbody>
+</table>
+
+39------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="84 132 161 151"><u>Symbol</u></th>
+<th data-bbox="348 132 614 151"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="84 218 128 248"><math>\dot{X}_{Sg}</math></td>
+<td data-bbox="214 218 792 263">Component of <math>\bar{V}</math> along <math>X_S</math> axis due to gravitational acceleration [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 283 128 313"><math>\ddot{X}_{Sg}</math></td>
+<td data-bbox="214 283 648 308">Component of <math>\bar{G}</math> along <math>X_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="84 333 118 358"><math>X_V</math></td>
+<td data-bbox="214 333 591 353">Component of <math>\bar{R}</math> along <math>X_V</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 373 118 403"><math>\dot{X}_V</math></td>
+<td data-bbox="214 373 638 398">Component of <math>\bar{V}</math> along <math>X_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 418 141 448"><math>\ddot{X}^*_{Vg}</math></td>
+<td data-bbox="214 418 661 443">Component of <math>\bar{G}^*</math> along <math>X_V</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="84 463 141 493"><math>\ddot{X}_{VT}</math></td>
+<td data-bbox="214 463 661 488">Component of <math>\bar{G}_T</math> along <math>X_V</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="84 513 128 538"><math>X_{VT}</math></td>
+<td data-bbox="214 513 604 533">Component of <math>\bar{R}_T</math> along <math>X_V</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 553 128 583"><math>\dot{X}_{VT}</math></td>
+<td data-bbox="214 553 651 578">Component of <math>\bar{V}_T</math> along <math>X_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 603 118 628"><math>X_4</math></td>
+<td data-bbox="214 603 591 623">Component of <math>\bar{R}</math> along <math>X_4</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 643 118 673"><math>\dot{X}_4</math></td>
+<td data-bbox="214 643 638 668">Component of <math>\bar{V}</math> along <math>X_4</math> axis [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+40------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>Y</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_A</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_A</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>Y_B</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_B</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{DS}</math></td>
+<td>Component of <math>\bar{A}_D</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>Y_G</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_G</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Gg}</math></td>
+<td>Component of <math>\bar{G}</math> along <math>Y_G</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>Y_{LS}</math></td>
+<td>Component of <math>\bar{R}_L</math> along <math>Y_S</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_m</math></td>
+<td>Measured platform velocity along <math>Y_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_m</math></td>
+<td>Average platform acceleration along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_0</math></td>
+<td>Initial value of <math>\dot{Y}_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>Y_P</math></td>
+<td>Component of the non-orthogonal inertial platform gimbal system, identical to the <math>Y_S</math> axis [m] *</td>
+</tr>
+<tr>
+<td><math>Y_{ref}</math></td>
+<td>Y reference angle of execute generalized maneuver commanded attitude [pirads]</td>
+</tr>
+<tr>
+<td><math>Y_S</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_S</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_S</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_S</math></td>
+<td>Component of <math>\bar{A}</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+</tbody>
+</table>
+
+41------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\dot{Y}_{Sg}</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_S</math> axis due to gravitational acceleration [m/sec]</td>
+<td>*<br/>*</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Sg}</math></td>
+<td>Component of <math>\bar{G}</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_V</math></td>
+<td>Component of <math>\bar{R}</math> along <math>X_V</math> axis. This is identical to <math>Y_4</math> [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_V</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_V</math> axis [m/sec]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Vg}^*</math></td>
+<td>Component of <math>\bar{G}^*</math> along <math>Y_V</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{VgT}</math></td>
+<td>Component of <math>\bar{G}_T</math> along <math>Y_V</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_{VT}</math></td>
+<td>Component of <math>\bar{R}_T</math> along <math>Y_V</math> axis [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_{VT}</math></td>
+<td>Component of <math>\bar{V}_T</math> along <math>Y_V</math> axis [m/sec]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_4</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_4</math> axis. This is identical to <math>Y_V</math> [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_4</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_4</math> axis [m]</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAW</td>
+<td>Yaw attitude error command [ladder bits]</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAWC01-</td>
+<td>Table of yaw commands for S-IB stage guidance</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAWC25</td>
+<td>associated with times in table TYAW [deg]</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAWLIM</td>
+<td>Yaw guidance command limit [pirads]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+42------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="150 75 228 93">Symbol</th>
+<th data-bbox="398 75 668 93">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="150 125 185 145"><u><b>Z</b></u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="150 165 185 185"><math>Z_A</math></td>
+<td data-bbox="270 165 690 185">Component of <math>\bar{R}</math> along the <math>Z_A</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 210 185 230"><math>Z_B</math></td>
+<td data-bbox="270 210 690 230">Component of <math>\bar{R}</math> along the <math>Z_B</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 250 195 275"><math>\ddot{z}_{DS}</math></td>
+<td data-bbox="270 250 715 275">Component of <math>\bar{A}_D</math> along <math>Z_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 300 185 320"><math>Z_G</math></td>
+<td data-bbox="270 300 645 320">Component of <math>\bar{R}</math> along <math>Z_G</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 340 195 365"><math>\ddot{z}_{Gg}</math></td>
+<td data-bbox="270 340 715 365">Component of <math>\bar{G}</math> along <math>Z_G</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 390 195 410"><math>Z_{LS}</math></td>
+<td data-bbox="270 390 655 410">Component of <math>\bar{R}_L</math> along <math>Z_S</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 430 185 455"><math>\dot{z}_m</math></td>
+<td data-bbox="270 430 875 455">Measured platform velocity along the <math>Z_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="150 475 185 500"><math>\ddot{z}_m</math></td>
+<td data-bbox="270 475 820 515">Average platform acceleration along the <math>Z_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 535 185 560"><math>\dot{z}_0</math></td>
+<td data-bbox="270 535 585 560">Initial value of <math>\dot{z}_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="150 590 185 610"><math>Z_P</math></td>
+<td data-bbox="270 590 845 630">Component of the non-orthogonal inertial platform gimbal system [m] *</td>
+</tr>
+<tr>
+<td data-bbox="150 655 205 675"><math>Z_{ref}</math></td>
+<td data-bbox="270 655 845 695">Z reference angle of execute generalized maneuver commanded attitude [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="150 720 185 740"><math>Z_S</math></td>
+<td data-bbox="270 720 645 740">Component of <math>\bar{R}</math> along <math>Z_S</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 760 185 785"><math>\dot{z}_S</math></td>
+<td data-bbox="270 760 690 785">Component of <math>\bar{V}</math> along <math>Z_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="150 805 185 830"><math>\ddot{z}_S</math></td>
+<td data-bbox="270 805 700 830">Component of <math>\bar{A}</math> along <math>Z_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 850 195 875"><math>\dot{z}_{Sg}</math></td>
+<td data-bbox="270 850 845 895">Component of <math>\bar{V}</math> along <math>Z_S</math> axis due to gravitational acceleration [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+43------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\ddot{z}_{Sg}</math></td>
+<td>Component of <math>\bar{G}</math> along <math>z_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>z_V</math></td>
+<td>Component of <math>\bar{R}</math> along <math>z_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{z}_V</math></td>
+<td>Component of <math>\bar{V}</math> along <math>z_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\ddot{z}_{Vg}^*</math></td>
+<td>Component of <math>\bar{G}^*</math> along the <math>z_V</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>\ddot{z}_{VT}</math></td>
+<td>Component of <math>\bar{G}_T</math> along the <math>z_V</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>z_{VT}</math></td>
+<td>Component of <math>\bar{R}_T</math> along the <math>z_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{z}_{VT}</math></td>
+<td>Component of <math>\bar{V}_T</math> along the <math>z_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>z_4</math></td>
+<td>Component of <math>\bar{R}</math> along the <math>z_4</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{z}_4</math></td>
+<td>Component of <math>\bar{V}</math> along the <math>z_4</math> axis [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+44------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2"><u>ALPHA</u></td>
+</tr>
+<tr>
+<td><math>\alpha</math></td>
+<td>Angle of attack [pirads]</td>
+</tr>
+<tr>
+<td><math>\alpha_f</math></td>
+<td>Weighting factor based on first phase IGM performance used in adjusting <math>\tau_3</math> computations</td>
+</tr>
+<tr>
+<td><math>\alpha_{LH}</math></td>
+<td>Angle between desired <math>\bar{P}</math> and the local horizontal [pirads]</td>
+</tr>
+<tr>
+<td colspan="2"><u>DELTA</u></td>
+</tr>
+<tr>
+<td><math>\delta_2</math></td>
+<td>Intermediate parameter used in terminal range angle prediction</td>
+</tr>
+<tr>
+<td><math>\Delta A</math></td>
+<td>Measured velocity change from accelerometer optisyn A</td>
+</tr>
+<tr>
+<td><math>\Delta B</math></td>
+<td>Measured velocity change from accelerometer optisyn B</td>
+</tr>
+<tr>
+<td><math>\Delta L_3</math></td>
+<td>Correction to velocity-to-be-gained <math>L_3</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>\bar{\Delta R}</math></td>
+<td>Radius-to-be-gained vector [m]</td>
+</tr>
+<tr>
+<td><math>\overline{\Delta R}_{SAV}</math></td>
+<td>Vector symbol for the low order bits of the computed position change during the past orbital navigation pass, saved to reduce truncation error [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T</math></td>
+<td>Execution time of the last BML [sec]</td>
+</tr>
+</tbody>
+</table>
+
+45------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta T'</math></td>
+<td>Previous value of <math>\Delta T</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T'_a</math></td>
+<td>Adjusted value of <math>\Delta T</math> for artificial tau calculations [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_b</math></td>
+<td>Time bias to compensate for S-IVB engine thrust decay after cutoff [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_f</math></td>
+<td>Duration of S-IB guidance freeze [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_N</math></td>
+<td>Nominal value of <math>\Delta T</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N1}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T0 + 0.0</math> until <math>T1 + 0.0</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N2}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T1 + 0.0</math> until <math>T3 + T3_{IGM}</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N3}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T3 + T3_{IGM}</math> until <math>T4 - \epsilon_2</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N4}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T4 - \epsilon_2</math> to <math>T4 - T_{HSL}</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N5}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T4 + 0.0</math> until <math>T4 + BN_5</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N6}</math></td>
+<td>Nominal <math>\Delta T</math> from <math>T4 + BN_5</math> to EOM [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T'_3</math></td>
+<td>Time-to-go correction term based on vehicle performance during the past BML [sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V</math></td>
+<td>Actual change in velocity in S-system [pulses]</td>
+</tr>
+</tbody>
+</table>
+
+46------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\overline{\Delta V}</math></td>
+<td>Velocity-to-be-gained vector [m/sec]</td>
+</tr>
+<tr>
+<td><math>\overline{\Delta V}'</math></td>
+<td>Approximation for <math>\overline{\Delta V}</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_b</math></td>
+<td>Velocity bias to allow for engine thrust decay after cutoff [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cx}</math></td>
+<td>Change in velocity along <math>X_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cy}</math></td>
+<td>Change in velocity along <math>Y_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cz}</math></td>
+<td>Change in velocity along <math>Z_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_f</math></td>
+<td>Expected change in velocity in the S-coordinate system [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fx}</math></td>
+<td>Expected change in velocity along <math>X_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fy}</math></td>
+<td>Expected change in velocity along <math>Y_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fz}</math></td>
+<td>Expected change in velocity along <math>Z_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{gx}</math></td>
+<td>Change in velocity along <math>X_S</math> due to gravity [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+47------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="84 131 164 148"><u>Symbol</u></th>
+<th data-bbox="348 131 618 148"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="84 221 141 248"><math>\Delta V_{gy}</math></td>
+<td data-bbox="216 221 804 248">Change in velocity along <math>Y_S</math> due to gravity [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 264 141 291"><math>\Delta V_{gz}</math></td>
+<td data-bbox="216 264 804 291">Change in velocity along <math>Z_S</math> due to gravity [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 307 151 334"><math>\overline{\Delta V}_{SAV}</math></td>
+<td data-bbox="216 307 794 394">Vector symbol for the low order bits of the computed velocity change during the past orbital navigation pass, saved to reduce truncation error [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 418 128 445"><math>\Delta V_x</math></td>
+<td data-bbox="216 418 628 445">Change in velocity along <math>X_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 461 128 488"><math>\Delta V_y</math></td>
+<td data-bbox="216 461 628 488">Change in velocity along <math>Y_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 504 128 531"><math>\Delta V_z</math></td>
+<td data-bbox="216 504 628 531">Change in velocity along <math>Z_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 547 118 564"><math>\Delta X</math></td>
+<td data-bbox="216 547 857 574">Attitude error about roll gimbal axis [pirads] *</td>
+</tr>
+<tr>
+<td data-bbox="84 590 141 617"><math>\Delta X_{mf}</math></td>
+<td data-bbox="216 590 734 617">Change in <math>X_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 633 141 660"><math>\Delta X_{Sg}</math></td>
+<td data-bbox="216 633 734 680">Change in radius vector along <math>X_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 696 128 723"><math>\Delta X_v</math></td>
+<td data-bbox="216 696 604 723">Component of <math>\overline{\Delta R}</math> along <math>X_v</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="84 739 128 766"><math>\dot{\Delta X}_v</math></td>
+<td data-bbox="216 739 651 766">Component of <math>\overline{\Delta V}</math> along <math>X_v</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 782 128 809"><math>\dot{\Delta X}'_v</math></td>
+<td data-bbox="216 782 661 809">Component of <math>\overline{\Delta V'}</math> along <math>X_v</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="84 825 118 842"><math>\Delta Y</math></td>
+<td data-bbox="216 825 857 858">Attitude error about pitch gimbal axis [pirads] *</td>
+</tr>
+</tbody>
+</table>
+
+48------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta Y_{mf}</math></td>
+<td>Change in <math>Y_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Y_{Sg}</math></td>
+<td>Change in radius vector along <math>Y_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Y_V</math></td>
+<td>Component of <math>\overline{\Delta R}</math> along <math>Y_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}_V</math></td>
+<td>Component of <math>\overline{\Delta V}</math> along <math>Y_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}'_V</math></td>
+<td>Component of <math>\overline{\Delta V'}</math> along <math>Y_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta Z</math></td>
+<td>Attitude error about yaw gimbal axis [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Delta Z_{mf}</math></td>
+<td>Change in <math>Z_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Z_{Sg}</math></td>
+<td>Change in radius vector along <math>Z_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Z_V</math></td>
+<td>Component of <math>\overline{\Delta R}</math> along <math>Z_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}_V</math></td>
+<td>Component of <math>\overline{\Delta V}</math> along <math>Z_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}'_V</math></td>
+<td>Component of <math>\overline{\Delta V'}</math> along <math>Z_V</math> axis [m/sec] *</td>
+</tr>
+<tr>
+<td><math>\Delta \Theta_{xe}</math></td>
+<td>Expected change in <math>\Theta_x</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta \Theta_{ye}</math></td>
+<td>Expected change in <math>\Theta_y</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta \Theta_{ze}</math></td>
+<td>Expected change in <math>\Theta_z</math> [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+49------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta\chi_x</math></td>
+<td>Computed change in <math>\chi'_x</math> for present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta\chi'_x</math></td>
+<td>Computed <math>\chi_x</math> guidance command increment for minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta\chi_y</math></td>
+<td>Computed change in <math>\chi'_y</math> for present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta\chi'_y</math></td>
+<td>Computed <math>\chi_y</math> guidance command increment for minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta\chi_z</math></td>
+<td>Computed change in <math>\chi'_z</math> for present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta\chi'_z</math></td>
+<td>Computed <math>\chi_z</math> guidance command increment for minor loop [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+EPSILON
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\epsilon_2</math></td>
+<td>Time prior to S-IVB cutoff to begin <math>\tilde{\chi}</math>-steering [sec] (see note 1)</td>
+</tr>
+</tbody>
+</table>
+
+THETA
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\theta_R</math></td>
+<td>Total angular rotation of earth since GRR [pirads]</td>
+</tr>
+<tr>
+<td><math>\theta_T</math></td>
+<td>Desired terminal flight path angle [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+50------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Theta_x</math></td>
+<td>Platform gimbal angle about <math>X_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_x</math></td>
+<td>Value of <math>\Theta_x</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{xa}</math></td>
+<td>Average value of <math>\Theta_x</math> during next major loop pass [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{xe}</math></td>
+<td>Expected value of <math>\Theta_x</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\Theta}_{xe}</math></td>
+<td>Expected rate of change of <math>\Theta_x</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\Theta_y</math></td>
+<td>Platform gimbal angle about <math>Y_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_y</math></td>
+<td>Value of <math>\Theta_y</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{ya}</math></td>
+<td>Average value of <math>\Theta_y</math> during next major loop pass [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{ye}</math></td>
+<td>Expected value of <math>\Theta_y</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\Theta}_{ye}</math></td>
+<td>Expected rate of change of <math>\Theta_y</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\Theta_z</math></td>
+<td>Platform gimbal angle about <math>Z_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_z</math></td>
+<td>Value of <math>\Theta_z</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{za}</math></td>
+<td>Average value of <math>\Theta_z</math> during next major loop pass [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+51------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="81 122 161 141"><u>Symbol</u></th>
+<th data-bbox="348 122 618 141"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="81 214 126 238"><math>\Theta_{ze}</math></td>
+<td data-bbox="213 214 558 238">Expected value of <math>\Theta_z</math> [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="81 256 126 280"><math>\dot{\Theta}_{ze}</math></td>
+<td data-bbox="213 256 711 280">Expected rate of change of <math>\Theta_z</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td colspan="2" data-bbox="81 304 161 323"><u>LAMBDA</u></td>
+</tr>
+<tr>
+<td data-bbox="81 348 101 363"><math>\lambda</math></td>
+<td data-bbox="213 348 798 416">Angle from launch meridian to the descending node of the desired orbit computed as a function of <math>\lambda_0</math>, <math>\dot{\lambda}</math>, and <math>T_D</math>.</td>
+</tr>
+<tr>
+<td data-bbox="81 441 111 465"><math>\lambda_0</math></td>
+<td data-bbox="213 441 798 465">Value of <math>\lambda</math> valid for a GRR time of <math>T_{GRRO}</math> [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="81 548 101 572"><math>\dot{\lambda}</math></td>
+<td data-bbox="213 548 666 572">Time rate of change of <math>\lambda_0</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td colspan="2" data-bbox="81 596 111 615"><u>MU</u></td>
+</tr>
+<tr>
+<td data-bbox="81 640 101 655"><math>\mu</math></td>
+<td data-bbox="213 640 823 683">Product of the universal gravitational constant and the mass of the earth [<math>m^3/sec^2</math>]</td>
+</tr>
+<tr>
+<td colspan="2" data-bbox="81 713 111 732"><u>PI</u></td>
+</tr>
+<tr>
+<td data-bbox="81 757 101 771"><math>\pi</math></td>
+<td data-bbox="213 757 338 771">3.14159265</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*
+
+52------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>RHO</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho</math></td>
+<td>Atmospheric density <math>[\text{kg}/\text{m}^3]</math></td>
+</tr>
+<tr>
+<td><math>\rho_c</math></td>
+<td>Constant <math>\rho</math> for use when altitude is less than <math>h_1</math><br/><math>[\text{kg}/\text{m}^3]</math></td>
+</tr>
+<tr>
+<td><math>\rho_0 - \rho_5</math></td>
+<td>Coefficients for atmospheric density polynomial<br/><math>[\text{kg}/\text{m}^3, \text{kg}/\text{m}^4, \text{kg}/\text{m}^5, \text{kg}/\text{m}^6, \text{kg}/\text{m}^7, \text{kg}/\text{m}^8]</math></td>
+</tr>
+<tr>
+<td><u>TAU</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\tau</math></td>
+<td>Ratio of mass to mass flow rate [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_1</math></td>
+<td>Value of <math>\tau</math> during first IGM phase [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_{10}</math></td>
+<td>Initial value of <math>\tau_1</math> used in artificial <math>\tau</math> calculations [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_3</math></td>
+<td>Value of <math>\tau</math> during second IGM phase [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_{3K}</math></td>
+<td>Intermediate <math>\tau_3</math> based on performance of the first phase burn; used in computing weighted artificial <math>\tau_3</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_{3M}</math></td>
+<td>IGM <math>\tau_3</math> based on <math>(M/F)_S</math> and <math>V_{ex3}</math> used in computing weighted artificial <math>\tau_3</math> [sec]</td>
+</tr>
+<tr>
+<td><math>\tau_{3N}</math></td>
+<td>Nominal value of <math>\tau_3</math> used in computing artificial <math>\tau_3</math> [sec]</td>
+</tr>
+</tbody>
+</table>
+
+53------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>PHI</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\phi_H</math></td>
+<td>Geodetic latitude of Huntsville used in flight simulation [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_i</math></td>
+<td>Range angle traveled since liftoff [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\phi}_i</math></td>
+<td>Rate of change of <math>\phi_i</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\phi_{iT}</math></td>
+<td>Predicted range angle-to-go [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_L</math></td>
+<td>Geodetic latitude of launch site [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi'_L</math></td>
+<td>Geocentric latitude of launch site [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_P</math></td>
+<td>Angle between <math>\bar{P}</math> and <math>X_4</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_{SO}</math></td>
+<td>Range angle at control return from SC to IU [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_T</math></td>
+<td>Predicted terminal range angle [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\phi}_T</math></td>
+<td>Rate of change of predicted terminal range angle [pirads/sec]</td>
+</tr>
+<tr>
+<td><u>CHI</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\chi</math></td>
+<td>Desired vehicle attitude (steering angle) [pirads]</td>
+</tr>
+<tr>
+<td><math>\tilde{\chi}</math></td>
+<td>Desired vehicle attitude (steering angle) neglecting position correction terms [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+54------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\chi_x</math></td>
+<td>Desired platform gimbal angle about <math>X_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_x</math></td>
+<td>Rate limited value of <math>\chi_x</math> in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi''_x</math></td>
+<td>Value of <math>\chi'_x</math> used for flight simulation [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_{xp}</math></td>
+<td>Predicted value of <math>\chi'_x</math> at end of present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_y</math></td>
+<td>Desired platform gimbal angle about <math>Y_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\tilde{\chi}_y</math></td>
+<td>Desired pitch attitude neglecting position correction terms [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_y</math></td>
+<td>Rate limited value of <math>\chi_y</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi''_y</math></td>
+<td>Value of <math>\chi'_y</math> used for flight simulation [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_{yp}</math></td>
+<td>Predicted value of <math>\chi'_y</math> at end of present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_{y4}</math></td>
+<td>Desired pitch attitude in 4-system calculated by IGM [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_z</math></td>
+<td>Desired platform gimbal angle about <math>Z_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\tilde{\chi}_z</math></td>
+<td>Desired yaw attitude neglecting position correction terms [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+55------------------------------------------------
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\chi'_z</math></td>
+<td>Rate limited value of <math>\chi_z</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi''_z</math></td>
+<td>Value of <math>\chi'_z</math> used for flight simulation [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_{zp}</math></td>
+<td>Predicted value of <math>\chi'_z</math> at end of present major loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_{z4}</math></td>
+<td>Desired yaw attitude in 4-system calculated by IGM [pirads]</td>
+</tr>
+<tr>
+<td colspan="2"><u>OMEGA</u></td>
+</tr>
+<tr>
+<td><math>\omega_E</math></td>
+<td>Rotation rate of the earth [pirads/sec]</td>
+</tr>
+</tbody>
+</table>
+
+56------------------------------------------------
+
+TABLE 15-3 MAXIMUM VALUES OF SELECTED VARIABLES
+
+<table border="1">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Expected Maximum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(M/F)</td>
+<td>0.40 E 00</td>
+</tr>
+<tr>
+<td>(M/F)<sub>s</sub></td>
+<td>0.40 E 00</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{X}'_V</math></td>
+<td>0.40 E 04</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}'_V</math></td>
+<td>0.20 E 04</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}'_V</math></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>1/R</td>
+<td>0.20 E-06</td>
+</tr>
+<tr>
+<td>G<sub>T</sub></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td>G<sub>Sx</sub></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td>G<sub>Sy</sub></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td>G<sub>Sz</sub></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td>C<sub>2</sub></td>
+<td>0.19 E 01</td>
+</tr>
+<tr>
+<td>C<sub>4</sub></td>
+<td>0.19 E-02</td>
+</tr>
+<tr>
+<td><math>\Delta L_3</math></td>
+<td>0.20 E 04</td>
+</tr>
+<tr>
+<td>D<sub>P</sub></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td><math>\Delta T'_3</math></td>
+<td>0.12 E 03</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{X}_V</math></td>
+<td>0.40 E 04</td>
+</tr>
+<tr>
+<td><math>\Delta X_V</math></td>
+<td>0.50 E 06</td>
+</tr>
+<tr>
+<td>D<sub>y</sub></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}_V</math></td>
+<td>0.20 E 04</td>
+</tr>
+<tr>
+<td><math>\Delta Y_V</math></td>
+<td>0.25 E 06</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}_V</math></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>J<sub>P</sub></td>
+<td>0.20 E 07</td>
+</tr>
+</tbody>
+</table>
+
+<table border="1">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Expected Maximum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J<sub>y</sub></td>
+<td>0.20 E 07</td>
+</tr>
+<tr>
+<td>J<sub>1</sub></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td>J<sub>3</sub></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td>J'<sub>3</sub></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td>K<sub>P</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>K<sub>y</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>K<sub>1</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>K<sub>2</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>K<sub>3</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>K<sub>4</sub></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>L<sub>P</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>L<sub>y</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>L'<sub>y</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>L<sub>1</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>L<sub>3</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>L'<sub>3</sub></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td>P<sub>1</sub></td>
+<td>0.25 E 09</td>
+</tr>
+<tr>
+<td>P<sub>3</sub></td>
+<td>0.10 E 10</td>
+</tr>
+<tr>
+<td>Q<sub>P</sub></td>
+<td>0.50 E 09</td>
+</tr>
+<tr>
+<td>Q<sub>y</sub></td>
+<td>0.50 E 09</td>
+</tr>
+<tr>
+<td>Q<sub>1</sub></td>
+<td>0.13 E 09</td>
+</tr>
+<tr>
+<td>Q<sub>3</sub></td>
+<td>0.64 E 08</td>
+</tr>
+</tbody>
+</table>
+
+57------------------------------------------------
+
+TABLE 15-3 MAXIMUM VALUES OF SELECTED VARIABLES (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Expected Maximum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMCY</td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td>SMCZ</td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td><math>S_p</math></td>
+<td>0.40 E 07</td>
+</tr>
+<tr>
+<td><math>S_y</math></td>
+<td>0.40 E 07</td>
+</tr>
+<tr>
+<td><math>S_1</math></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td><math>S_3</math></td>
+<td>0.10 E 07</td>
+</tr>
+<tr>
+<td><math>\tau_1</math></td>
+<td>0.10 E 04</td>
+</tr>
+<tr>
+<td><math>\tau_3</math></td>
+<td>0.10 E 04</td>
+</tr>
+<tr>
+<td>T*</td>
+<td>0.10 E 04</td>
+</tr>
+<tr>
+<td><math>T_{1i}</math></td>
+<td>0.50 E 03</td>
+</tr>
+<tr>
+<td><math>T_{3i}</math></td>
+<td>0.10 E 04</td>
+</tr>
+<tr>
+<td><math>U_1</math></td>
+<td>0.80 E 11</td>
+</tr>
+<tr>
+<td><math>U_3</math></td>
+<td>0.68 E 11</td>
+</tr>
+<tr>
+<td><math>V_T</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>\ddot{X}_{VgT}</math></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td><math>\dot{X}_V</math></td>
+<td>0.80 E 04</td>
+</tr>
+<tr>
+<td><math>\dot{X}_{VT}</math></td>
+<td>0.40 E 04</td>
+</tr>
+<tr>
+<td><math>\dot{X}_4</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>F'_{Sx}</math></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td><math>X_V</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td><math>\ddot{X}_{Vg}^*</math></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td><math>X_{VT}</math></td>
+<td>0.80 E 07</td>
+</tr>
+</tbody>
+</table>
+
+<table border="1">
+<thead>
+<tr>
+<th>Variable</th>
+<th>Expected Maximum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>X_4</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{VgT}</math></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_V</math></td>
+<td>0.40 E 04</td>
+</tr>
+<tr>
+<td><math>F'_{Sy}</math></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td><math>Y_V</math></td>
+<td>0.40 E 07</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Vg}^*</math></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td><math>\ddot{Z}_{VgT}</math></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td><math>\dot{Z}_V</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>\dot{Z}_{VT}</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>\dot{Z}_4</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>F'_{Sz}</math></td>
+<td>0.10 E 01</td>
+</tr>
+<tr>
+<td><math>Z_V</math></td>
+<td>0.40 E 07</td>
+</tr>
+<tr>
+<td><math>\ddot{Z}_{Vg}^*</math></td>
+<td>0.10 E 02</td>
+</tr>
+<tr>
+<td><math>Z_4</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td><math>\dot{X}_S</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>X_S</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_S</math></td>
+<td>0.40 E 04</td>
+</tr>
+<tr>
+<td><math>Y_S</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td><math>\dot{Z}_S</math></td>
+<td>0.16 E 05</td>
+</tr>
+<tr>
+<td><math>Z_S</math></td>
+<td>0.80 E 07</td>
+</tr>
+<tr>
+<td>R</td>
+<td>0.80 E 07</td>
+</tr>
+</tbody>
+</table>

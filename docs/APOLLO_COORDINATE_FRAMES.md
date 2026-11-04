@@ -1,7 +1,7 @@
 # Apollo-era coordinate frames (Saturn IB)
 
 **Primary source:** *Saturn IB Instrument Unit* documentation  
-file `satinstunitibm_1.pdf` (local), **Section 2 — Reference Systems and Transformations**, pages **I-2-1 … I-2-?** (PDF pp. ~29–44).
+file `reference/LVDC-EDD/satinstunitibm_1.pdf`, **Section 2 — Reference Systems and Transformations**, pages **I-2-1 … I-2-?** (PDF pp. ~29–44).
 
 Cross-refs in that section:
 
@@ -206,5 +206,5 @@ Site constants: `AS205_presettings.m` / `AS205_PAD` (LC-34, \(A_z\), \(R_L\)).
 
 | Local path | Content |
 |------------|---------|
-| `(local copy) satinstunitibm_1.pdf` | IU manual; Section 2 pp. ~29–44 |
+| `reference/LVDC-EDD/satinstunitibm_1.pdf` | IU manual; Section 2 pp. ~29–44 |
 | This note | Working summary for obliq Saturn migration |

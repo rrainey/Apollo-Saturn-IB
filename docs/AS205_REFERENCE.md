@@ -3,6 +3,7 @@
 ## Primary reference (current)
 
 **Document:** NASA-TM-X-62831 — *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision I* (Solmon, Sept 1968)  
+**PDF:** `reference/NASA-TM-X-62831/NASA-TM-X-62831.pdf`  
 **Markdown extract:** `reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md`
 
 This is the **flown Apollo 7 / AS-205 operational** reference. Full-stack Obliq work targets this document for guidance presettings, mass properties, and trajectory residual.

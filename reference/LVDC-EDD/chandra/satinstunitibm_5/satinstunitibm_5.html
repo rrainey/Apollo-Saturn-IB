@@ -1,0 +1,734 @@
+<h2>SECTION 12</h2><h3>PREFLIGHT TESTS</h3><h4>12.1 INTRODUCTION</h4><p>To make the LVDC flight program usable during preflight vehicle tests, special flight program test options must be provided. These options must provide simulation of flight-like conditions which exercise the interfaces between the LVDC/LVDA and the remainder of the vehicle, and must allow preflight linkage tests, which exercise the control system and allow ground communication via the Digital Command System (DCS).</p><h4>12.2 FLIGHT SIMULATION</h4><p>A flight simulation option must provide the capability to demonstrate integrity of the LVDC memory, issue switch selector commands, issue special LVDA ladder profiles, and accept certain discretizes and interrupts. Flight simulation must have two modes: repeatable and non-repeatable.</p><h5>12.2.1 <u>Repeatable</u></h5><p>The repeatable flight simulation mode will provide the capability to execute a portion of the LVDC memory logic with an exact predictability. This capability must be furnished to provide a check on the integrity of the memory. This test mode will use the actual flight equations; however, to insure complete predictability, the following modifications must be made to nominal flight input processing.</p><ul style="list-style-type: none;"><li>• Substitution of stored acceleration profile for accelerometer input</li><li>• Substitution of internal timing for external sequencing events</li></ul>
+
+<!-- Page 2 -->
+
+<ul style="list-style-type: none;"><li>• Substitution of computed guidance angles for attitude angles</li><li>• Substitution of preset typical targeting load data for the indeterminate DCS targeting load parameters. *<br/>* *</li></ul><p>The use of the stored acceleration or <math>(F/M)_c</math> profile will assure that the program will bypass the accelerometer error processing; thus, providing predictable input to the boost navigation equations. The stored acceleration or <math>(F/M)_c</math> profile is generated as a function of prestored vehicle mass, mass flow rate, and thrust values based on vehicle performance predictions (Eq. 4.2.12, 4.2.13, and 12.2.1). The resulting acceleration is then used in Eq. 12.2.2 to produce velocity changes which replace the velocity changes normally read from external accelerometers. The velocity changes computed from <math>(F/M)_c</math> will drive the navigation equations and produce a boost trajectory.</p><p>The use of internal timing will allow the program to insure that event dependent processing occurs at fixed times. The nominal time base start times, as specified in the Event Sequence Timeline Table in Part II, will be used to internally force time base initiation at the nominal time. *<br/>* *</p><p>The use of guidance angles will allow predictable resolution of the <math>(F/M)_c</math> profile and will also assure bypassing the flight program gimbal angle error processing. Minor loop processing will essentially be reduced to processing the ladder profiles, as discussed in Section 12.2.2.5.</p><p>The use of preset typical targeting load data in place of DCS targeting data is necessary to assure predictable input to the guidance equations. *<br/>* * *</p><p>In order to allow simultaneous LVDC and stage testing, the repeatable test mode must bypass switch selector output processing. This feature will also allow repeatable test execution</p>
+
+<!-- Page 3 -->
+
+<p>during the terminal countdown without causing erroneous stage sequencing on the pad.</p><p>The repeatable mode must have a means of initializing all hardware and software functions that would influence the predictability of flight simulation execution. The areas requiring processing include:</p><ul style="list-style-type: none;"><li>• The status of the real-time clock and the two internal interrupt counters</li><li>• The variable data words in LVDC memory</li><li>• The activation of logic to bypass external input sampling.</li></ul><p>The termination of a repeatable test run will be a function of internal processing of T4+145 seconds. Upon termination of each repeatable test run, LVDC memory occupied by the flight program must have a bit-by-bit configuration identical to the configuration at the end of any other repeatable run made with that program. This will provide the capability to verify that memory has not been altered from the verified state, and that the LVDC is functioning normally. The technique that will be used to verify memory will be under the control of the RCA-110A. Each memory sector will be summed and the sector sums will be compared against a predetermined set of memory sums. Any deviation from the predetermined sums will imply that either the memory has been altered or that the LVDC/LVDA has malfunctioned.</p><h4>12.2.2 <u>Non-Repeatable</u></h4><p>The non-repeatable flight simulation mode must provide the capability to selectively satisfy the following objectives:</p>
+
+<!-- Page 4 -->
+
+
+<ul style="list-style-type: none;">
+<li>• Verify correct accelerometer interface</li>
+<li>• Verify proper gimbal angle interface</li>
+<li>• Verify proper acceptance of vehicle inputs</li>
+<li>• Verify proper use of switch selector interface</li>
+<li>• Issue ladder commands to exercise the flight control system.</li>
+</ul>
+
+<p>The non-repeatable mode differs from the repeatable in that acceptance of external inputs causes timing differences which affect the LVDC operation and, hence, result in non-repeatable (non-compare) memory checksums. The following external inputs must be accepted depending on test definition:</p>
+
+<ul style="list-style-type: none;">
+<li>• Accelerometer readings</li>
+<li>• Gimbal readings</li>
+<li>• Vehicle interrupts and discretes</li>
+<li>• Switch selector processing for designated stages.</li>
+</ul>
+
+<h4>12.2.2.1 Accelerometer Interface</h4>
+
+<p>The verification of the interface between the LVDC/LVDA and the accelerometers can only be accomplished in tests that include a powered-up platform which becomes inertial at GRR in the test countdown. This interface will be verified in the following manner for powered-up platform runs. Since the platform is inertial, earth's rotational effects will be measured by the accelerometers. This expected earth rotational effect will be computed by Eq. 12.2.3.</p>
+
+
+<!-- Page 5 -->
+
+<p>The LVDC/LVDA, through the flight program, will read and process accelerometer readings and subtract the expected readings from the actual readings, Eq. 12.2.4. Any discrepancy between the expected and the actual reading will result in abnormal navigation and guidance results. These abnormalities will in turn cause the S-IVB cutoff time to vary outside nominal limits, thereby providing an indication of an error.</p><h4>12.2.2.2 Gimbal Interface</h4><p>The verification of the interface between the LVDC/LVDA and the gimbals is accomplished in much the same manner as the accelerometer verification. Again, the inertial platform must be powered up for gimbal interface verification. For repeatable simulations, this gimbal interface will be accomplished by the following method. The expected gimbal readings due to the earth's rotation are calculated using Eq. 12.2.5 through 12.2.7. The attitude errors are calculated using Eq. 12.2.8 and 12.2.9. *</p><p>These attitude errors, if any, are combined with the increments from the ladder profiles as defined in Section 12.2.2.5 to generate the ladder commands. Since all ladder commands are recorded on strip charts during preflight tests, any unexpected ladder signal will be immediately noticeable and will indicate either platform alignment error or erroneous gimbal operation. Although erroneous gimbal readings will result in abnormal ladder outputs, the trajectory flown will not be affected since the commanded attitude angles, and not the gimbal angles, are used to resolve the accelerometer vector.</p>
+
+<!-- Page 6 -->
+
+<h3>12.2.2.3 Vehicle Interrupt and Discrete Interface</h3><p>Since in the non-repeatable simulation mode, external interrupts must be enabled and the vehicle discrete input register must be sampled, indications of time base initiation events can be set through the ground computer to force the flight program to initiate the desired time bases. Thus, proper recognition of vehicle inputs by the LVDC/LVDA can be verified.</p><h3>12.2.2.4 Switch Selector Interface</h3><p>Non-repeatable flight simulation mode must provide the capability to issue switch selector commands for selected vehicle stages. By monitoring LVDC issuance of switch selector commands, it will be possible to verify that all interfaces between LVDC/LVDA and the vehicle via the switch selector are correct. It will also be possible to simulate failures in the switch selector and, thereby, force the flight program to take corrective action as defined in Section 9.</p><h3>12.2.2.5 Flight Control Computer Interface</h3><p>Another function of flight simulation will be the issuance of a series of prestored ladder profiles. Execution of these profiles will exercise the flight control computer by issuing a series of ramps at specified times. Proper functioning of the control computer can be determined by monitoring its output in response to these inputs.</p><p>The required profiles are defined in the Flight Simulation Ladder Profiles Figure in Part II. The slope of the ramps shown in the figure must be one degree per second. The square waves must be generated at the maximum allowable ladder rate,</p>
+
+<!-- Page 7 -->
+
+<p>maintained at the specified level for at least two seconds, then returned to zero at the maximum allowable ladder rate.</p><p>The levels shown must be commanded with a tolerance of <math>\pm 1</math> ladder bit. The profiles must be issued at the times specified with a tolerance of + 200 milliseconds.</p><h3>12.3 FLIGHT SIMULATION OPTIONS</h3><p>In order to allow flexibility in operating the flight program in the flight simulation mode, the capability to select combinations of operating conditions must be available. A flight simulation indicator word will be loaded into the LVDC via the ground computer. The word will supply the following information:</p><ul style="list-style-type: none;"><li>• Flight simulation selected</li><li>• Switch selector status</li><li>• Repeatable/non-repeatable option</li><li>• Data compression status</li><li>• Platform status</li><li>• Test site indication.</li></ul><p>An explanation of these options is given in the following paragraphs.</p><h4>12.3.1 <u>Flight Simulation Selected</u></h4><p>Since the indicator word is examined in flight as well as flight simulation, the indicator must be set to flight simulation status prior to each preflight test run. All flight</p>
+
+<!-- Page 8 -->
+
+<p>simulation runs, then, upon completion, must reset the indicator to flight status.</p><h4>12.3.2 <u>Switch Selector Status</u></h4><p>Since all stages of the launch vehicle may not be powered during a flight simulation test, this option must be provided to issue switch selector commands to selected stages only.</p><h4>12.3.3 <u>Repeatable/Non-Repeatable</u></h4><p>The selection of the repeatable or non-repeatable option will be controlled through this indication.</p><h4>12.3.4 <u>Data Compression Status</u></h4><p>This option must be provided to bypass the storing of compressed data over the preflight LVDC programs, thus eliminating the need to reload the preflight programs after every flight simulation run.</p><h4>12.3.5 <u>Platform Status</u></h4><p>As defined earlier, the LVDC programs must have the capability to test LVDC/LVDA platform interfaces. Under some conditions, it will be necessary to make flight simulation runs without powering the platform. When the platform interface is not exercised, Eq. 12.2.3 and 12.2.5 through 12.2.9 are not solved by the LVDC programs.</p><h4>12.3.6 <u>Test Site Indicator</u></h4><p>As is shown in Eq. 12.2.3 and 12.2.5, the earth's rotational effects on the platform are functions of the test site latitude</p>
+
+<!-- Page 9 -->
+
+<p>and total gravity acceleration at the test site. This indicator, therefore, determines whether Huntsville or KSC values should be used.</p><h4>12.4 PREFLIGHT LINKAGE TESTS</h4><p>The LVDC program must provide the access linkage to allow the preflight logic to exercise certain portions of the flight logic during vehicle tests. The two tests presently defined are the Guidance and Control (G &amp; C) Steering Test and the Preflight Command Receiver Test.</p><h5>12.4.1 <u>G &amp; C Steering Linkage</u></h5><p>The G &amp; C Steering Test requires that the preflight program use the flight program's Minor Loop logic to monitor and respond to testing of the ST-124M inertial platform. The flight program must provide the access linkage from the preflight program to allow the following processing:</p><ul style="list-style-type: none;"><li>• The initialization of linkage parameters between the preflight and the flight routines</li><li>• The initialization of required transformation matrices</li><li>• The initialization of gimbal input parameters</li><li>• The initialization of gimbal reading processing parameters</li><li>• The initialization of timekeeping and scheduling parameters.</li></ul>
+
+<!-- Page 10 -->
+
+<p>This initialization must insure the complete activation of all logic required for subsequent execution of the Minor Loop by the preflight program as required by test procedures.</p><h4>12.4.2 <u>Preflight Command Receiver Linkage</u></h4><p>The Preflight Command Receiver test, also known as the Houston Interface test, requires that the preflight program use the flight program's Digital Command System (DCS) logic to respond to and process DCS commands from Mission Control Center in Houston for checkout of the vehicle Command Receiver system. The flight logic must provide the access linkage from the preflight logic to allow the following processing:</p><ul style="list-style-type: none;"><li>• The initialization of linkage parameters between the preflight and flight programs</li><li>• The initialization of all logic switches and processing parameters</li><li>• The initialization of timekeeping and scheduling parameters.</li></ul><p>This initialization must insure that all mission dependent commands are enabled and that DCS processing is activated as defined for actual flight. In order to prevent undesirable program action such as issuance of Generalized Switch Selector commands, the flight program must insure that all command response remains internal to the DCS logic.</p>
+
+<!-- Page 11 -->
+
+<h2>SECTION 13</h2><h3>ALGORITHMS</h3><h4>13.1 INTRODUCTION</h4><p>Elementary functions and mathematical procedures must be computed by the algorithms and techniques described below. Logic necessary to make the algorithms flexible enough to accept inputs in the ranges expected is also defined.</p><p>The angular unit to be used in the flight program and in these algorithms is the pirad. One pirad is equal to <math>\pi</math> radians, or 180 degrees. For example,</p><math display="block">45^\circ = 45^\circ \left( \frac{1 \text{ pirad}}{180^\circ} \right) = 0.25 \text{ pirad}</math><math display="block">.628 \text{ radians} = .628 \text{ radians} \left( \frac{1 \text{ pirad}}{\pi \text{ radians}} \right) = 0.20 \text{ pirads}</math><p>All principal angles are in the range of -1.0 to +1.0 when expressed in pirads.</p><p>The polynomials cited in this section for the calculation of sines, arctangents, and natural logarithms are Chebyshev approximations.<sup>1</sup> The coefficients are converted to be compatible with flight program units.</p><h4>13.2 SINE-COSINE ALGORITHM</h4><p>The sine-cosine algorithm uses a polynomial approximation of the sine function. The sine polynomial is</p><hr/><p><sup>1</sup><u>Approximations for Digital Computers</u>, by Cecil Hastings, Jr. (Princeton University Press, 1955).</p>
+
+<!-- Page 12 -->
+
+
+<math display="block">\sin \alpha = 3.1415897\alpha - 5.1673678\alpha^3 + 2.5436052\alpha^5 - 0.55839693\alpha^7 \quad (13.2.1)^2</math>
+
+<p>for <math>-0.5 \leq \alpha \leq 0.5</math>.</p>
+
+<p>Given the angle <math>\alpha'</math> in pirads, the quadrant in which <math>\alpha'</math> lies must be determined and the two associated quantities, <math>\bar{\alpha}</math> and <math>\tilde{\alpha}</math> must be computed according to Table 13-1.</p>
+
+<p>Table 13-1 SINE/COSINE ARGUMENT SELECTION</p>
+
+<table border="1">
+<thead>
+<tr>
+<th><math>\alpha'</math><br/>Quadrant</th>
+<th><math>\bar{\alpha}</math></th>
+<th><math>\tilde{\alpha}</math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I</td>
+<td><math>\alpha'</math></td>
+<td><math>0.5 - \alpha'</math></td>
+</tr>
+<tr>
+<td>II</td>
+<td><math>1.0 - \alpha'</math></td>
+<td><math>0.5 - \alpha'</math></td>
+</tr>
+<tr>
+<td>III</td>
+<td><math>1.0 - \alpha'</math></td>
+<td><math>0.5 + \alpha'</math></td>
+</tr>
+<tr>
+<td>IV</td>
+<td><math>\alpha'</math></td>
+<td><math>0.5 + \alpha'</math></td>
+</tr>
+</tbody>
+</table>
+
+<p>The quantities <math>\bar{\alpha}</math> and <math>\tilde{\alpha}</math> are now such that both lie between <math>-0.5</math> and <math>0.5</math>, satisfying the following identities:</p>
+
+<math display="block">\sin \alpha' = \sin \bar{\alpha}</math>
+
+<math display="block">\cos \alpha' = \cos \tilde{\alpha}</math>
+
+<p>The numbers <math>\bar{\alpha}</math> and <math>\tilde{\alpha}</math> are substituted into the polynomial to obtain <math>\sin \alpha'</math> and <math>\cos \alpha'</math>, respectively.</p>
+
+<p>The error characteristics of the sine-cosine algorithm are shown in Fig. 13-1.</p>
+
+<hr/>
+<p><sup>2</sup> Parenthetical numbers in right field of page identify equations; a comprehensive list of equations for all sections of this document is presented in Section 14.</p>
+
+
+<!-- Page 13 -->
+
+
+<h3>13.3 ARCTANGENT ALGORITHM</h3>
+
+<p>The arctangent algorithm uses a polynomial approximation to the arctangent function. This algorithm requires both the numerator Y and the denominator Z of the arctangent argument. An associated number V is computed from the following.</p>
+
+<math display="block">V = \frac{|Z| - |Y|}{|Z| + |Y|}</math>
+
+<p>The principal arctangent of V, for <math>-1.0 \leq V \leq 1.0</math>, is calculated from the polynomial</p>
+
+<math display="block">\begin{aligned} \text{Arctan } V = &amp; 0.31830264V - 0.10587734V^3 \\ &amp; + 0.06160678V^5 - 0.037061733V^7 \\ &amp; + 0.016760072V^9 - 0.0037309738V^{11} \end{aligned} \quad (13.3.1)</math>
+
+<p>Since <math>-1.0 \leq V \leq 1.0</math>, the principal arctangent satisfies the inequality <math>-0.25 \leq \text{Arctan } V \leq 0.25</math>.</p>
+
+<p>The algorithm thus determines <math>\text{Arctan} \left( \frac{Y}{Z} \right)</math>, from Table 13-2, such that the inequality</p>
+
+<math display="block">-1.0 \leq \text{Arctan} \left( \frac{Y}{Z} \right) \leq 1.0</math>
+
+<p>is satisfied.</p>
+
+<p>TABLE 13-2 ARCTANGENT POLYNOMIAL ARGUMENT</p>
+
+<table border="1">
+<thead>
+<tr>
+<th>Y</th>
+<th>Z</th>
+<th>Arctan (Y/Z)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+,0</td>
+<td>+,0</td>
+<td>0.25-Arctan V</td>
+</tr>
+<tr>
+<td>+,0</td>
+<td>-</td>
+<td>0.75+Arctan V</td>
+</tr>
+<tr>
+<td>-</td>
+<td>+,0</td>
+<td>-0.25+Arctan V</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>-0.75-Arctan V</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- Page 14 -->
+
+<p>The error characteristics for this algorithm are shown in Figure 13-2.</p><img alt="Graph of Absolute Error vs Angle (Pirads) for the Sine-Cosine Algorithm." src="447390796004f81ec3c3335b4b327176_2_img.webp"/><p>A line graph showing the absolute error of the Sine-Cosine Algorithm. The vertical axis is labeled 'ABSOLUTE ERROR' and ranges from <math>-1 \times 10^{-6}</math> to <math>1 \times 10^{-6}</math> with major grid lines every <math>1 \times 10^{-6}</math>. The horizontal axis is labeled 'ANGLE (PIRADS)' and ranges from 0 to 1.0 with major grid lines every 0.1. The curve starts at (0,0), dips to a minimum of approximately <math>-0.5 \times 10^{-6}</math> at <math>x \approx 0.05</math>, rises to a peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.2</math>, dips to a minimum of approximately <math>-1.5 \times 10^{-6}</math> at <math>x \approx 0.4</math>, rises to a sharp peak of approximately <math>0.9 \times 10^{-6}</math> at <math>x \approx 0.45</math>, dips to a sharp minimum of approximately <math>-1.5 \times 10^{-6}</math> at <math>x \approx 0.5</math>, rises to a sharp peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.55</math>, dips to a minimum of approximately <math>-1.5 \times 10^{-6}</math> at <math>x \approx 0.65</math>, rises to a peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.8</math>, dips to a minimum of approximately <math>-0.5 \times 10^{-6}</math> at <math>x \approx 0.95</math>, and ends at (1.0, 0).</p><p>Figure 13-1 Error Characteristics of the Sine-Cosine Algorithm</p><img alt="Graph of Absolute Error (Pirads) vs Value of 'V' for the Arctangent Algorithm." src="447390796004f81ec3c3335b4b327176_4_img.webp"/><p>A line graph showing the absolute error of the Arctangent Algorithm. The vertical axis is labeled 'ABSOLUTE ERROR (PIRADS)' and ranges from <math>-1 \times 10^{-6}</math> to <math>1 \times 10^{-6}</math> with major grid lines every <math>1 \times 10^{-6}</math>. The horizontal axis is labeled 'VALUE OF "V"' and ranges from 0 to 1.0 with major grid lines every 0.1. The curve starts at (0,0), dips to a minimum of approximately <math>-0.5 \times 10^{-6}</math> at <math>x \approx 0.05</math>, rises to a peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.1</math>, dips to a minimum of approximately <math>-0.5 \times 10^{-6}</math> at <math>x \approx 0.2</math>, rises to a peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.3</math>, dips to a minimum of approximately <math>-0.5 \times 10^{-6}</math> at <math>x \approx 0.5</math>, rises to a peak of approximately <math>0.8 \times 10^{-6}</math> at <math>x \approx 0.8</math>, and ends at (1.0, 0).</p><p>Figure 13-2 Error Characteristics for Arctangent Algorithm</p>
+
+<!-- Page 15 -->
+
+<h3>13.4 NATURAL LOGARITHM ALGORITHM</h3><p>The natural logarithm algorithm uses a limited range polynomial combined with appropriate algebraic identities to extend the range for greater usefulness.</p><p>To find the logarithm of a number <math>\alpha</math>, the flight program must first determine a number <math>\alpha'</math> and an integer <math>N</math> such that <math>1.0 \leq \alpha' \leq 2.0</math> and <math>\alpha' = \alpha 2.0^{-N}</math>. The natural logarithm of <math>\alpha'</math> will then be determined by evaluating the following polynomial:</p><math display="block">\begin{aligned} \ln \alpha' = &amp; 0.99990167(\alpha' - 1.0) - 0.49787544(\alpha' - 1.0)^2 \\ &amp; + 0.31765005(\alpha' - 1.0)^3 - 0.19376149(\alpha' - 1.0)^4 \\ &amp; + 0.08556927(\alpha' - 1.0)^5 - 0.01833831(\alpha' - 1.0)^6, \quad 1.0 \leq \alpha' \leq 2.0 \end{aligned} \quad (13.4.1)</math><p>Finally, the relation</p><math display="block">\ln \alpha = \ln(2.0^N \alpha') = N \ln 2.0 + \ln \alpha' = 0.6931471806 N + \ln \alpha' \quad (13.4.2)</math><p>will be used to calculate the natural logarithm of <math>\alpha</math>. The algorithm must accept <math>\alpha</math> in the range <math>0.125 \leq \alpha \leq 8.0</math>.</p><p>The error characteristics for this algorithm are given in Figure 13-3.</p><h3>13.5 SQUARE ROOT ALGORITHM</h3><p>The square root algorithm is derived from Newton's method of successive approximations. Given some positive number <math>X (=x^2)</math>, the square root of <math>X</math> will be obtained by iterating the expression</p><math display="block">x_{i+1} = 0.5(x_i + \frac{X}{x_i}), \quad i = 0, 1, 2, 3, \dots, \quad (13.5.1)</math>
+
+<!-- Page 16 -->
+
+
+<img alt="Graph showing Absolute Error in Log versus Polynomial Argument for the Natural Logarithm Algorithm. The curve oscillates between approximately 1.0 and 2.0 on the x-axis, with peaks and troughs reaching values between 10^-6 and -10^-6 on the y-axis." src="ee0a20a88ba41de30b3fb3a7cd6f5474_1_img.webp"/>
+<p>The graph shows a periodic oscillation of the absolute error in the logarithm of the polynomial argument. The x-axis is labeled 'POLYNOMINAL ARGUMENT' and ranges from 1.0 to 2.0 with major grid lines every 0.5 units. The y-axis is labeled 'ABSOLUTE ERROR IN LOG' and ranges from <math>-1 \times 10^{-6}</math> to <math>1 \times 10^{-6}</math> with major grid lines every <math>1 \times 10^{-6}</math> units. The curve starts at (1.0, 0), rises to a peak of approximately <math>1.2 \times 10^{-6}</math> at x ≈ 1.1, crosses the x-axis at x ≈ 1.25, reaches a trough of approximately <math>-1.2 \times 10^{-6}</math> at x ≈ 1.4, crosses the x-axis again at x ≈ 1.55, reaches a second peak of approximately <math>1.2 \times 10^{-6}</math> at x ≈ 1.7, crosses the x-axis at x ≈ 1.85, reaches a second trough of approximately <math>-1.2 \times 10^{-6}</math> at x ≈ 1.95, and ends at x ≈ 2.0.</p>
+
+<p>Figure 13-3 Error Characteristics for Natural Logarithm Algorithm</p>
+
+<p>where <math>x_0</math> is an initial guess for the square root of <math>X</math>. Following this procedure, <math>x_i \rightarrow \sqrt{X}</math> as <math>i \rightarrow \infty</math>.</p>
+
+<p>Four iterations are required to calculate square roots to an accuracy of six decimal places for <math>\Delta x_0 = |x_0 - \sqrt{X}| &lt; 0.50 \sqrt{X}</math>. Three iterations are required for <math>\Delta x_0 &lt; 0.10 \sqrt{X}</math>; two iterations are required for <math>\Delta x_0 &lt; 0.01 \sqrt{X}</math>; and a single iteration is sufficient for <math>\Delta x_0 &lt; 0.001 \sqrt{X}</math>.</p>
+
+<p>In order to insure sufficient accuracy, the square root algorithm must be iterated three times each time the routine is called.</p>
+
+<h3>13.6 INVERSE SQUARE ROOT ALGORITHM</h3>
+
+<p>The inverse square root algorithm is a variation of Newton's method. The approximation for <math>1.0/\sqrt{X}</math> will be obtained by iterating the expression</p>
+
+
+<!-- Page 17 -->
+
+
+<math display="block">x_{i+1} = 0.5 x_i (3.0 - x_i^2 X), \quad i = 0, 1, 2, 3, \dots \quad (13.6.1)</math>
+
+<p>where <math>x_0</math> is an initial guess for the inverse square root of <math>X</math>. These iterations produce <math>x_i \rightarrow 1.0/\sqrt{X}</math> as <math>i \rightarrow \infty</math>.</p>
+
+<p>Six iterations are required to calculate inverse square roots to an accuracy of six decimal places for <math>\Delta x_0 = |x_0 - 1.0/\sqrt{X}| &lt; 0.50(1.0/\sqrt{X})</math>. Three iterations are required for <math>\Delta x_0 &lt; 0.10(1.0/\sqrt{X})</math>; two iterations are required for <math>\Delta x_0 &lt; 0.01(1.0/\sqrt{X})</math>; and a single iteration is sufficient for <math>\Delta x_0 &lt; 0.001(1.0/\sqrt{X})</math>.</p>
+
+<h3>13.7 VECTOR DOT PRODUCT</h3>
+
+<p>The method to be used in calculating the dot product of two vectors <math>\bar{A}</math> and <math>\bar{B}</math> is</p>
+
+<math display="block">\bar{A} \cdot \bar{B} = A_x B_x + A_y B_y + A_z B_z, \quad (13.7.1)</math>
+
+<p>where <math>A_x, A_y, A_z</math> and <math>B_x, B_y, B_z</math> are the components of <math>\bar{A}</math> and <math>\bar{B}</math>, respectively.</p>
+
+<h3>13.8 VECTOR CROSS PRODUCT</h3>
+
+<p>The method to be used to obtain the cross product vector <math>\bar{C}</math> of two vectors <math>\bar{A}</math> and <math>\bar{B}</math> is given by</p>
+
+<math display="block">\bar{C} = \begin{bmatrix} C_x \\ C_y \\ C_z \end{bmatrix} = \begin{bmatrix} (A_y B_z - A_z B_y) \\ (A_z B_x - A_x B_z) \\ (A_x B_y - A_y B_x) \end{bmatrix} = \bar{A} \times \bar{B} \quad (13.8.1)</math>
+
+<p>where <math>A_x, A_y</math>, and <math>A_z</math> and <math>B_x, B_y, B_z</math> are the components of <math>\bar{A}</math> and <math>\bar{B}</math>, respectively, and <math>C_x, C_y, C_z</math> are the components of the cross product vector <math>\bar{C}</math>.</p>
+
+
+<!-- Page 18 -->
+
+<p>(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)</p>
+
+<!-- Page 19 -->
+
+<h2>SECTION 14</h2><h3>EQUATIONS</h3><h4>14.1 INTRODUCTION</h4><p>This section lists the equations defined by this document. The equations are appropriately numbered by sections for easy reference to the sections of the text.</p><p>In these equations, the liberty has been taken to define the equality sign according to the commonly accepted computer language meaning; that is, the symbol "=" shall mean "is replaced by" or "is set equal to."</p>
+
+<!-- Page 20 -->
+
+<p>(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)</p>
+
+<!-- Page 21 -->
+
+
+<h2>14.2 EQUATIONS</h2>
+
+<h3><u>[MSG] Matrix</u></h3>
+
+<math display="block">[MSG] = \begin{bmatrix} \cos \phi_L &amp; \sin \phi_L \sin A_z &amp; -\sin \phi_L \cos A_z \\ -\sin \phi_L &amp; \cos \phi_L \sin A_z &amp; -\cos \phi_L \cos A_z \\ 0 &amp; \cos A_z &amp; \sin A_z \end{bmatrix} \quad (2.3.1)</math>
+
+<h3><u>[MG4] Matrix</u></h3>
+
+<math display="block">[MG4] = \begin{bmatrix} \cos \lambda &amp; 0 &amp; \sin \lambda \\ \sin i \sin \lambda &amp; \cos i &amp; -\sin i \cos \lambda \\ -\cos i \sin \lambda &amp; \sin i &amp; \cos i \cos \lambda \end{bmatrix} \quad (2.3.2)</math>
+
+<h3><u>[MBS] Matrix</u></h3>
+
+<math display="block">MBS11 = \cos \theta_y \cos \theta_z</math>
+
+<math display="block">MBS12 = -\cos \theta_x \cos \theta_y \sin \theta_z + \sin \theta_x \sin \theta_y</math>
+
+<math display="block">MBS13 = \sin \theta_x \cos \theta_y \sin \theta_z + \cos \theta_x \sin \theta_y</math>
+
+<math display="block">MBS21 = \sin \theta_z</math>
+
+<math display="block">MBS22 = \cos \theta_x \cos \theta_z</math>
+
+<math display="block">MBS23 = -\sin \theta_x \cos \theta_z</math>
+
+<math display="block">MBS31 = -\sin \theta_y \cos \theta_z</math>
+
+<math display="block">MBS32 = \cos \theta_x \sin \theta_y \sin \theta_z + \sin \theta_x \cos \theta_y</math>
+
+<math display="block">MBS33 = -\sin \theta_x \sin \theta_y \sin \theta_z + \cos \theta_x \cos \theta_y \quad (2.3.3)</math>
+
+
+<!-- Page 22 -->
+
+<p><u>[M4V] Matrix</u></p><math display="block">[M4V] = \begin{bmatrix} \cos \phi_T &amp; 0 &amp; \sin \phi_T \\ 0 &amp; 1 &amp; 0 \\ -\sin \phi_T &amp; 0 &amp; \cos \phi_T \end{bmatrix} \quad (2.3.4)</math><p><u>[MS4] Matrix</u></p><math display="block">\begin{aligned} MS411 &amp;= \cos \lambda \cos \phi_L \\ MS412 &amp;= \cos \lambda \sin \phi_L \sin A_z + \sin \lambda \cos A_z \\ MS413 &amp;= -\cos \lambda \sin \phi_L \cos A_z + \sin \lambda \sin A_z \\ MS421 &amp;= \sin i \sin \lambda \cos \phi_L - \cos i \sin \phi_L \\ MS422 &amp;= \sin i \sin \lambda \sin \phi_L \sin A_z + \cos i \cos \phi_L \sin A_z \\ &amp;\quad - \sin i \cos \lambda \cos A_z \\ MS423 &amp;= -\sin i \sin \lambda \sin \phi_L \cos A_z - \cos i \cos \phi_L \cos A_z \\ &amp;\quad - \sin i \cos \lambda \sin A_z \\ MS431 &amp;= -\cos i \sin \lambda \cos \phi_L - \sin i \sin \phi_L \\ MS432 &amp;= -\cos i \sin \lambda \sin \phi_L \sin A_z + \sin i \cos \phi_L \sin A_z \\ &amp;\quad + \cos i \cos \lambda \cos A_z \\ MS433 &amp;= \cos i \sin \lambda \sin \phi_L \cos A_z - \sin i \cos \phi_L \cos A_z \\ &amp;\quad + \cos i \cos \lambda \sin A_z \end{aligned} \quad (2.3.5)</math>
+
+<!-- Page 23 -->
+
+
+<p><u>[MGA] Matrix</u></p>
+
+<math display="block">[MGA] = \begin{bmatrix} \cos \theta_R &amp; 0 &amp; \sin \theta_R \\ 0 &amp; 1 &amp; 0 \\ -\sin \theta_R &amp; 0 &amp; \cos \theta_R \end{bmatrix} \quad (2.3.6)</math>
+
+<p><u>[MSA] Matrix</u></p>
+
+<math display="block">MSA11 = \cos \theta_R \cos \phi_L</math>
+
+<math display="block">MSA12 = \cos \theta_R \sin \phi_L \sin A_z + \sin \theta_R \cos A_z</math>
+
+<math display="block">MSA13 = -\cos \theta_R \sin \phi_L \cos A_z + \sin \theta_R \sin A_z</math>
+
+<math display="block">MSA21 = -\sin \phi_L</math>
+
+<math display="block">MSA22 = \cos \phi_L \sin A_z</math>
+
+<math display="block">MSA23 = -\cos \phi_L \cos A_z</math>
+
+<math display="block">MSA31 = -\sin \theta_R \cos \phi_L</math>
+
+<math display="block">MSA32 = -\sin \theta_R \sin \phi_L \sin A_z + \cos \theta_R \cos A_z</math>
+
+<math display="block">MSA33 = \sin \theta_R \sin \phi_L \cos A_z + \cos \theta_R \sin A_z \quad (2.3.7)</math>
+
+<p><u>[MSV] Matrix</u></p>
+
+<math display="block">MSV11 = \cos \phi_T \cos \lambda \cos \phi_L - \sin \phi_T \cos i \sin \lambda \cos \phi_L \\ - \sin \phi_T \sin i \sin \phi_L</math>
+
+<math display="block">MSV12 = \cos \phi_T \cos \lambda \sin \phi_L \sin A_z + \cos \phi_T \sin \lambda \cos A_z \\ - \sin \phi_T \cos i \sin \lambda \sin \phi_L \sin A_z \\ + \sin \phi_T \sin i \cos \phi_L \sin A_z \\ + \sin \phi_T \cos i \cos \lambda \cos A_z</math>
+
+
+<!-- Page 24 -->
+
+
+<p><u>[MSV] Matrix (continued)</u></p>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV13} = &amp; -\cos \phi_T \cos \lambda \sin \phi_L \cos A_z + \cos \phi_T \sin \lambda \sin A_z \\
+ &amp; + \sin \phi_T \cos i \sin \lambda \sin \phi_L \cos A_z \\
+ &amp; - \sin \phi_T \sin i \cos \phi_L \cos A_z \\
+ &amp; + \sin \phi_T \cos i \cos \lambda \sin A_z
+ \end{aligned}
+ </math>
+
+<math display="block">\text{MSV21} = \sin i \sin \lambda \cos \phi_L - \cos i \sin \phi_L</math>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV22} = &amp; \sin i \sin \lambda \sin \phi_L \sin A_z + \cos i \cos \phi_L \sin A_z \\
+ &amp; - \sin i \cos \lambda \cos A_z
+ \end{aligned}
+ </math>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV23} = &amp; -\sin i \sin \lambda \sin \phi_L \cos A_z - \cos i \cos \phi_L \cos A_z \\
+ &amp; - \sin i \cos \lambda \sin A_z
+ \end{aligned}
+ </math>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV31} = &amp; -\sin \phi_T \cos \lambda \cos \phi_L - \cos \phi_T \cos i \sin \lambda \cos \phi_L \\
+ &amp; - \cos \phi_T \sin i \sin \phi_L
+ \end{aligned}
+ </math>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV32} = &amp; -\sin \phi_T \cos \lambda \sin \phi_L \sin A_z - \sin \phi_T \sin \lambda \cos A_z \\
+ &amp; - \cos \phi_T \cos i \sin \lambda \sin \phi_L \sin A_z \\
+ &amp; + \cos \phi_T \sin i \cos \phi_L \sin A_z \\
+ &amp; + \cos \phi_T \cos i \cos \lambda \cos A_z
+ \end{aligned}
+ </math>
+
+<math display="block">
+ \begin{aligned}
+ \text{MSV33} = &amp; \sin \phi_T \cos \lambda \sin \phi_L \cos A_z - \sin \phi_T \sin \lambda \sin A_z \\
+ &amp; + \cos \phi_T \cos i \sin \lambda \sin \phi_L \cos A_z \\
+ &amp; - \cos \phi_T \sin i \cos \phi_L \cos A_z \\
+ &amp; + \cos \phi_T \cos i \cos \lambda \sin A_z
+ \end{aligned} \tag{2.3.8}
+ </math>
+
+<p><u>[MEG] Matrix</u></p>
+
+<math display="block">
+ \begin{aligned}
+ [\text{MEG}] = &amp; \begin{bmatrix} \cos \theta_E &amp; \sin \theta_E &amp; 0 \\ 0 &amp; 0 &amp; -1 \\ -\sin \theta_E &amp; \cos \theta_E &amp; 0 \end{bmatrix}
+ \end{aligned} \tag{2.3.9}
+ </math>
+
+
+<!-- Page 25 -->
+
+<p><u>[MES] Matrix</u></p><math display="block">\text{MES11} = \cos \phi_L \cos \theta_E</math><math display="block">\text{MES12} = \cos \phi_L \sin \theta_E</math><math display="block">\text{MES13} = \sin \phi_L</math><math display="block">\text{MES21} = \sin \phi_L \sin A_z \cos \theta_E - \cos A_z \sin \theta_E</math><math display="block">\text{MES22} = \sin \phi_L \sin A_z \sin \theta_E + \cos A_z \cos \theta_E</math><math display="block">\text{MES23} = -\cos \phi_L \sin A_z</math><math display="block">\text{MES31} = -\sin \phi_L \cos A_z \cos \theta_E - \sin A_z \sin \theta_E</math><math display="block">\text{MES32} = -\sin \phi_L \cos A_z \sin \theta_E + \sin A_z \cos \theta_E</math><math display="block">\text{MES33} = \cos \phi_L \cos A_z</math><p>(2.3.10)</p>
+
+<!-- Page 26 -->
+
+<p>(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)</p>
+
+<!-- Page 27 -->
+
+<h3><u>Platform Azimuth</u></h3><math display="block">T_D = T_L' - 5 - T_{GRR0} \quad (3.2.1)</math><math display="block">\lambda = \lambda_0 - \dot{\lambda}(T_D) \quad (3.2.2)</math><math display="block">A_z = A_{00} + A_{01}\dot{i} + A_{10}\lambda + A_{11}i\lambda \quad (3.2.3)</math><h3><u>Flight Descending Node</u></h3><math display="block">T_D = T_{GMT} - T_{GRR0} \quad (3.4.1)</math><math display="block">\lambda = \lambda_0 - \dot{\lambda}(T_D) \quad (3.4.2)</math><h3><u>Initial Position, Velocity, and Gravitational Acceleration<br/>Vectors Calculations</u></h3><math display="block">\overline{R_S} = R_L \begin{bmatrix} \cos(\phi_L - \phi_L') \\ \sin(\phi_L - \phi_L') \sin A_z \\ -\sin(\phi_L - \phi_L') \cos A_z \end{bmatrix} \quad (3.4.3)</math><math display="block">\overline{V_S} = R_L \omega_E \pi \begin{bmatrix} 0 \\ \cos \phi_L' \cos A_z \\ \cos \phi_L' \sin A_z \end{bmatrix} \quad (3.4.4)</math><math display="block">Y_G = -X_S \sin \phi_L + Y_S \cos \phi_L \sin A_z - Z_S \cos \phi_L \cos A_z \quad (3.4.5)</math><math display="block">S = -\frac{\mu}{R^3} \left\{ 1 + J \left( \frac{a_e}{R} \right)^2 \left[ 1 - 5 \left( \frac{Y_G}{R} \right)^2 \right] \right\} \quad (3.4.6)</math><math display="block">P = -\frac{\mu}{R^2} \left( \frac{a_e}{R} \right)^2 \left( \frac{2JY_G}{R} \right) \quad (3.4.7)</math>
+
+<!-- Page 28 -->
+
+<p><u>Initial Position, Velocity, and Gravitational Acceleration</u><br/><u>Vectors Calculations (Continued)</u></p><math display="block">\overline{G}_S = S \overline{R}_S + P \begin{bmatrix} -\sin\phi_L \\ \cos\phi_L \sin A_z \\ -\cos\phi_L \cos A_z \end{bmatrix} \quad (3.4.8)</math>
+
+<!-- Page 29 -->
+
+<h3><u>Expected Velocity Changes Using Past Acceleration</u></h3><math display="block">\overline{\Delta V_f} = \begin{bmatrix} \Delta V_{fx} \\ \Delta V_{fy} \\ \Delta V_{fz} \end{bmatrix} = 20(F/M)\Delta T \begin{bmatrix} \cos \theta_y &amp; \cos \theta_z \\ \sin \theta_z &amp; \\ -\sin \theta_y &amp; \cos \theta_z \end{bmatrix} \quad (4.2.1)</math><h3><u>Disagreement Test</u></h3><math display="block">|\Delta A_x - \Delta B_x| \leq 2 \text{ bits} \quad (4.2.1.1) \quad *</math><math display="block">\Delta V_{Mx} = \begin{cases} \Delta A_x &amp; \text{for A channel used} \\ \Delta B_x &amp; \text{for B channel used} \end{cases} \quad (4.2.2)</math><p>Same for Y and Z channel</p><h3><u>Zero Test Values</u></h3><math display="block">\begin{cases} A_{c0} = 20(F/M)\Delta T \sin (2^\circ) \\ A_{c0} = 20(F/M)\Delta T \sin (6^\circ) \end{cases} \quad (4.2.3)</math><math display="block">|\overline{\Delta V_f}| \leq A_{c0} \quad (4.2.3.1) \quad *</math><h3><u>Reasonableness Test</u></h3><math display="block">(0.5\overline{\Delta V_f} - 20RTC \Delta T) \leq \overline{\Delta V_M} \leq (1.5\overline{\Delta V_f} + 20RTC \Delta T) \quad \text{for } \overline{\Delta V_f} \geq 0 \quad (4.2.4)</math><math display="block">(1.5\overline{\Delta V_f} - 20RTC \Delta T) \leq \overline{\Delta V_M} \leq (0.5\overline{\Delta V_f} + 20RTC \Delta T) \quad \text{for } \overline{\Delta V_f} &lt; 0 \quad (4.2.5)</math>
+
+<!-- Page 30 -->
+
+
+<h3><u>Velocity Accumulation</u></h3>
+
+<math display="block">\overline{\Delta V} = \begin{cases} \overline{\Delta V_M} &amp; \text{for reasonable accelerometer readings} \\ \overline{\Delta V_B} &amp; \text{for unreasonable accelerometer readings} \end{cases} \quad (4.2.6)</math>
+
+<math display="block">\overline{V_M} = \begin{bmatrix} \dot{X}_M \\ \dot{Y}_M \\ \dot{Z}_M \end{bmatrix} = \overline{V_M} + \overline{\Delta V} \quad (4.2.7)</math>
+
+<h3><u>F/M Calculations</u></h3>
+
+<math display="block">\overline{V_m} = \begin{bmatrix} \dot{X}_m \\ \dot{Y}_m \\ \dot{Z}_m \end{bmatrix} = \frac{\overline{V_M}}{20} \quad (4.2.8)</math>
+
+<math display="block">\overline{A_m} = \begin{bmatrix} \ddot{X}_m \\ \ddot{Y}_m \\ \ddot{Z}_m \end{bmatrix} = \frac{\overline{V_m} - \left( \overline{V_m} \right)_{\text{past}}}{\Delta T} \quad (4.2.9)</math>
+
+<math display="block">F/M = \left( \ddot{X}_m^2 + \ddot{Y}_m^2 + \ddot{Z}_m^2 \right)^{1/2} \quad (4.2.10)</math>
+
+<h3><u>Reciprocal Acceleration Filter</u></h3>
+
+<math display="block">\begin{aligned} (M/F)_S = &amp; MFK1(M/F)_1 + MFK2(M/F)_2 + MFK3(M/F)_3 \\ &amp; + MFK4(M/F)_4 + MFK5(M/F)_{S1} + MFK6(M/F)_{S2} \\ &amp; + MFK7(M/F)_{S3} + MFK8(M/F)_{S4} \end{aligned} \quad (4.2.11)</math>
+
+
+<!-- Page 31 -->
+
+
+<h3><u>Backup Accelerations</u></h3>
+
+<math display="block">M_{cb} = M_j - \dot{M}_k \Delta T \quad (j,k) = (1,1), (2,2), (2,3) \quad (4.2.12)</math>
+
+<math display="block">(F/M)_c = F_k / M_{cb} \quad k = 1, 2, 3 \quad (4.2.13)</math>
+
+<h3><u>Calculated Velocity Changes Using Backup Acceleration</u></h3>
+
+<math display="block">\overline{\Delta V_B} = \begin{bmatrix} \Delta V_{Bx} \\ \Delta V_{By} \\ \Delta V_{Bz} \end{bmatrix} = 20(F/M)_c \Delta T \begin{bmatrix} \cos \theta_y &amp; \cos \theta_z \\ \sin \theta_z &amp; \\ -\sin \theta_y &amp; \cos \theta_z \end{bmatrix} \quad (4.2.14)</math>
+
+<h3><u>Position and Velocity Calculations</u></h3>
+
+<math display="block">\left\{ \begin{array}{l} \Delta X_{Sg} = (\dot{X}_{sg} + \frac{1}{2} \ddot{X}_{sg} \Delta T) \Delta T \\ \Delta Y_{Sg} = (\dot{Y}_{sg} + \frac{1}{2} \ddot{Y}_{sg} \Delta T) \Delta T \\ \Delta Z_{Sg} = (\dot{Z}_{sg} + \frac{1}{2} \ddot{Z}_{sg} \Delta T) \Delta T \end{array} \right. \quad (4.3.1)</math>
+
+<math display="block">\left\{ \begin{array}{l} \Delta X_{mf} = \frac{1}{2} (\dot{X}_m + [\dot{X}_m]_{past}) \Delta T \\ \Delta Y_{mf} = \frac{1}{2} (\dot{Y}_m + [\dot{Y}_m]_{past}) \Delta T \\ \Delta Z_{mf} = \frac{1}{2} (\dot{Z}_m + [\dot{Z}_m]_{past}) \Delta T \end{array} \right. \quad (4.3.2)</math>
+
+<math display="block">\left\{ \begin{array}{l} X_S = X_S + \Delta X_{Sg} + \Delta X_{mf} + \dot{X}_0 \Delta T \\ Y_S = Y_S + \Delta Y_{Sg} + \Delta Y_{mf} + \dot{Y}_0 \Delta T \\ Z_S = Z_S + \Delta Z_{Sg} + \Delta Z_{mf} + \dot{Z}_0 \Delta T \end{array} \right. \quad (4.3.3)</math>
+
+
+<!-- Page 32 -->
+
+
+<p><u>Position and Velocity Calculations (Continued)</u></p>
+
+<math display="block">\left\{ \begin{array}{l} \dot{x}_{Sg} = \dot{x}_{Sg} + \frac{1}{2} (\ddot{x}_{Sg} + [\ddot{x}_{Sg}]_{past}) \Delta T \\ \dot{y}_{Sg} = \dot{y}_{Sg} + \frac{1}{2} (\ddot{y}_{Sg} + [\ddot{y}_{Sg}]_{past}) \Delta T \\ \dot{z}_{Sg} = \dot{z}_{Sg} + \frac{1}{2} (\ddot{z}_{Sg} + [\ddot{z}_{Sg}]_{past}) \Delta T \end{array} \right. \quad (4.3.4)</math>
+
+<math display="block">\left\{ \begin{array}{l} \dot{x}_S = \dot{x}_m + \dot{x}_{Sg} + \dot{x}_0 \\ \dot{y}_S = \dot{y}_m + \dot{y}_{Sg} + \dot{y}_0 \\ \dot{z}_S = \dot{z}_m + \dot{z}_{Sg} + \dot{z}_0 \end{array} \right. \quad (4.3.5)</math>
+
+<math display="block">V = (\dot{x}_S^2 + \dot{y}_S^2 + \dot{z}_S^2)^{1/2} \quad (4.3.5.1) \quad *</math>
+
+<p><u>Gravitational Acceleration</u> <span style="float: right;">*</span></p>
+
+<math display="block">Y_G = -X_S \sin \phi_L + Y_S \cos \phi_L \sin A_z - Z_S \cos \phi_L \cos A_z \quad (4.3.6)</math>
+
+<math display="block">R = (X_S^2 + Y_S^2 + Z_S^2)^{1/2} \quad (4.3.7)</math>
+
+<math display="block">S_{34} = H \left( \frac{a_e}{R} \right) \left( \frac{Y_G}{R} \right) \left[ 3 - 7 \left( \frac{Y_G}{R} \right)^2 \right] + \frac{D}{7} \left( \frac{a_e}{R} \right)^4 \left[ 3 - 42 \left( \frac{Y_G}{R} \right)^2 + 63 \left( \frac{Y_G}{R} \right)^4 \right] \quad (4.3.8)</math>
+
+<math display="block">P_{34} = \frac{H}{5} \left( \frac{a_e}{R} \right) \left[ 15 \left( \frac{Y_G}{R} \right)^2 - 3 \right] + \frac{D}{7} \left( \frac{a_e}{R} \right)^2 \left( \frac{Y_G}{R} \right) \left[ 12 - 28 \left( \frac{Y_G}{R} \right)^2 \right] \quad (4.3.9)</math>
+
+<math display="block">S = - \frac{\mu}{R^3} \left\{ 1 + J \left( \frac{a_e}{R} \right)^2 \left[ 1 - 5 \left( \frac{Y_G}{R} \right)^2 \right] + S_{34} \right\} \quad (4.3.10)</math>
+
+
+<!-- Page 33 -->
+
+
+<p><u>Gravitational Acceleration (Continued)</u></p>
+
+<math display="block">P = - \frac{\mu}{R^2} \left( \frac{a_e}{R} \right)^2 \left\{ 2J \left( \frac{Y_G}{R} \right) + P_{34} \right\} \quad (4.3.11)</math>
+
+<math display="block">\overline{G}_S = S \overline{R}_S + P \begin{bmatrix} -\sin \phi_L \\ \cos \phi_L \sin A_z \\ -\cos \phi_L \cos A_z \end{bmatrix} \quad (4.3.12)</math>
+
+<p><u>Time-tilt Computations</u></p>
+
+<math display="block">T_c = T_{as} - T_l + T_d \quad (4.4.1)</math>
+
+<math display="block">\chi_y = \begin{cases} \sum_{j=0}^3 F_{1j} (T_c - \Delta T_f)^j &amp; \text{for } T_{S0} \leq T_c - \Delta T_f &lt; T_{S1} \\ \sum_{j=0}^3 F_{2j} (T_c - \Delta T_f)^j &amp; \text{for } T_{S1} \leq T_c - \Delta T_f &lt; T_{S2} \\ \sum_{j=0}^3 F_{3j} (T_c - \Delta T_f)^j &amp; \text{for } T_{S2} \leq T_c - \Delta T_f &lt; T_{ar} \end{cases} \quad (4.4.2)</math>
+
+<math display="block">\chi_z = \left[ \frac{YAWC(K) - YAWC(K-1)}{TYAW(K) - TYAW(K-1)} \right] (T_c - TYAW(K)) + YAWC(K) \quad (4.4.2.1)</math>
+
+<p>for <math>\chi_z</math> computations <math>K = 2, 3, 4 \dots 25</math> and<br/>
+<math>TYAW(K-1) \leq T_c &lt; TYAW(K)</math></p>
+
+<p><u>S-IB Engine Out Freeze Time</u></p>
+
+<math display="block">T_{EO} = T_{as} - T_l \quad (4.4.3)</math>
+
+<math display="block">\Delta T_f = \begin{cases} B_{11} T_{EO} + B_{12} &amp; T_{EO} &lt; T_{f1} \\ B_{21} T_{EO} + B_{22} &amp; T_{f1} \leq T_{EO} &lt; T_{f2} \\ 0 &amp; T_{f2} \leq T_{EO} \end{cases} \quad (4.4.4)</math>
+
+
+<!-- Page 34 -->
+
+<h3><u>S-IB Engine Out Freeze Time (Continued)</u></h3><math display="block">T_{MEFRZ} = T_c + \Delta T_f \quad (4.4.5)</math><math display="block">T_{ar} = T_{ar} + \Delta T_f - C_{ar1} \quad \text{if } T_{EO} &lt; T_{far} \quad (4.4.6) \quad *</math><math display="block">T_{ar} = T_{ar} + \Delta T_f \quad \text{if } T_{far} \leq T_{EO} \quad *</math><h3><u>First Phase Time-to-go Calculation</u></h3><math display="block">\tau_1 = V_{ex1} \left( \frac{M}{F} \right)_S \quad (4.4.7)</math><math display="block">T_{1i} = T_{1i} - \Delta T \quad (4.4.8)</math><h3><u>Second Phase Time-to-go Initialization</u></h3><math display="block">T_{1i} = 0.0 \quad (4.4.9)</math><math display="block">\alpha_f = \frac{\tau_{10}}{T_{10} + \tau_1} \quad (4.4.10)</math><math display="block">\tau_{3N} = \frac{M_{GR} - \alpha_f \dot{M}_2 T_{10}}{\dot{M}_3} \quad (4.4.11)</math><h3><u>Second Phase Artificial <math>\tau</math> Calculations</u></h3><math display="block">\tau_{3M} = V_{ex3} \left( \frac{M}{F} \right)_S \quad (4.4.12)</math><math display="block">\tau_{3K} = \tau_{3N} - P_C \quad (4.4.13)</math><math display="block">\tau_3 = \tau_{3K} + \left( \tau_{3M} - \tau_{3K} \right) \left( \frac{P_C}{P_{CMR}} \right)^4 \quad (4.4.14) \quad *</math><math display="block">P_C = P_C + \Delta T \quad (4.4.15)</math>
+
+<!-- Page 35 -->
+
+<h3><u>Second Phase Time-to-go Calculations</u></h3><math display="block">\tau_3 = V_{ex3} \left( \frac{M}{F} \right)_S \quad (4.4.16)</math><math display="block">T_{3i} = T_{3i} - \Delta T \quad (4.4.17)</math><h3><u>Transformation of Position and Velocity to 4-System</u></h3><math display="block">\overline{R}_4 = [MS4] \overline{R}_S \quad (4.4.18)</math><math display="block">\overline{V}_4 = [MS4] \overline{V}_S \quad (4.4.19)</math><h3><u>IGM Intermediate Parameters</u></h3><math display="block">L_1 = V_{ex1} \ln \left( \frac{\tau_1}{\tau_1 - T_{1i}} \right) \quad (4.4.20)</math><math display="block">J_1 = L_1 \tau_1 - V_{ex1} T_{1i} \quad (4.4.21)</math><math display="block">S_1 = L_1 T_{1i} - J_1 \quad (4.4.22)</math><math display="block">Q_1 = S_1 \tau_1 - \frac{1}{2} V_{ex1} T_{1i}^2 \quad (4.4.23)</math><math display="block">P_1 = J_1 \tau_1 - \frac{1}{2} V_{ex1} T_{1i}^2 \quad (4.4.24)</math><math display="block">U_1 = Q_1 \tau_1 - \frac{1}{6} V_{ex1} T_{1i}^3 \quad (4.4.25)</math><math display="block">L'_3 = V_{ex3} \ln \left( \frac{\tau_3}{\tau_3 - T_{3i}} \right) \quad (4.4.26)</math>
+
+<!-- Page 36 -->
+
+<h3><u>IGM Intermediate Parameters (Continued)</u></h3><math display="block">L'_y = L_1 + L'_3 \quad (4.4.27)</math><math display="block">J'_3 = L'_3 \tau_3 - V_{ex3} T_{3i} \quad (4.4.28)</math><h3><u>Total Time-to-go Prediction</u></h3><math display="block">T^* = T_{1i} + T_{3i} \quad (4.4.29)</math><h3><u>Range Angle</u></h3><math display="block">\phi_i = \text{Arctan} \left( \frac{Z_4}{X_4} \right) \quad (4.4.30)</math><h3><u>Predicted Terminal Range Angle</u></h3><math display="block">\delta_2 = V T^* - J'_3 + L'_y T_{3i} - \left( \frac{ROV}{V_{ex3}} \right) \left[ \left( \tau_1 - T_{1i} \right) L_1 + \left( \tau_3 - T_{3i} \right) L'_3 \right] \left[ L'_y + V - V_T \right] \quad (4.4.31)</math><math display="block">\phi_{iT} = \left( \frac{1}{R_T} \right) \left( S_1 + \delta_2 \right) \frac{\cos \Theta_T}{\pi} \quad (4.4.32)</math><math display="block">\phi_T = \phi_i + \phi_{iT} \quad (4.4.33)</math><h3><u>Terminal Position, Velocity, and Gravity</u></h3><math display="block">X_{VT} = R_T \quad (4.4.34)</math><math display="block">\dot{X}_{VT} = V_T \sin \Theta_T \quad (4.4.35)</math>
+
+<!-- Page 37 -->
+
+<p><u>Terminal Position, Velocity, and Gravity (Continued)</u></p><math display="block">\dot{Y}_{VT} = 0 \quad (4.4.36)</math><math display="block">\dot{Z}_{VT} = V_T \cos \theta_T \quad (4.4.37)</math><math display="block">\ddot{X}_{VgT} = G_T \quad (4.4.38)</math><math display="block">\ddot{Y}_{VgT} = 0 \quad (4.4.39)</math><math display="block">\ddot{Z}_{VgT} = 0 \quad (4.4.40)</math><math display="block">\phi_T = \phi_T \quad (4.4.41)</math><math display="block">[MSV] = [M4V][MS4] \quad (4.4.42)</math><math display="block">\overline{R_V} = [M4V] \overline{R_4} \quad (4.4.43)</math><math display="block">\overline{V_V} = [M4V] \overline{V_4} \quad (4.4.44)</math><math display="block">\overline{G_V} = [MSV] \overline{G_S} \quad (4.4.45)</math><p><u>Estimated Velocity-to-be-gained</u></p><math display="block">\overline{G_V^*} = \frac{1}{2} \left( \overline{G_{TV}} + \overline{G_V} \right) \quad (4.4.46)</math><math display="block">\overline{\Delta V_V'} = \overline{V_{TV}} - \overline{V_V} - T^* \overline{G_V^*} \quad (4.4.47)</math>
+
+<!-- Page 38 -->
+
+<p><u>Improved Estimate of Total Time-to-go</u></p><math display="block">\Delta L_3 = \frac{1}{2} \left[ \frac{(\Delta V'_V)^2}{L'_y} - L'_y \right] \quad (4.4.48)</math><math display="block">L_3 = L'_3 + \Delta L_3 \quad (4.4.49)</math><math display="block">\Delta T'_3 = \Delta L_3 \left( \frac{\tau_3 - T_{3i}}{V_{ex3}} \right) \quad (4.4.50)</math><p>*</p><math display="block">T_{3i} = T_{3i} + \Delta T'_3 \quad (4.4.52)</math><math display="block">T^* = T_{1i} + T_{3i} \quad (4.4.53)</math><p><u>Improved Estimate of Velocity-to-be-gained</u></p><math display="block">\overline{\Delta V}_V = \overline{\Delta V}'_V - \Delta T'_3 \overline{G}^*_V \quad (4.4.54)</math><p><u>Preliminary Guidance Commands Satisfying Velocity Constraint</u></p><math display="block">\tilde{\chi}_y = \text{Arctan} \left( \frac{\Delta \dot{\chi}_V}{\Delta \dot{z}_V} \right) \quad (4.4.55)</math><math display="block">\tilde{\chi}_z = \text{Arctan} \left[ \frac{\Delta \dot{\chi}_V}{\left( \Delta \dot{\chi}_V^2 + \Delta \dot{z}_V^2 \right)^{1/2}} \right] \quad (4.4.56)</math>
+
+<!-- Page 39 -->
+
+
+<p><u>Position Correction Terms</u></p>
+
+<math display="block">J_3 = J'_3 + T_{3i} \Delta L_3 \quad (4.4.51) \quad *</math>
+
+<math display="block">S_3 = L_3 T_{3i} - J_3 \quad (4.4.57)</math>
+
+<math display="block">Q_3 = S_3 \tau_3 - \frac{1}{2} V_{ex3} T_{3i}^2 \quad (4.4.58)</math>
+
+<math display="block">L_y = L_1 + L_3 \quad (4.4.59)</math>
+
+<math display="block">J_y = J_1 + J_3 + L_3 T_{1i} \quad (4.4.60)</math>
+
+<math display="block">S_y = S_1 - J_3 + L_y T_{3i} \quad (4.4.61)</math>
+
+<math display="block">Q_y = Q_1 + Q_3 + S_3 T_{1i} + J_1 T_{3i} \quad (4.4.62) \quad *</math>
+
+<math display="block">K_y = \frac{L_y}{J_y} \quad (4.4.63)</math>
+
+<math display="block">D_y = S_y - K_y Q_y \quad (4.4.64)</math>
+
+<math display="block">\Delta Y_V = Y_V + \dot{Y}_V T^* + \frac{1}{2} \ddot{Y}_V^{*2} T^{*2} + S_y \sin \tilde{\chi}_z \quad (4.4.65)</math>
+
+<math display="block">K_3 = \frac{\Delta Y_V}{D_y \cos \tilde{\chi}_z} \quad (4.4.66)</math>
+
+<math display="block">K_4 = K_y K_3 \quad (4.4.67)</math>
+
+<math display="block">P_3 = J_3 \left( \tau_3 + 2T_{1i} \right) - \frac{1}{2} V_{ex3} T_{3i}^2 \quad (4.4.68)</math>
+
+<math display="block">U_3 = Q_3 \left( \tau_3 + 2T_{1i} \right) - \frac{1}{6} V_{ex3} T_{3i}^3 \quad (4.4.69)</math>
+
+<math display="block">L_p = L_y \cos \tilde{\chi}_z \quad (4.4.70)</math>
+
+
+<!-- Page 40 -->
+
+<p><u>Position Correction Terms (Continued)</u></p><math display="block">C_2 = \cos \tilde{\chi}_z + K_3 \sin \tilde{\chi}_z \quad (4.4.71)</math><math display="block">C_4 = K_4 \sin \tilde{\chi}_z \quad (4.4.72)</math><math display="block">J_p = J_y C_2 - C_4 \left( P_1 + P_3 + L_3 T_{1i}^2 \right) \quad (4.4.73)</math><math display="block">S_p = S_y C_2 - Q_y C_4 \quad (4.4.74)</math><math display="block">Q_p = Q_y C_2 - C_4 \left( U_1 + U_3 + S_3 T_{1i}^2 + T_{3i} P_1 \right) \quad (4.4.75)</math><math display="block">K_p = \frac{L_p}{J_p} \quad (4.4.76)</math><math display="block">D_p = S_p - K_p Q_p \quad (4.4.77)</math><math display="block">\Delta X_V = X_V - X_{VT} + \dot{X}_V T^* + \frac{1}{2} \ddot{X}_{Vg}^* T^{*2} + S_p \sin \tilde{\chi}_y \quad (4.4.78)</math><math display="block">K_1 = \frac{\Delta X_V}{D_p \cos \tilde{\chi}_y} \quad (4.4.79)</math><math display="block">K_2 = K_p K_1 \quad (4.4.80)</math><p><u>Corrected Guidance Commands in 4-System Satisfying<br/>Position Constraint</u></p><math display="block">X_{y4} = \tilde{X}_y - \frac{1}{\pi} \left( K_1 - K_2 \Delta T_N \right) - \phi_T - \frac{1}{2} \quad (4.4.81)</math><math display="block">X_{z4} = \tilde{X}_z - \frac{1}{\pi} \left( K_3 - K_4 \Delta T_N \right) \quad (4.4.82)</math>
+
+<!-- Page 41 -->
+
+
+<p><u>Steering Misalignment Correction Terms</u></p>
+
+<math display="block">SMCY = SMCY + SMCG \left\{ \frac{\ddot{z}_m + \ddot{x}_m \tan \left[ \frac{1}{2} \left( \chi_y + [\chi_y]_{\text{past}} \right) - SMCY \right]}{\ddot{x}_m - \ddot{z}_m \tan \left[ \frac{1}{2} \left( \chi_y + [\chi_y]_{\text{past}} \right) - SMCY \right]} \right\} \frac{\Delta T}{\pi} \quad (4.4.83)</math>
+
+<math display="block">SMCZ = SMCZ + SMCG \left\{ \frac{\sin \left[ \frac{1}{2} \left( \chi_z + [\chi_z]_{\text{past}} \right) - SMCZ \right] - \left( \frac{M}{F} \right) \ddot{y}_m}{\cos \left[ \frac{1}{2} \left( \chi_z + [\chi_z]_{\text{past}} \right) - SMCZ \right]} \right\} \frac{\Delta T}{\pi} \quad (4.4.84)</math>
+
+<p><u>Thrust Vector Transformation</u></p>
+
+<math display="block">\overline{F}'_S = [MS4]^T \begin{bmatrix} \cos \chi_{y_4} &amp; \cos \chi_{z_4} \\ &amp; \sin \chi_{z_4} \\ -\sin \chi_{y_4} &amp; \cos \chi_{z_4} \end{bmatrix} \quad (4.4.85)</math>
+
+<p><u>Final Guidance Commands in S-System Corrected for Thrust Misalignment</u></p>
+
+<math display="block">\chi_y = \text{Arctan} \left( \frac{-F'_S z}{F'_S x} \right) + SMCY \quad (4.4.86)</math>
+
+<math display="block">\chi_z = \text{Arctan} \left[ \frac{F'_S y}{(1 - F'^2_{Sy})^{1/2}} \right] + SMCZ \quad (4.4.87)</math>
+
+<p><u>High Speed Loop for S-IVB Cutoff</u></p>
+
+<math display="block">\Delta T_b = \Delta V_b \Delta T \left( \frac{1}{V-V'} \right) \quad (4.4.88)</math>
+
+<math display="block">T_{3i} = T_{3i} - \Delta T_b \quad (4.4.89)</math>
+
+
+<!-- Page 42 -->
+
+<p><u>High Speed Loop for S-IVB Cutoff (Continued)</u></p><math display="block">T_{3i} = T_{3i} - \Delta T \quad (4.4.90)</math><math display="block">A'' = \frac{[(V-V') \frac{\Delta T'}{\Delta T} - (V'-V'') \frac{\Delta T}{\Delta T}]}{(\Delta T' + \Delta T)} \quad (4.4.91)</math><math display="block">A' = A'' \Delta T + \left( \frac{V-V'}{\Delta T} \right) \quad (4.4.92)</math><math display="block">T_{3i} = \frac{V_T - \Delta V_b - V}{A' + A'' T_{3i}} \quad (4.4.93) \quad *</math><math display="block">T_{CO} = T_{3i} + T_{as} \quad (4.4.94)</math>
+
+<!-- Page 43 -->
+
+
+<h3><u>Position for Orbital Guidance</u></h3>
+
+<math display="block">\overline{R}_{OG} = (\overline{R})_t + T_{SON}(\overline{V})_t \quad (5.4.1)</math>
+
+<h3><u>Integration Scheme</u></h3>
+
+<math display="block">\left\{ \begin{array}{l} (\overline{R})_{t-4} = (\overline{R})_{t-8} + 4(\overline{V})_{t-8} + 8(\overline{A})_{t-8} \\ (\overline{V})_{t-4} = (\overline{V})_{t-8} + 4(\overline{A})_{t-8} \end{array} \right. \quad (5.4.2)</math>
+
+<math display="block">(\overline{A})_{t-4} = (\overline{G})_{t-4} + (\overline{A}_D)_{t-4} \quad (5.4.3)</math>
+
+<math display="block">\left\{ \begin{array}{l} (\overline{R}_p)_t = (\overline{R})_{t-8} + 8(\overline{V})_{t-8} + 32(\overline{A})_{t-4} \\ (\overline{V}_p)_t = (\overline{V})_{t-4} + 8(\overline{A})_{t-4} \end{array} \right. \quad (5.4.4)</math>
+
+<math display="block">(\overline{A}_p)_t = (\overline{G}_p)_t + (\overline{A}_{Dp})_t \quad (5.4.5)</math>
+
+<math display="block">\left\{ \begin{array}{l} (\overline{\Delta R})_t = 8(\overline{V})_{t-8} + \frac{32}{3} [(\overline{A})_{t-8} + 2(\overline{A})_{t-4}] \\ \quad + (\overline{\Delta R}_{SAV})_{t-8} + 8(\overline{\Delta V}_{SAV})_{t-8} \\ (\overline{R})_t = (\overline{R})_{t-8} + (\overline{\Delta R})_t \\ (\overline{\Delta V})_t = \frac{4}{3} [(\overline{A})_{t-8} + 4(\overline{A})_{t-4} + (\overline{A}_p)_t] + (\overline{\Delta V}_{SAV})_{t-8} \\ (\overline{V})_t = (\overline{V})_{t-8} + (\overline{\Delta V})_t \end{array} \right. \quad (5.4.6)</math>
+
+<math display="block">(\overline{A})_t = (\overline{G})_t + (\overline{A}_D)_t \quad (5.4.7)</math>
+
+<h3><u>Drag Acceleration</u></h3>
+
+<math display="block">h = R - a_e + (a_e - b) \left( \frac{Y_G}{R} \right)^2 \quad (5.4.8)</math>
+
+
+<!-- Page 44 -->
+
+
+<p><u>Drag Acceleration (Continued)</u></p>
+
+<math display="block">\rho = \begin{cases} 0 &amp; \text{for } h &gt; h_2 \\ \rho_0 + \rho_1 h + \rho_2 h^2 + \rho_3 h^3 + \rho_4 h^4 + \rho_5 h^5 &amp; \text{for } h_2 \geq h &gt; h_1 \\ \rho_c &amp; \text{for } h_1 &gt; h \end{cases} \quad (5.4.9)</math>
+
+<math display="block">\begin{cases} \overline{V}_r = \overline{V}_S - \overline{\omega}_{ES} \times \overline{R}_S \\ V_r = (V_{rx}^2 + V_{ry}^2 + V_{rz}^2)^{1/2} \end{cases} \quad (5.4.10)</math>
+
+<math display="block">\cos \alpha = \frac{1}{V_r} [V_{rx} \cos \theta_y \cos \theta_z + V_{ry} \sin \theta_z - V_{rz} \sin \theta_y \cos \theta_z] \quad (5.4.11)</math>
+
+<math display="block">C_D = \sum_{j=1}^5 C_{Dj} (\cos \alpha)^{j-1} \quad (5.4.12)</math>
+
+<math display="block">\overline{A}_{DS} = - \rho C_D K_D V_r \overline{V}_r \quad (5.4.13)</math>
+
+<p><u>Inertial Guidance Commands</u></p>
+
+<math display="block">\begin{cases} \chi_x = \text{ROLLA} \\ \chi_y = \text{SPITCH} \\ \chi_z = \text{SYAW} \end{cases} \quad (5.5.1)</math>
+
+<p><u>Track Local Reference Guidance Commands</u></p>
+
+<math display="block">\overline{R}_4 = [\text{MS4}] \overline{R}_S \quad (5.5.2)</math>
+
+<math display="block">R_4 = (X_4^2 + Z_4^2)^{1/2} \quad (5.5.3)</math>
+
+
+<!-- Page 45 -->
+
+
+<p><u>Track Local Reference Guidance Commands (Continued)</u></p>
+
+<math display="block">\begin{cases} \sin \chi_{y_4} = \text{SPITCH} \begin{pmatrix} -Z_4 \\ R_4 \end{pmatrix} + \text{CPITCH} \begin{pmatrix} -X_4 \\ R_4 \end{pmatrix} \\ \cos \chi_{y_4} = \text{CPITCH} \begin{pmatrix} -Z_4 \\ R_4 \end{pmatrix} - \text{SPITCH} \begin{pmatrix} -X_4 \\ R_4 \end{pmatrix} \end{cases} \quad (5.5.4)</math>
+
+<math display="block">\begin{cases} \sin \chi_{z_4} = \text{SYAW} \\ \cos \chi_{z_4} = \text{CYAW} \end{cases} \quad (5.5.5)</math>
+
+<math display="block">\chi_x = \text{ROLLA} \quad (5.5.6)</math>
+
+<p><u>Inertial Hold Guidance Commands (upon return of control from S/C to IU)</u></p>
+
+<math display="block">\begin{cases} \chi_x = \theta'_x \\ \chi'_x = \theta'_x \\ \chi_y = \theta'_y \\ \chi'_y = \theta'_y \\ \chi_z = \theta'_z \\ \chi'_z = \theta'_z \end{cases} \quad (5.5.7)</math>
+
+<p><u>Track Local Horizontal Guidance Commands (upon return of control from S/C to IU)</u></p>
+
+<math display="block">\chi_x = \theta'_x \quad (5.5.8)</math>
+
+<math display="block">\overline{P}_S = \begin{bmatrix} \cos \theta'_y \cos \theta'_z \\ \sin \theta'_z \\ -\sin \theta'_y \cos \theta'_z \end{bmatrix} \quad (5.5.9)</math>
+
+
+<!-- Page 46 -->
+
+
+<p><u>Track Local Horizontal Guidance Commands (upon return of control from S/C to IU)</u></p>
+
+<math display="block">\overline{P}_4 = \begin{bmatrix} P_{4x} \\ P_{4y} \\ P_{4z} \end{bmatrix} = [MS4] \overline{P}_S \quad (5.5.10)</math>
+
+<math display="block">\begin{cases} \sin \chi_{z_4} = P_{4y} \\ \cos \chi_{z_4} = (1 - \sin^2 \chi_{z_4})^{1/2} \end{cases} \quad (5.5.11)</math>
+
+<math display="block">\begin{cases} \phi_{SO} = \text{Arctan} \left( \frac{Z_4}{X_4} \right) \\ \phi_P = \text{Arctan} \left( \frac{-P_{4z}}{P_{4x}} \right) \\ \alpha_{LH} = \phi_{SO} + \phi_P + 0.5 \end{cases} \quad (5.5.12)</math>
+<p style="text-align: right;">*</p>
+
+<math display="block">\begin{cases} \text{SPITCH} = \sin \alpha_{LH} \\ \text{CPITCH} = \cos \alpha_{LH} \\ \text{SYAW} = \sin \chi_{z_4} \\ \text{CYAW} = \cos \chi_{z_4} \\ \text{ROLLA} = \Theta'_x \end{cases} \quad (5.5.13)</math>
+
+<p><u>Telemetry Station Acquisition Test</u></p>
+
+<math display="block">\Theta_R = \omega_E T_{as} \quad (5.6.1)</math>
+
+
+<!-- Page 47 -->
+
+<p><u>Telemetry Station Acquisition Test (Continued)</u></p><math display="block">\begin{bmatrix} X_A \\ Y_A \\ Z_A \end{bmatrix} = [MSA] \begin{bmatrix} X_S \\ Y_S \\ Z_S \end{bmatrix} \quad (5.6.2)</math><math display="block">\overline{R}_A = \begin{bmatrix} X_A \\ Y_A \\ Z_A \end{bmatrix} \quad (5.6.3)</math><math display="block">\overline{C}_A(i) = \begin{bmatrix} C_{Ax}(i) \\ C_{Ay}(i) \\ C_{Az}(i) \end{bmatrix} \quad (5.6.4)</math><math display="block">d_A(i) = \overline{R}_A \cdot \overline{C}_A(i) - R_{STA} \quad (5.6.5)</math>
+
+<!-- Page 48 -->
+
+<p>(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)</p>
+
+<!-- Page 49 -->
+
+<h3><u>Attitude Error Commands</u></h3><math display="block">\begin{cases} \chi'_x &amp;= \chi_x + \Delta\chi'_x \\ \chi'_y &amp;= \chi_y + \Delta\chi'_y \\ \chi'_z &amp;= \chi_z + \Delta\chi'_z \end{cases} \quad (8.2.1)</math><math display="block">\begin{cases} \Delta Z &amp;= \theta'_z - \chi'_z \\ \text{YAW} &amp;= A_5 \Delta Z - A_4 \Delta Y \\ \Delta Y &amp;= \theta'_y - \chi'_y \\ \text{PITCH} &amp;= A_1 \Delta Y + A_2 \Delta Z \\ \Delta X &amp;= \theta'_x - \chi'_x \\ \text{ROLL} &amp;= A_6 \Delta X + A_3 \Delta Y \end{cases} \quad (8.2.2)</math><h3><u>Attitude Increments</u></h3><math display="block">\begin{cases} \Delta\chi'_x &amp;= (\chi_x - \chi'_x) / [(MLR)(\Delta T_N)] \\ \Delta\chi'_y &amp;= (\chi_y - \chi'_y) / [(MLR)(\Delta T_N)] \\ \Delta\chi'_z &amp;= (\chi_z - \chi'_z) / [(MLR)(\Delta T_N)] \end{cases} \quad (8.3.1)</math><h3><u>Gimbal-to-Body Transformation</u></h3><math display="block">\begin{cases} \chi'_{xp} &amp;= \chi'_x + \Delta\chi'_x [(MLR)(\Delta T_N)] \\ \chi'_{zp} &amp;= \chi'_z + \Delta\chi'_z [(MLR)(\Delta T_N)] \end{cases} \quad (8.3.2)</math><math display="block">\theta_{xa} = \frac{1}{2} (\chi'_{xp} + \theta'_x) \quad (8.3.3)</math><math display="block">\theta_{za} = \frac{1}{2} (\chi'_{zp} + \theta'_z) \quad (8.3.4)</math>
+
+<!-- Page 50 -->
+
+<math display="block">A_1 = SF \cos(\theta_{xa}) \cos(\theta_{za}) \quad (8.3.5)</math><math display="block">A_2 = SF \sin(\theta_{xa}) \quad (8.3.6)</math><math display="block">A_3 = SF \sin(\theta_{za}) \quad (8.3.7)</math><math display="block">A_4 = SF \sin(\theta_{xa}) \cos(\theta_{za}) \quad (8.3.8)</math><math display="block">A_5 = SF \cos(\theta_{xa}) \quad (8.3.9)</math><math display="block">A_6 = SF \quad (8.3.10)</math>
+
+<!-- Page 51 -->
+
+
+<h3><u>Computed Acceleration Profile</u></h3>
+
+<math display="block">\begin{bmatrix} \ddot{X}_S \\ \ddot{Y}_S \\ \ddot{Z}_S \end{bmatrix} = [MBS] \begin{bmatrix} \left(\frac{F}{M}\right)_c \\ 0 \\ 0 \end{bmatrix} \quad (12.2.1)</math>
+
+<h3><u>Computed Velocity Changes</u></h3>
+
+<math display="block">\left\{ \begin{array}{l} \dot{X}_S = \frac{1}{2} (\ddot{X}_S + [\ddot{X}_S]_{\text{past}}) \Delta T \\ \dot{Y}_S = \frac{1}{2} (\ddot{Y}_S + [\ddot{Y}_S]_{\text{past}}) \Delta T \\ \dot{Z}_S = \frac{1}{2} (\ddot{Z}_S + [\ddot{Z}_S]_{\text{past}}) \Delta T \end{array} \right. \quad (12.2.2)</math>
+
+<h3><u>Velocity Increments</u></h3>
+
+<math display="block">\left\{ \begin{array}{l} \Delta V_{gx} = 20G_L [\sin^2 \phi_L + \cos \omega_{E\text{as}} T_{\text{as}} \cos^2 \phi_L] \Delta T \\ \Delta V_{gy} = 20G_L \cos \phi_L [\cos A_z \sin \omega_{E\text{as}} T_{\text{as}} \\ \quad - (1 - \cos \omega_{E\text{as}} T_{\text{as}}) \sin A_z \sin \phi_L] \Delta T \\ \Delta V_{gz} = 20G_L \cos \phi_L [\sin A_z \sin \omega_{E\text{as}} T_{\text{as}} \\ \quad + (1 - \cos \omega_{E\text{as}} T_{\text{as}}) \cos A_z \sin \phi_L] \Delta T \end{array} \right. \quad (12.2.3)</math>
+
+<math display="block">\left\{ \begin{array}{l} \Delta V_x = \Delta V_{cx} + \Delta V_{fx} - \Delta V_{gx} \\ \Delta V_y = \Delta V_{cy} + \Delta V_{fy} - \Delta V_{gy} \\ \Delta V_z = \Delta V_{cz} + \Delta V_{fz} - \Delta V_{gz} \end{array} \right. \quad (12.2.4)</math>
+
+
+<!-- Page 52 -->
+
+
+<h3><u>Expected Gimbal Angles</u></h3>
+
+<math display="block">\left\{ \begin{aligned} \dot{\Theta}_{xe} &amp;= \omega_E [\sin \phi_L + \cos \phi_L \tan \Theta_{ze} \sin(\Theta_{xe} + A_z)] \\ \dot{\Theta}_{ye} &amp;= -\omega_E \cos \phi_L \sin(\Theta_{xe} + A_z) \left( \frac{1}{\cos \Theta_{ze}} \right) \\ \dot{\Theta}_{ze} &amp;= \omega_E \cos \phi_L \cos(\Theta_{xe} + A_z) \end{aligned} \right. \quad (12.2.5) \quad *</math>
+
+<math display="block">\left\{ \begin{aligned} \Delta \Theta_{xe} &amp;= \frac{1}{2} (\dot{\Theta}_{xe} + [\dot{\Theta}_{xe}]_{\text{past}}) \Delta T \\ \Delta \Theta_{ye} &amp;= \frac{1}{2} (\dot{\Theta}_{ye} + [\dot{\Theta}_{ye}]_{\text{past}}) \Delta T \\ \Delta \Theta_{ze} &amp;= \frac{1}{2} (\dot{\Theta}_{ze} + [\dot{\Theta}_{ze}]_{\text{past}}) \Delta T \end{aligned} \right. \quad (12.2.6)</math>
+
+<math display="block">\left\{ \begin{aligned} \Theta_{xe} &amp;= \Theta_{xe} + \Delta \Theta_{xe} \\ \Theta_{ye} &amp;= \Theta_{ye} + \Delta \Theta_{ye} \\ \Theta_{ze} &amp;= \Theta_{ze} + \Delta \Theta_{ze} \end{aligned} \right. \quad (12.2.7)</math>
+
+<h3><u>Attitude Errors</u></h3>
+
+<math display="block">\left\{ \begin{aligned} X''_x &amp;= X''_x + \Delta \Theta_{xe} \\ X''_y &amp;= X''_y + \Delta \Theta_{ye} \\ X''_z &amp;= X''_z + \Delta \Theta_{ze} \end{aligned} \right. \quad (12.2.8)</math>
+
+<math display="block">\left\{ \begin{aligned} \Delta X &amp;= \Theta_x - X''_x \\ \Delta Y &amp;= \Theta_y - X''_y \\ \Delta Z &amp;= \Theta_z - X''_z \end{aligned} \right. \quad (12.2.9)</math>
+
+
+<!-- Page 53 -->
+
+<h3><u>Sine-Cosine Algorithm</u></h3><math display="block">\sin \alpha = 3.1415897\alpha - 5.1673678\alpha^3 + 2.5436052\alpha^5 - 0.55839693\alpha^7 \quad (13.2.1)</math><h3><u>Arctangent Algorithm</u></h3><math display="block">\begin{aligned} \text{Arctan } V = &amp; 0.31830264V - 0.10587734V^3 \\ &amp; + 0.06160678V^5 - 0.037061733V^7 \\ &amp; + 0.016760072V^9 - 0.00373097V^{11} \end{aligned} \quad (13.3.1)</math><h3><u>Natural Logarithm Algorithm</u></h3><math display="block">\begin{aligned} \ln \alpha' = &amp; 0.99990167(\alpha' - 1.0) - 0.49787544(\alpha' - 1.0)^2 \\ &amp; + 0.31765005(\alpha' - 1.0)^3 - 0.19376149(\alpha' - 1.0)^4 \\ &amp; + 0.08556927(\alpha' - 1.0)^5 - 0.01833831(\alpha' - 1.0)^6 \end{aligned} \quad (13.4.1)</math><math display="block">\begin{aligned} \ln \alpha = &amp; \ln(2.0^N \alpha') = N \ln 2.0 + \ln \alpha' = \\ &amp; 0.6931471806 N + \ln \alpha' \end{aligned} \quad (13.4.2)</math><h3><u>Square Root Algorithm</u></h3><math display="block">x_{i+1} = 0.5(x_i + \frac{X}{x_i}), \quad i = 0, 1, 2, 3, \dots \quad (13.5.1)</math><h3><u>Inverse Square Root Algorithm</u></h3><math display="block">x_{i+1} = 0.5x_i(3.0 - x_i^2 X), \quad i = 0, 1, 2, 3, \dots \quad (13.6.1)</math><h3><u>Vector Dot Product</u></h3><math display="block">\bar{A} \cdot \bar{B} = A_x B_x + A_y B_y + A_z B_z \quad (13.7.1)</math>
+
+<!-- Page 54 -->
+
+<p><u>Vector Cross Product</u></p><math display="block">\bar{C} = \begin{bmatrix} C_x \\ C_y \\ C_z \end{bmatrix} = \begin{bmatrix} A_y B_z - A_z B_y \\ A_z B_x - A_x B_z \\ A_x B_y - A_y B_x \end{bmatrix} = \bar{A} \times \bar{B}</math><p>(13.8.1)</p>

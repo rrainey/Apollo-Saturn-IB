@@ -3,7 +3,7 @@
 **Date:** 2026-08-26  
 **Context:** After H-1/J-2 Table 11, LES/ullage Table 12, and `lambda_0_deg`→119, GCS \|V\|≈7802 vs TM 7781. Remaining: Chi_Z bias ~+8–12° vs TM CHIY≈−4°, late-looking `nIGMMode`.
 
-**IU reference:** LVDC EDD `ApolloA/reference/satinstunitibm_*.pdf` (esp. vol.1 §2.3 matrices, §4.4 IGM/SMC/Chi).  
+**IU reference:** LVDC EDD `reference/LVDC-EDD/satinstunitibm_*.pdf` (esp. vol.1 §2.3 matrices, §4.4 IGM/SMC/Chi).  
 **TM presets:** Table 3B (+ AP note).
 
 ---
@@ -104,7 +104,7 @@ Chi already tracks TM pitch from ~190 s while `nIGMMode=0`. Mode 0→1 @ ~473 s 
 
 ## 6. Suspect 1 — IU EDD §4.4.5 vs stack (2026-08-26)
 
-### EDD formulas (satinstunitibm_5)
+### EDD formulas (`reference/LVDC-EDD/satinstunitibm_5.pdf`)
 
 \[
 \overline{F_S'} = [\mathrm{MS4}]^T

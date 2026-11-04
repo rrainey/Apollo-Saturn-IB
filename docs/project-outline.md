@@ -31,7 +31,7 @@ Compare: `npm run as205:compare-final -- --ref …/reference-1000s-final.json --
 
 Retune **both** Simulink/`batch_sim` and Obliq with launch / vehicle / guidance parameters from:
 
-`reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md` — *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision I* (10 Sep 1968).
+`reference/NASA-TM-X-62831/NASA-TM-X-62831.pdf` — *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision I* (10 Sep 1968).
 
 Rerun both; compare Obliq↔Simulink `final.json` with the same 0.5% primary-field gate.
 
@@ -68,7 +68,7 @@ Walk discrepancies early→late; correct modeling. Simulink optional diagnostic.
 | `src/batch/` | Headless closed-loop driver |
 | `src/support/` | Host math and support code |
 | `model/provenance/saturn_ib_stack.mdl` | Authoritative MDL (copy also under `obliq-2/saturn-1B/`) |
-| `reference/NASA-TM-X-62831/` | Phase 2 params + Phase 3 trajectory |
+| `reference/NASA-TM-X-62831/NASA-TM-X-62831.pdf` | Phase 2 params + Phase 3 trajectory |
 
 ### RTW root contract (drop-in)
 
