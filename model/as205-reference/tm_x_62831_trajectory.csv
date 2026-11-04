@@ -1,5 +1,5 @@
 # NASA-TM-X-62831 AS-205/CSM-101 Operational Trajectory — Tables 5/6/7 (SI)
-# Source: ApolloA/reference/chandra_out/NASA-TM-X-62831/NASA-TM-X-62831.md
+# Source: reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md
 # Epoch: t_flight_sec after FIRST MOTION (GRR=-5s). Powered flight window t<=700s.
 # h_m [m], Vs_mps space-fixed [m/s], mass_kg [kg], thrust_N [N]
 # Mass: LES jettison t=163.11 (8986 lbm); ullage cases t=156.41 (214 lbm). Table12 sep=138709.9 kg, GCS=30734.1 kg.

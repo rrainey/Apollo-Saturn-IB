@@ -1,6 +1,6 @@
 /**
  * AS-205/CSM-101 operational trajectory presettings from NASA-TM-X-62831
- * (markdown extract: ApolloA/reference/chandra_out/NASA-TM-X-62831/NASA-TM-X-62831.md).
+ * (markdown extract: reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md).
  *
  * Variable **names** follow `lib_SaturnIB/model/AS205_presettings.m` (TN-era schema)
  * plus LVDC mask / mass symbols used by `saturn_ib_stack.mdl`.

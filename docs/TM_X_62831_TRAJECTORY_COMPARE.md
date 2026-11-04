@@ -1,6 +1,6 @@
 # TM-X-62831 Tables 5/6/7 vs Obliq tm904
 
-**TM source:** `ApolloA/reference/chandra_out/NASA-TM-X-62831/NASA-TM-X-62831.md` (SI HTML tables)
+**TM source:** `reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md` (SI HTML tables)
 **TM CSV:** `model/as205-reference/tm_x_62831_trajectory.csv`
 **Sim:** `artifacts/tm904_h1_table11_dense.csv` (H-1+J-2 Table 11 scales/flow; dense 1 s S-IB / 5 s S-IVB)
 **Residuals:** `artifacts/tm904_vs_tm_x_62831_residuals.csv` (sim − TM, interpolated to TM times)

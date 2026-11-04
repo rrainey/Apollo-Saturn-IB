@@ -1,6 +1,6 @@
 # NASA-TM-X-62831 AS-205/CSM-101 Operational Trajectory — key events
 # Times are seconds after FIRST MOTION (not GRR). GRR = first_motion - 5 s.
-# Source: NASA-TM-X-62831.md summary + TABLE 1 / TABLE 2 / TABLE 3–4 end conditions.
+# Source: reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md summary + TABLE 1 / TABLE 2 / TABLE 3–4 end conditions.
 event,t_flight_sec,h_km,Vs_mps,gamma_deg,range_km,notes
 first_motion,0,,,,,GRR at -5 s
 S-IB_propellant_sensors,133.71,,,,,TABLE 1
