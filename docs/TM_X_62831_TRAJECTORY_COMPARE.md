@@ -1,5 +1,18 @@
 # TM-X-62831 Tables 5/6/7 vs Obliq tm904
 
+> **Status (2026-11-06):** the residual tables and "Interpretation" section
+> below describe the pre-fix archival sim `tm904_h1_table11_dense.csv`.  Since
+> then, the LVDC Chi path has been corrected in two places (gravity averaging
+> for ΔX_V/ΔY_V per EDD 4.4.78/4.4.65; SMCY/SMCZ all-radians convention per
+> EDD 4.4.83/4.4.84 — see `LVDA_LVDC.c` block comments at `:67`, `:2616`,
+> `:2929`, `:3510`, `:3631`).  Current GCS residuals on `AS-205-tm-x-62831`:
+> **ΔV = −12.2 m/s** (was −239 m/s), **Δh = +5.9 km** (was −8 km, sign flipped).
+> The velocity residual is nearly closed.  The **altitude bias (vehicle
+> cuts off ~6 km high)** is the open item — likely upstream in the S-IVB
+> mass/thrust modelling described in the "S-IVB mass deep-dive" section
+> below, which remains relevant.  The Chi-freeze symptom that previously
+> masked these numbers is now gated by `tests/batch/chi_freeze.sh`.
+
 **TM source:** `reference/NASA-TM-X-62831/chandra/NASA-TM-X-62831.md` (SI HTML tables)
 **TM CSV:** `model/as205-reference/tm_x_62831_trajectory.csv`
 **Sim:** `artifacts/tm904_h1_table11_dense.csv` (H-1+J-2 Table 11 scales/flow; dense 1 s S-IB / 5 s S-IVB)

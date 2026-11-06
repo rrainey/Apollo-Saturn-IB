@@ -55,8 +55,17 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Constant3 = 0; /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Constant3 */
     model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Phase_2 = 2; /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Phase_2 */
     model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Ground = 0; /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Ground */
-    model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Constant9 = 0.509295817894; /* LVDC_Iterative_Guidance_Mode_SMCY_Constant9 */
-    model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Constant8 = 0.509295817894; /* LVDC_Iterative_Guidance_Mode_SMCZ_Constant8 */
+    /* EDD 4.4.83 / 4.4.84: the (ΔT/π) factor is the pi-rad-convention form.
+     * The Angle_Conversion3 block (:3377-3378) feeds Chi_y/Chi_z into the SMC
+     * loops already converted to RADIANS, so the subtraction (Gain - SMCZ)
+     * and C sin()/cos() operate in rad.  Multiplying by π through the
+     * pirads_to_radians output block then produced a π× inflated data-store
+     * value and drove SMCZ to grow monotonically to ~0.065 rad instead of
+     * settling near zero.  Switching to the all-radians convention: this
+     * factor becomes ΔT = 1.6 (not ΔT/π), and the ·π at :3506/:3627 is
+     * removed.  See diagnostic probe notes & IGM_CHI_DIVERGENCE.md. */
+    model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Constant9 = 1.6; /* ΔT_sec (was 1.6/π in pi-rad form) */
+    model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Constant8 = 1.6; /* ΔT_sec (was 1.6/π in pi-rad form) */
     model->signals.LVDC_Iterative_Guidance_Mode_XYZdot_VT_mps[0] = 0;
     model->signals.LVDC_Iterative_Guidance_Mode_XYZdot_VT_mps[1] = 0;
     model->signals.LVDC_Iterative_Guidance_Mode_XYZdot_VT_mps[2] = PARAM_V_T_mps;
@@ -2609,7 +2618,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Selector2 */
             // Selector block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Selector2 indices=[1]
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Selector2 = model->signals.LVDC_Iterative_Guidance_Mode_Product10[1];
+            /* EDD 4.4.65: ΔY_V uses averaged y-gravity Ÿ*_V = (G_TV_y + G_V,y)/2.
+             * Generator selects raw Product10[1]; patch averages with target-frame
+             * terminal gravity XYZdotdot_VT_mps2[1] (= 0 by 4.4.39) before the
+             * downstream Product4·Gain2 chain multiplies by T_star² and 0.5. */
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Selector2 = (model->signals.LVDC_Iterative_Guidance_Mode_XYZdotdot_VT_mps2[1] + model->signals.LVDC_Iterative_Guidance_Mode_Product10[1]) * 0.5;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2920,7 +2933,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Selector5 */
             // Selector block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Selector5 indices=[0]
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Selector5 = model->signals.LVDC_Iterative_Guidance_Mode_Product10[0];
+            /* EDD 4.4.78: ΔX_V uses averaged x-gravity Ẍ*_Vg = (G_TV_x + G_V,x)/2.
+             * Generator selects raw Product10[0]; patch averages with target-frame
+             * terminal gravity XYZdotdot_VT_mps2[0] (= PARAM_Xdotdot_VGT_mps2) before
+             * the downstream Product15·Gain2 chain multiplies by T_star² and 0.5. */
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Selector5 = (model->signals.LVDC_Iterative_Guidance_Mode_XYZdotdot_VT_mps2[0] + model->signals.LVDC_Iterative_Guidance_Mode_Product10[0]) * 0.5;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3494,8 +3511,12 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_SMCY_pirads_to_radians */
-            // Scale block: LVDC_Iterative_Guidance_Mode_SMCY_pirads_to_radians (gain = 3.141592653589793)
-            model->signals.LVDC_Iterative_Guidance_Mode_SMCY_pirads_to_radians = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Sum2 * 3.141592653589793;
+            // Scale block: LVDC_Iterative_Guidance_Mode_SMCY_pirads_to_radians
+            /* EDD 4.4.83 all-radians convention: Chi_y_last feeds in via
+             * Angle_Conversion3 (deg→rad), so the SMCY state is already in
+             * radians.  The ·π multiplier was inflating the data store by a
+             * factor of π.  See Constant9 note at :67. */
+            model->signals.LVDC_Iterative_Guidance_Mode_SMCY_pirads_to_radians = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Sum2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3590,8 +3611,9 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_SMCZ_pirads_to_radians */
-            // Scale block: LVDC_Iterative_Guidance_Mode_SMCZ_pirads_to_radians (gain = 3.141592653589793)
-            model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_pirads_to_radians = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Sum3 * 3.141592653589793;
+            // Scale block: LVDC_Iterative_Guidance_Mode_SMCZ_pirads_to_radians
+            /* EDD 4.4.84 all-radians convention: see Constant8 note at :68. */
+            model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_pirads_to_radians = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Sum3;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 

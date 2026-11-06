@@ -77,7 +77,7 @@ endif()
 # hand: see tests/gui/run_scenario.py.
 # ---------------------------------------------------------------------------
 enable_testing()
-foreach(t determinism staging_events baseline)
+foreach(t determinism staging_events baseline chi_freeze)
     add_test(NAME ${t} COMMAND ${CMAKE_SOURCE_DIR}/tests/batch/${t}.sh $<TARGET_FILE:batch_sim>)
 endforeach()
 
