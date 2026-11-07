@@ -21,18 +21,89 @@ cmake --build build -j
 
 The first configure clones Virtual AGC at a pinned commit into `third_party/virtualagc/` and applies the patches in `third_party/virtualagc-patches/`.
 
-## Run
+## Run the Interactive Simulation
 
-Both programs load their ROM and data relative to the working directory, so run them from `data/`.
+The application is currently designed to run from the  `./data/` directory.
+
+```
+$ cd data
+$ ../build/apolloa
+```
+
+1. Starting the simulation automatically initiates a 90-second power-up sequence for the ISS (the inertial platform for the AGC). The "NO ATT" lamp will illuminate. In the terminal window where you started the application, you will see these messages:
+
+```
+scene: 1362x800, 65 top-level children, 3 textures
+Opening ddd-77773-Colossus249.tsv
+Records read from ddd-77773-Colossus249.tsv:  126
+Opening ddd-77774-Colossus249.tsv
+Records read from ddd-77774-Colossus249.tsv:  125
+Opening ddd-77775-Colossus249.tsv
+Records read from ddd-77775-Colossus249.tsv:  130
+Opening ddd-77776-Colossus249.tsv
+Records read from ddd-77776-Colossus249.tsv:  136
+Opening ddd-77777-Colossus249.tsv
+Records read from ddd-77777-Colossus249.tsv:  133
+AGC downlink: configured for Colossus249 (CmOrLm=1)
+sim: launch vehicle = 0x5fdec440e070
+sim: Colossus249.bin OK (73728 bytes)
+draw_sphere name=AttitudeBall tex=1 radii=(214.732727,214.732727,214.732544) loc=(249.160477,250.419769,-260.000000)
+  scene.textures.size=2, tex_ok=1
+  tex[1]: textures/sphere-rotated.png gl_id=5
+sim FDAI nodes: ball=0x5fdec36c9530 indexer=0x5fdec36d4050 rates=(0x5fdec36d3b10,0x5fdec36d3870,0x5fdec36d35a0) errs=(0x5fdec36d2d90,0x5fdec36ca390,0x5fdec36caa60)
+  sim ch030 = 17377  [TEMP_OK=1 TURN_ON_REQ=1 IMU_FAIL=0 ICDU_FAIL=0 IMU_CAGE=0 SC_CTL=1 IMU_OPER=1 GRR=0 LIFTOFF=0 SIVB_ABORT=0]
+  sim ch031 = 37777  [IMU_PWR=1 FREE=1 HOLD=1 THC/RHC=7777]
+  sim ch032 = 77777  [PROCEED=0]
+  sim ch033 = 77777  [PIPA_FAIL=0 DNTM_FAST=0 UPTM_FAST=0 AGC_WARN=0 OSCILLATOR_FAIL=0]
+AGC downlink: first decoded list "Coast and Align"
+```
+
+2. Immediately after the simulation starts, press the **RSET** push button. This works around a bug in the current start up sequence.  If you fail to press **RESET** you may see a flashing "02" on the DSKY display -- just press **RSET** at that point and the startup sequence will proceed.
+
+3. After 15 seconds, a simulated data uplink will begin.  The "UPLINK" lamp will illuminate to confirm this.  This is a transfer of the Apollo 7 PAD LOAD parameters to the AGC.
+
+```
+  PAD LOAD STARTED at elapsed=15.010 sec (file=TM-X-62831_PAD_LOAD.txt)
+  UPLINK COMPLETE at elapsed=56.451 sec
+```
+
+4. At start+90 seconds, the "NO ATT" lamp will extinguish.  Keep monitoring the display.
+
+```
+  ISS turn-on delay complete at elapsed=90.627 sec
+  NO ATT OFF (SV arm) at elapsed=90.627 sec — state-vector uplink in +45 s (enter P00 before then; then P01→P02 after SV)
+  sim ch030 = 37377  [TEMP_OK=1 TURN_ON_REQ=0 IMU_FAIL=0 ICDU_FAIL=0 IMU_CAGE=0 SC_CTL=1 IMU_OPER=1 GRR=0 LIFTOFF=0 SIVB_ABORT=0]
+```
+
+5. At start+135 seconds, the vehicle position and velocity AGC State Vector will be uplinked to the AGC:
+
+```
+  STATE VECTOR UPLINK STARTED at elapsed=135.637 sec
+    R_ECI=[-5409656.7, 1479638.0, 3027472.3] m   |R|=6373327.5 m
+    V_ECI=[-107.8969, -394.4784, 0.0000] m/s |V|=408.9681 m/s
+    T_clock=135.637 s (from CMC zero)  id=CSM/Earth  ECADR=01501
+    preamble: V37E 00E then V71E (need P00 or P02)
+    gate: NO ATT off at 90.627 + 45 s
+  UPLINK COMPLETE at elapsed=169.654 sec
+```
+
+6. Once the state vector uplink is complete, you must prepare for launch monitoring by putting the AGC into program **P01**, "Prelaunch Initialization and Alignment"; to initiate **P01**, key in:
+
+  **VERB** **3** **7** **ENTR** **0** **1** **ENTR**
+
+7. **_P01_** will orchestrate ISS alignment for launch.  The FDAI will erect onto the correct launch pad alignment.  Once correctly aligned, the AGC will then automatically switch to program **P02**, "Gyro Compassing Program", and await the **liftoff discrete** from the Saturn Instrument Unit.
+
+8. start+297 seconds -- **Ignition**
+
+9. start+300 seconds -- **Liftoff**; the AGC will automatically switch to **P11**, "Earth Orbit Insertion Monitor Program".
+
+## Run the batch simulation
 
 ```bash
 cd data
 
 # Headless: TM-X-62831 launch profile, through insertion
 ../build/batch_sim examples/AS-205-tm-x-62831.json --run-time 960 --final final.json --csv results.csv
-
-# Interactive panel
-../build/apolloa
 ```
 
 See [docs/batch_sim.md](docs/batch_sim.md) and [docs/apolloa_gui.md](docs/apolloa_gui.md).
