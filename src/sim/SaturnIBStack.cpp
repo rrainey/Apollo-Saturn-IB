@@ -1121,6 +1121,36 @@ SaturnIBStack::NotifyNoAttLamp(bool lampOn)
     m_bNoAttLampOn = lampOn;
 }
 
+/**
+ * Format an Apollo-style mission clock from simulation elapsed time.
+ *
+ * Liftoff occurs at sim time + dLiftoffOffset_sec (default 300 s).
+ *   Before liftoff: "- HH:MM:SS"  (countdown, two-digit hours)
+ *   At/after liftoff: "+ H:MM:SS" (hours grow to as many digits as needed)
+ *
+ * Returns a pointer to a static buffer; not reentrant.
+ */
+static const char *GenerateMissionTimeString(double dSimTime_sec,
+                                             double dLiftoffOffset_sec = 300.0)
+{
+    static char szBuf[32];
+
+    double dMissionTime_sec = dSimTime_sec - dLiftoffOffset_sec;
+    bool   bPrelaunch       = dMissionTime_sec < 0.0;
+
+    long nTotal = (long) std::floor( std::fabs( dMissionTime_sec ) );
+    long nHours = nTotal / 3600;
+    int  nMin   = (int) ((nTotal / 60) % 60);
+    int  nSec   = (int) (nTotal % 60);
+
+    if (bPrelaunch) {
+        snprintf( szBuf, sizeof(szBuf), "- %02ld:%02d:%02d", nHours, nMin, nSec );
+    } else {
+        snprintf( szBuf, sizeof(szBuf), "+ %ld:%02d:%02d", nHours, nMin, nSec );
+    }
+    return szBuf;
+}
+
 static const char *ImuModeName(ISS_IMU_Mode mode)
 {
     switch (mode) {
@@ -1918,15 +1948,17 @@ void SaturnIBStack::UpdateDebugText()
     GetSimClock()->GetCurrentSimulationTime().GetDate( &nYear,  &nMonth,  &nDay, &nHour,  &nMin, &dSec );
 
     sprintf( m_szDebugText,
-        "   T %8.2f   %04.4d-%02.2d-%02.2d %02.2d:%02.2d:%05.2f\r\n"
-        "CMDX %8.3f   CMDY %8.3f   CMDZ %8.3f\r\n"
-        " OGX %8.3f    IGY %8.3f    MGZ %8.3f\r\n"
-        " LSX %8.3f    LSY %8.3f    LSZ %8.3f\r\n"
-        "FAPS %8.8d   FAPC %8.3f     CA  %d  ERRCEN %d\r\n"
-        " ERX %8.3f    ERY %8.3f    ERZ %8.3f\r\n"
-        " LAT %8.3f    LON %8.3f   H(M) %8.0f\r\n"
-        "ECIX %8.0f   ECIY %8.0f   ECIZ %8.0f\r\n"
+        "    T %s\r\n"
+        "SIM_T %8.2f   %04.4d-%02.2d-%02.2d %02.2d:%02.2d:%05.2f\r\n"
+        " CMDX %8.3f   CMDY %8.3f   CMDZ %8.3f\r\n"
+        "  OGX %8.3f    IGY %8.3f    MGZ %8.3f\r\n"
+        "  LSX %8.3f    LSY %8.3f    LSZ %8.3f\r\n"
+        " FAPS %8.8d   FAPC %8.3f     CA  %d  ERRCEN %d\r\n"
+        "  ERX %8.3f    ERY %8.3f    ERZ %8.3f\r\n"
+        "  LAT %8.3f    LON %8.3f   H(M) %8.0f\r\n"
+        " ECIX %8.0f   ECIY %8.0f   ECIZ %8.0f\r\n"
         ,
+        GenerateMissionTimeString(GetSimClock()->GetElapsedTime()),
         GetSimClock()->GetElapsedTime(),
         nYear, nMonth,  nDay, nHour, nMin, dSec,
         m_vCoarseAlignCommand_deg.x,
