@@ -77241,9 +77241,9 @@
       {
         "name": "epsilon_2_sec",
         "dataType": "double",
-        "defaultValue": "15",
+        "defaultValue": "25",
         "signalType": "double",
-        "value": 15
+        "value": 25
       },
       {
         "name": "epsilon_prime_sec",

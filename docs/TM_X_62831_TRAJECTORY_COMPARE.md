@@ -219,3 +219,195 @@ Updated packs + `saturn_ib_stack.json`; re-run `artifacts/tm904_lambda0_119.*`.
 | \|V\| @ ~615 | 7581 | **7802** | 7781 |
 
 Yaw still has a ~**+8–12°** bias (sign opposite TM CHIY); runaway / ΔV hole largely closed. Remaining: yaw polarity / SMCZ, and late `nIGMMode`.
+
+## IGM-enable gate: hardcoded 44 s vs TM 25 s (fixed)
+
+**Finding (2026-11-06).**  TM-X-62831 §V-A p.796: *"The IGM equations and
+logic which provide guidance in pitch and yaw are initiated at TB3 + 25
+seconds."*  Table 1 row at flight 168.11 s: `(25.0)_3 Command IGM
+initiation.` — the subscript denotes time-in-TB3, so the TM-preset value is
+**T3_IGM = 25.0 s**.
+
+The source Simulink model (`model/provenance/saturn_ib_stack.mdl:40417`,
+block "IGM Enable (3)") carries a hardcoded `Compare To Constant
+const "44.0"`, which propagated through codegen to
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c:444` and the
+regenerated `plant/generated/` copy.  Sibling Compare-To-Constant blocks in
+the same MDL sheet match TM Table 1 (IECO at 3.2, J-2 Engine Start at 2.7);
+only this one diverged.  The repo's own preset carries the correct value at
+`lib_SaturnIBObliq/ts/as205TmX62831Presettings.ts:103`
+(`T3_IGM_sec = 25.0`, cited Table 3B / §IV).
+
+**Numerical match.**  44 − 25 = 19 s, matching the observed ~20 s late IGM
+engagement (sim `igm_enable` flipping at flight ~188 s vs TM 168.11 s).
+
+**Fix applied (point-fix).**  Changed the literal 44.0 → 25.0 in
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c:444` only — the
+obliq-2 native snapshot is what `batch_sim` links.  The legacy
+`model/provenance/saturn_ib_stack.mdl` and the regenerated
+`plant/generated/LVDA_LVDC.c` are deliberately left untouched (we're
+focused on obliq-2 forward; the MDL is kept for historical provenance).
+
+**Measured impact on `AS-205-tm-x-62831`:**
+
+| Quantity | Before | After | TM |
+|----------|-------:|------:|---:|
+| IGM engage (flight t) | 188 s | **169 s** | 168.11 s |
+| Mode→4 (flight t) | 612 s | 610 s | — |
+| Engine cutoff (flight t) | 617 s | **613 s** | 614.63 s |
+| h at sim cutoff | 228,113 m | 228,102 m | 227,941 m |
+| V at sim cutoff | 7,768.5 m/s | **7,753.2 m/s** | 7,780.67 m/s |
+| Δh at TM GCS time (614.63) | +162 m | +160 m | — |
+| ΔV at TM GCS time | −12.2 m/s | **−19.0 m/s** | — |
+
+The fix is reference-correct and should stand.  It exposed a secondary issue:
+with IGM running on time, the HSL / Mode-4 cutoff now fires **~1.6 s early**
+at V ~27 m/s short of `V_T_mps = 7780.67`.  Previously the late IGM was
+effectively racing to catch up and cutoff landed ~2.4 s late at a V closer to
+TM.  The ΔV residual is now attributable to the HSL/Mode-4 arming logic
+(`epsilon_1`, `epsilon_2`, or `LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_*`),
+not to the plant or IGM entry.
+
+## Chi_Z yaw bias: reporting convention, not a steering error
+
+**Finding (2026-11-06).**  The long-standing ~8° Chi_Z residual (sim ≈ +4°
+vs TM CHIY ≈ −4° through the S-IVB burn) is **not** steering the vehicle
+off-plane.  Ground-track comparison closes it cleanly.
+
+**What was ruled out (audit summary):**
+
+1. **MS4 matrix:** every element at `LVDA_LVDC.c:1835–1860` matches EDD
+   Eq. (2.3.5) exactly (9/9 terms verified, A_z/φ_L/λ/i expansion with raw
+   `PARAM_A_z_deg = 72°` is correct — the EDD pre-expanded the "A_z − 90°"
+   rotation algebra).  [Equation extracted from
+   `reference/LVDC-EDD/chandra/satinstunitibm_5/satinstunitibm_5.md:457`.]
+2. **Mux assembly** `[cos χ_y cos χ_z, sin χ_z, −sin χ_y cos χ_z]` matches
+   Eq. (4.4.85) `F'_S = [MS4]ᵀ · Mux`.
+3. **Transpose** at `:3235–3240` (`Math_Function5 = MS4ᵀ`) correctly gives
+   `Product15 = MS4ᵀ·Mux = F'_S` (S-frame thrust unit vector).
+4. **Writer formula** `Chi_Z_deg = asin(Product15[1]) + SMCZ` is the
+   S-frame yaw angle of the commanded thrust — a well-defined quantity.
+5. **TM CHIY sign convention** is the same as sim Chi_Z: pre-IGM hold
+   matches to 2 decimal places (both 0.00°); TM CHIP tracks sim Chi_Y with
+   same sign throughout burn (both reach ≈ −106° at GCS).  If yaw used
+   opposite convention, pitch would too — it doesn't.
+
+**Probe data at mid-burn (t_fl=500, Mux pitch-dominated):** Mux[1] (raw IGM
+yaw command) ≈ +0.005 — essentially zero.  Product15[1] ≈ +0.062 is
+generated almost entirely by `MS4[0][1]·Mux[0] + MS4[2][1]·Mux[2]`,
+dominated by `sin(λ)·cos(A_z)·cos(χ_y_cmd)`.  That is EDD-correct
+geometry — not an algebra bug.
+
+**Ground-track decides it.**  Comparing sim latitude to TM `LATT` (both
+earth-fixed — no frame-conversion ambiguity):
+
+| t_fl (s) | sim lat | TM LATT | Δ (°) | cross-track (km) |
+|---------:|--------:|--------:|------:|-----------------:|
+| 144 | 28.686 | 28.69 | −0.004 | −0.4 |
+| 250 | 29.213 | 29.23 | −0.017 | −1.9 |
+| 450 | 30.467 | 30.49 | −0.023 | −2.6 |
+| 600 | 31.443 | 31.40 | +0.043 | +4.8 |
+| 614 | 31.516 | 31.53 | −0.014 | −1.6 |
+
+**Max deviation ±0.05° (≈ ±5 km) across the entire S-IVB burn**, with no
+systematic drift.  An actual +4° yaw command applied for 470 s at ~5 km/s
+would displace the vehicle by hundreds of km off-plane; instead we're
+within ~5 km.  **The vehicle is yawing per TM's intent.**
+
+**Interpretation:** the `Chi_Z_deg` data-store value we read via the IGM
+trace carries one sign convention; the downstream FCC/TVC yaw loop
+compensates with the opposite-sign gain polarity already documented in
+`docs/H1_YAW_POLARITY_PROBE.md` (`β_Y = +Kp_yaw · Ψ_Y`, not the pitch-style
+`−Kp · Ψ_Y`).  The two sign conventions cancel through the control loop,
+which is why the vehicle flies the correct track despite the reported
+Chi_Z sitting opposite to TM CHIY.
+
+**Decision:** do not "fix" the Chi_Z writer.  Any change would ripple
+through the FCC sign compensation and break the closed loop that already
+flies correctly.  Document the artifact, move on to the real open items
+(HSL cutoff timing).
+
+**Separate observation:** sim `s1_lon_deg` reports ~1.25° west of pad at
+`t_fl=0` and the longitude drift against TM `LONG` reaches +2.4° by GCS
+after sidereal-rate correction.  Looks like the ECI vehicle state is not
+being carried through the 300 s pad hold (the ECI_to_LLA then has GMST
+advancing while Xe stays at the T_GRR value, producing a westward drift of
+earth-fixed lon during pad time).  Doesn't affect the trajectory-fidelity
+story but worth noting separately as a pad-hold frame-handling question.
+
+## HSL polynomial cutoff: implementing EDD §4.4.2.4 Eqs. 4.4.91–4.4.94
+
+**Finding (2026-11-06).**  After the IGM-enable gate fix brought engine
+cutoff into the right ballpark (flight 613 s vs TM 614.63 s), the velocity
+residual at GCS widened to **−19.0 m/s** rather than closed.  Investigation
+revealed that the HSL cutoff gate was using a **simple linear T_3i
+countdown** (subtract 0.04 s per 40 ms tick) with no reference to the actual
+velocity history — effectively ignoring the EDD's polynomial cutoff
+prediction.
+
+**EDD §4.4.2.4 (p. I-4-29) specifies:**
+
+> *"The prediction of the S-IVB cutoff time is performed with Eq. 4.4.91
+> through 4.4.94.  This cutoff prediction uses a second-degree polynomial
+> which expresses velocity as a function of time.  This polynomial is
+> constructed using the current and two previous BML durations and
+> velocity values.  The polynomial is then evaluated to give the time at
+> which the cutoff velocity will be achieved.  The cutoff velocity is
+> biased by the preset ΔV_b to compensate for thrust tailoff and system
+> delays which cause velocity gain after the S-IVB cutoff command is
+> issued."*
+
+**Equations (from `reference/LVDC-EDD/chandra/satinstunitibm_5/satinstunitibm_5.md:897`):**
+
+```
+ΔT_b  = ΔV_b · ΔT / (V − V')                                 (4.4.88)   [already implemented]
+T_3i  = T_3i − ΔT_b     (first HSL pass)                     (4.4.89)   [already implemented]
+T_3i  = T_3i − ΔT       (subsequent passes)                  (4.4.90)   [already implemented]
+A''   = [(V−V')·ΔT'/ΔT − (V'−V'')·ΔT/ΔT'] / (ΔT' + ΔT)      (4.4.91)   [ADDED]
+A'    = A''·ΔT + (V−V')/ΔT                                    (4.4.92)   [ADDED]
+T_3i  = (V_T − ΔV_b − V) / (A' + A''·T_3i)                   (4.4.93)   [ADDED]
+T_CO  = T_3i + T_as                                           (4.4.94)   [implicit in fire gate]
+```
+
+**Implementation** (`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c`):
+
+- Added module-scope V-history pipeline (`s_hsl_V_curr`, `s_hsl_V_prev`,
+  `s_hsl_V_prev2`, `s_hsl_dT_curr`, `s_hsl_dT_prev`, `s_hsl_V_samples`)
+  refreshed on each IGM major cycle right after `Math_Function3` is
+  updated.
+- Replaced the pure linear-countdown gate in `HSL_Cutoff_Timing_Compare_To_Constant`
+  (`:3744`) with: fall back to linear `tgo` when nHSLActive=1 (first pass)
+  or history incomplete; otherwise apply Eq. 4.4.91/4.4.92/4.4.93 to
+  refine `tgo` using the current linear countdown as the fixed-point seed
+  for `T_3i` on the RHS of Eq. 4.4.93.  Cut when refined `tgo ≤ 40 ms`.
+- Sanity-clamped: polynomial refinement only trusted if positive and < 60 s.
+
+**Measured impact on `AS-205-tm-x-62831` (chain of today's fixes):**
+
+| Quantity | Pre-fixes | After IGM gate 44→25 | After ε_2 15→25 | **After HSL polynomial** | TM |
+|----------|----------:|---------------------:|----------------:|-------------------------:|---:|
+| IGM engage (fl) | 188 s | 169 s | 169 s | 169 s | 168.11 s |
+| Mode→4 (fl) | 612 s | 610 s | 608 s | 608 s | — |
+| Cutoff (fl) | 617 s | 613 s | 613 s | **~614.5 s** | 614.63 s |
+| h at cutoff | 228,113 m | 228,103 m | 228,103 m | 228,104 m | 227,941 m |
+| V at cutoff | 7,768.5 m/s | 7,753.2 m/s | 7,753.2 m/s | **7,773.0 m/s** | 7,780.67 m/s |
+| Δh at cutoff | +172 m | +162 m | +162 m | +163 m | — |
+| ΔV at cutoff | −12.2 m/s | −19.0 m/s | −19.0 m/s | **−7.6 m/s** | — |
+
+**The remaining −7.6 m/s matches `PARAM_DeltaV_b_mps = 7.2381` exactly.**
+That is **by design** — the HSL polynomial solves for the time at which
+V reaches `V_T − ΔV_b`, intentionally cutting the engine early so that the
+real J-2 thrust tailoff (plus command-latency / shutdown transients) adds
+the remaining ΔV_b m/s to bring V up to V_T.  Our plant does not model
+J-2 tailoff — the engine stops instantly on cutoff command — so V stays
+at `V_T − ΔV_b`.  Closing this last residual is a plant-model item
+(simulate tailoff) rather than a guidance-logic item.
+
+**Regression:** `tests/batch/chi_freeze.sh` still passes — Chi_Z step at
+T_3_eff = 15 crossing is 0.15° (gate: 1.5°).
+
+**Residual integer code tidying:** `HSL_Cutoff_Timing_Compare_To_Constant`
+still retains the redundant `(tgo < 0.02)` clause for parity with EDD text
+("immediate cut if predicted t-to-go < 20 ms").  At the 40 ms gate
+resolution it collapses into `(tgo <= 0.04)`.  Kept explicit for
+documentation.

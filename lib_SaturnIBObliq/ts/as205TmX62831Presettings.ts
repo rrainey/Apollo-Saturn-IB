@@ -114,9 +114,16 @@ export const AS205_TM_X_62831_PRESETTINGS: Record<string, PresettingEntry> = {
     }
   },
   epsilon_2_sec: {
-    value: 15.0,
+    value: 25.0,
     units: 's',
-    cite: { source: 'tn-hold', note: 'χ̃ / terminal steering; confirm vs TM' }
+    cite: {
+      source: 'AS-206 EDD Part II Table 1-1 (satinstunitibm_7.md:597)',
+      note: 'χ̃ / terminal steering start (K_1..K_4 → 0 per EDD §4.4.2.4). ' +
+            'AS-205 TM Table 3B does not list this; AS-206 Table 1-1 gives 25.0. ' +
+            'BN_1 and T_HSL at this same table matched our prior tn-hold values ' +
+            'exactly (14.4 and 5.0), making AS-206 Part II the best available ' +
+            'reference. Was 15.0 (tn-hold) — raised to 25.0 2026-11-06.'
+    }
   },
   BN_1_sec: {
     value: 14.4,

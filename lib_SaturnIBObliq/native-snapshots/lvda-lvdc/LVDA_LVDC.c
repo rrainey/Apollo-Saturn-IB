@@ -153,6 +153,19 @@ static int s_obliq_chi_ang_latched = 0;
 static double s_obliq_chi_add12_latched = 0.0;
 static double s_obliq_chi_add14_latched = 0.0;
 
+/* HSL polynomial cutoff state (EDD §4.4.2.4 Eqs. 4.4.91-4.4.94).
+ * V, V', V'' and ΔT, ΔT' are the three most-recent |V|_S samples and the
+ * two most-recent cycle lengths (nominal 1.6 s IGM major).  They are
+ * refreshed on each IGM major cycle (see the Math_Function3 update site)
+ * and consumed by the HSL_Cutoff_Timing gate below. */
+static double s_hsl_V_curr = 0.0;
+static double s_hsl_V_prev = 0.0;
+static double s_hsl_V_prev2 = 0.0;
+static double s_hsl_dT_curr = 1.6;
+static double s_hsl_dT_prev = 1.6;
+static int s_hsl_V_samples = 0;   /* 0..3; need 3 for polynomial */
+static double s_hsl_last_Vref = -1.0; /* last Math_Function3 we consumed */
+
 /*
  * Compute outputs from inputs and states
  * This is the algebraic evaluation - no state changes
@@ -440,8 +453,20 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
     /* IGM_Enable_3 */
     // Condition block: IGM_Enable_3
-    // Evaluate condition: input >= 44.0
-    model->signals.IGM_Enable_3 = (model->signals.T3_Timer_Switch >= 44.0);
+    // Evaluate condition: input >= 25.0
+    /* TM-X-62831 §V-A (p.796): "The IGM equations and logic ... are initiated
+     * at TB3 + 25 seconds."  Table 1 confirms with "168.11 (25.0)_3 Command
+     * IGM initiation." where the "_3" subscript denotes time-in-TB3.
+     * Source MDL (model/provenance/saturn_ib_stack.mdl:40417, block
+     * "IGM Enable (3)") carries the literal 44.0 which was propagated into
+     * this regenerated file.  44 − 25 = 19 s, matching the observed late
+     * IGM engagement (sim flight ~188 s vs TM 168.11 s).  Sibling gates in
+     * the same MDL sheet (IECO at 3.2, J-2 Engine Start at 2.7) agree with
+     * TM Table 1; only this one diverged.  The repo's own preset carries the
+     * correct value at as205TmX62831Presettings.ts:103 (T3_IGM_sec = 25.0).
+     * Fix is applied here only (obliq-2 native snapshot, the path batch_sim
+     * links); legacy MDL and plant/generated/ copy left untouched. */
+    model->signals.IGM_Enable_3 = (model->signals.T3_Timer_Switch >= 25.0);
 
     /* J_2_Engine_Start_3 */
     // Condition block: J_2_Engine_Start_3
@@ -1338,6 +1363,22 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             double _eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0 = model->signals.LVDC_Iterative_Guidance_Mode_Sum_of_Elements1;
             // Note: This expression requires #include <math.h>
             model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3 = (((_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0 < 0)) ? ((-sqrt((-_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0)))) : (sqrt(_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0)));
+
+            /* HSL polynomial state refresh (EDD §4.4.2.4 inputs to Eq. 4.4.91).
+             * Shift the V-history pipeline every IGM major cycle.  Guard against
+             * double-shifts within one cycle by tracking the last Vref consumed. */
+            {
+                const double Vnow = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
+                if (Vnow != s_hsl_last_Vref) {
+                    s_hsl_V_prev2 = s_hsl_V_prev;
+                    s_hsl_V_prev  = s_hsl_V_curr;
+                    s_hsl_V_curr  = Vnow;
+                    s_hsl_dT_prev = s_hsl_dT_curr;
+                    s_hsl_dT_curr = PARAM_delta_T_sec;
+                    s_hsl_last_Vref = Vnow;
+                    if (s_hsl_V_samples < 3) s_hsl_V_samples++;
+                }
+            }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3725,10 +3766,50 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant */
             // Condition block: LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant
-            // EDD 4.4.2.4: issue cutoff when T_3i countdown reaches the 40 ms
-            // minor-loop quantum; also cut immediately if predicted tgo < 20 ms.
+            // EDD §4.4.2.4 Eqs. 4.4.91-4.4.94: fit a 2nd-degree polynomial
+            // V(t) = V + A'·t + A''·t² over the most recent 3 |V|_S samples,
+            // solve for the time at which V reaches V_T − ΔV_b, and cut when
+            // the predicted time-to-go hits the minor-loop quantum (60 ms
+            // scheduled, 20 ms immediate per text at EDD §4.4.2.4).
+            //
+            // The linear countdown `Sum` (Eq. 4.4.90) is still computed above
+            // and used as the T_3i estimate on the RHS of Eq. 4.4.93 (fixed-
+            // point form).  Polynomial refinement only runs on the subsequent
+            // HSL passes (nHSLActive == 2); the first HSL pass applies
+            // Eq. 4.4.89 (ΔT_b correction) alone, per EDD.
             {
-                const double tgo = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+                double tgo = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+                const int subsequent_pass =
+                    (model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive != 1);
+                if (subsequent_pass && s_hsl_V_samples >= 3) {
+                    const double V   = s_hsl_V_curr;
+                    const double Vp  = s_hsl_V_prev;
+                    const double Vpp = s_hsl_V_prev2;
+                    const double dT  = s_hsl_dT_curr;
+                    const double dTp = s_hsl_dT_prev;
+                    /* Eq. 4.4.91: A'' = [(V-V')·(ΔT'/ΔT) − (V'-V'')·(ΔT/ΔT')] / (ΔT' + ΔT) */
+                    const double A2 = ((V - Vp) * (dTp / dT) - (Vp - Vpp) * (dT / dTp))
+                                      / (dTp + dT);
+                    /* Eq. 4.4.92: A' = A''·ΔT + (V-V')/ΔT */
+                    const double A1 = A2 * dT + (V - Vp) / dT;
+                    /* Eq. 4.4.93: T_3i = (V_T − ΔV_b − V) / (A' + A''·T_3i)
+                     * (fixed-point; use current linear T_3i as the RHS seed). */
+                    const double num = PARAM_V_T_mps - PARAM_DeltaV_b_mps - V;
+                    const double denom = A1 + A2 * tgo;
+                    if (fabs(denom) > 1e-9 && num > 0.0) {
+                        const double tgo_poly = num / denom;
+                        /* Only trust the polynomial if it's sane (positive and
+                         * within a few seconds).  If V has already overshot
+                         * V_T − ΔV_b (num ≤ 0), fall through to cutoff via
+                         * the linear tgo check below. */
+                        if (tgo_poly > 0.0 && tgo_poly < 60.0) {
+                            tgo = tgo_poly;
+                        }
+                    }
+                }
+                /* Cutoff: EDD text "T_3i < 60 ms → scheduled read / < 20 ms → immediate".
+                 * At 40 ms gate resolution the two collapse to a single <= 40 ms test;
+                 * keep the 20 ms branch explicit for parity with the EDD text. */
                 model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant =
                     (tgo <= 0.04) || (tgo < 0.02);
             }
