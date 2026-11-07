@@ -113,12 +113,12 @@ The pre-Obliq Simulink model (`model/provenance/saturn_ib_stack.mdl`) carries em
 
 | Reference | Subsystem | MDL annotation location |
 |-----------|-----------|------------------------|
-| **NASA-TM-X-53243** — *Static Aerodynamic Characteristics of the Aborted Saturn IB Vehicle* | Saturn IB aero coefficients (lift, drag, moment vs Mach and α) | `saturn_ib_stack.mdl:12837`, `:28638` — "Use data from NASA-TM-X-53243" |
-| **NASA-CR-95967** | Individual H-1 engine performance estimates (per-engine thrust ratings, mass flow) | `saturn_ib_stack.mdl:23955`, `:34125` — "Individual engine performance estimates have been integrated into this model. See NASA-CR-95967 for the original values." |
-| **NASA-CR-71607** — *Astrionics System Handbook*, Figure 3.4-3 and §3-1 "S-IVB Polarity Table" | S-IVB TVC polarity and attitude-error sign convention | `saturn_ib_stack.mdl:39501` — "Based on Figure 3.4-3 from Astrionics System Handbook and S-IVB Polarity Table from section 3-1" |
-| **NASA-CR-92837** — *SA-204/LM-1 Launch Vehicle Dynamics Analyses* | S-IVB control-system gain schedule; ullage motor timing (p. 114) | `saturn_ib_stack.mdl:40099`, `:59857` |
-| **Chrysler TN-AP-67-158** — *AS-205 Revised Launch Vehicle Reference Trajectory* (1967, never-flown pre-flight trajectory; referred to as "[1]" in MDL annotations) | S-IB mass characteristics, liftoff weight, separation weight (Table 3A); cutoff-mass estimate **These values were ultimately superseded by values from NASA TM-X-62831 when we transitions to `obliq-2` for modeling**| `saturn_ib_stack.mdl:25460`, `:25466`, `:35730` |
-| **AS-203 vehicle document** | Rate-gyro model (same gyro package was flown on AS-203 and AS-205) | `saturn_ib_stack.mdl:36988` — "Gyro model from AS-203 document" |
+| [**NASA-TM-X-53423** — *Static Aerodynamic Characteristics of the Aborted Saturn IB Vehicle*](https://ntrs.nasa.gov/api/citations/19660014297/downloads/19660014297.pdf) | Saturn IB aero coefficients (lift, drag, moment vs Mach and α) | `saturn_ib_stack.mdl:12837`, `:28638` — "Use data from NASA-TM-X-53243" |
+| **NASA-CR-94697** | "FINAL FLIGHT PERFORMANCE PREDICTION FOR SATURN AS-205 PROPULSION SYSTEM S-IB-5 STAGE" (per-engine thrust ratings, mass flow) | `saturn_ib_stack.mdl:23955`, `:34125` — "Individual engine performance estimates have been integrated into this model. See NASA-CR-95967 for the original values." |
+| [**NASA-CR-71607** — *Astrionics System Handbook, Saturn Launch Vehicles*](https://www.ibiblio.org/apollo/Documents/MSFC%20-%20Saturn%20Launch%20Vehicles%20Astrionics%20System%20Handbook.pdf), Figure 3.4-3 and §3-1 "S-IVB Polarity Table" | S-IVB TVC polarity and attitude-error sign convention | `saturn_ib_stack.mdl:39501` — "Based on Figure 3.4-3 from Astrionics System Handbook and S-IVB Polarity Table from section 3-1" |
+| **NASA-CR-92837** — *SA-204/LM-1 Launch Vehicle Dynamics Analyse, Part II* | S-IVB control-system gain schedule; ullage motor timing (p. 114) | `saturn_ib_stack.mdl:40099`, `:59857` |
+| [**Chrysler TN-AP-67-158** — *AS-205 Revised Launch Vehicle Reference Trajectory*](https://www.ibiblio.org/apollo/Documents/CHRYSLER-TN-AP-67-158%20-%20AS-205%20-%20Revised%20Launch%20Vehicle%20Reference%20Trajectory.pdf) (1967, never-flown pre-flight trajectory; referred to as "[1]" in MDL annotations) | S-IB mass characteristics, liftoff weight, separation weight (Table 3A); cutoff-mass estimate **These values were ultimately superseded by values from NASA TM-X-62831 when we transitions to `obliq-2` for modeling**| `saturn_ib_stack.mdl:25460`, `:25466`, `:35730` |
+| [**AS-203 vehicle document**](https://www.ibiblio.org/apollo/Documents/UAH-19660614-AS203TechnicalInformationSummary.pdf) | Rate-gyro model (same gyro package was flown on AS-203 and AS-205) | `saturn_ib_stack.mdl:36988` — "Gyro model from AS-203 document" |
 | **SLV, AS-205, Rev A** | Attitude-error limits | `saturn_ib_stack.mdl:~39501` (adjacent annotation) |
 | **LVDC EDD §2.3 / §4.2.5** | ST-124M Euler-angle rotation sequence (Eq. 2.3.3); geocentric-latitude convention per EDD §4.2.5 | `saturn_ib_stack.mdl:1653`, `:58385`, `:60042` |
 
@@ -130,7 +130,7 @@ This is why the sim's body/gimbal/S-frame handedness follows the LVDC EDD (1972)
 
 Two of the inherited references cover subsystems that are not yet documented in `as205TmX62831Presettings.ts`:
 
-- The aero data (NASA-TM-X-53243) populates the thrust-and-aero lookup tables inside `saturn_ib_stack.json` itself; the TS presettings file does not mirror these.
+- The aero data (NASA-TM-X-53423) populates the thrust-and-aero lookup tables inside `saturn_ib_stack.json` itself; the TS presettings file does not mirror these.
 - The S-IVB control-system gains (NASA-CR-92837) populate the inner control loop in the plant (`saturn_ib_stack.json`) rather than the LVDC presettings; the H1_YAW_POLARITY_PROBE audit touches this layer.
 
 The NASA reports themselves are not currently in the repo as full PDFs. Finding and archiving them under `reference/` would be a useful supplement — the MDL annotations are enough to identify them, and all four NASA documents (TM-X-53243, CR-95967, CR-71607, CR-92837) are generally findable through [NASA Technical Reports Server (NTRS)](https://ntrs.nasa.gov/) and ibiblio's Apollo archive.
