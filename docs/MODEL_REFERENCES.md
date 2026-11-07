@@ -99,7 +99,7 @@ For any equation implemented in `LVDA_LVDC.c`, the equation number cited in a bl
 
 ### 2.3 Virtual AGC and the Colossus 249 flight program
 
-**Citation:** [Virtual AGC project](https://github.com/virtualagc/virtualagc), MIT Instrumentation Laboratory source for *Colossus 249* (Apollo 7 Command Module program).
+**Citation:** [Virtual AGC project](https://github.com/virtualagc/virtualagc), MIT Instrumentation Laboratory source for *Colossus 249*. [Colossus 249](https://www.ibiblio.org/apollo/Colossus.html) was actually flown on Apollo 9; _Sundisk 282_ was the Apollo 7 version, but the source code for it has not been located as of this writing.  Colossus seem to suffice for our purposes.
 
 The AGC flight software is the real one that flew on Apollo 7. We assemble the sources at build time (via Virtual AGC's build chain) and the resulting ROM image is at `data/Colossus249.bin`. Downlink-list decoding tables are at `data/ddd-7777[3-7]-Colossus249.tsv`. The `yaAGC` core emulator is built as a static library and linked into `saturnib`.
 
