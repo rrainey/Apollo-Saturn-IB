@@ -116,7 +116,55 @@ ctest --test-dir build --output-on-failure
 
 `tests/gui/run_scenario.py` runs a scripted launch through the panel under Xvfb and takes about 8 minutes. Build its helper first with `cmake --build build --target xclick`.
 
-## Layout
+## Architecture at a glance
+
+Both executables are built on the same static library (`saturnib`) that bundles the vehicle plant, the LVDC guidance computer, the Saturn Instrument Unit ↔ AGC bridge, and Virtual AGC itself:
+
+```
+  ┌────────────────────────────────────────────────────────────────┐
+  │                        saturnib (static)                        │
+  │                                                                 │
+  │  ┌────────────────────┐   ┌───────────────────────────────┐    │
+  │  │  Obliq-2 plant     │   │  LVDC guidance (hand-edited)  │    │
+  │  │  (vehicle dyn,     │◄──┤  lib_SaturnIBObliq/           │    │
+  │  │   S-IB & S-IVB     │   │  native-snapshots/lvda-lvdc/  │    │
+  │  │   stages, aero,    │   │  LVDA_LVDC.c                  │    │
+  │  │   engines, IMU)    │   └───────────────────────────────┘    │
+  │  │                    │                                        │
+  │  │ lib_SaturnIBObliq/ │   ┌───────────────────────────────┐    │
+  │  │ plant/generated/   │   │  Saturn IU ↔ CSM AGC bridge   │    │
+  │  │ saturn_ib_stack.c  │◄──┤  src/sim/SaturnIBStack.cpp    │    │
+  │  └────────────────────┘   │  (PAD load uplink, state-     │    │
+  │                           │   vector uplink, PIPA/CDU,    │    │
+  │                           │   discrete channels, FDAI)    │    │
+  │                           └───────────────────────────────┘    │
+  │                                     │                           │
+  │                                     ▼                           │
+  │                           ┌───────────────────────────────┐    │
+  │                           │  Virtual AGC (yaAGC)          │    │
+  │                           │  third_party/virtualagc/      │    │
+  │                           │  running Colossus 249 ROM     │    │
+  │                           └───────────────────────────────┘    │
+  └────────────────────────────────────────────────────────────────┘
+                 │                                 │
+                 ▼                                 ▼
+    ┌────────────────────────┐          ┌────────────────────────┐
+    │   batch_sim            │          │   apolloa              │
+    │   src/batch/main.cpp   │          │   src/gui/apolloa_main │
+    │                        │          │                        │
+    │  - headless            │          │  - DSKY + FDAI panel   │
+    │  - JSON scenario in    │          │  - wall-clock pace     │
+    │  - final.json + CSV    │          │  - OpenGL/GLUT         │
+    │  - ~150× real time     │          │  - interactive run     │
+    │  - deterministic       │          │                        │
+    └────────────────────────┘          └────────────────────────┘
+```
+
+Everything above `batch_sim` and `apolloa` is shared. The two programs differ only in whether a human sits at the DSKY and whether the pace is wall-clock or free-running; the vehicle, guidance, and AGC are byte-for-byte identical between them.
+
+The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn_ib_stack.json`) is cross-compiled to C by an external tool and lives under `lib_SaturnIBObliq/plant/generated/`, except for `LVDA_LVDC.c` which is hand-edited in `lib_SaturnIBObliq/native-snapshots/lvda-lvdc/` and overrides the regenerated copy. See [`lib_SaturnIBObliq/README.md`](lib_SaturnIBObliq/README.md) for the regeneration workflow.
+
+## Project layout
 
 | Path | Contents |
 |------|----------|
@@ -131,6 +179,18 @@ ctest --test-dir build --output-on-failure
 | `tests/` | Batch regression scripts and the GUI scenario |
 | `third_party/` | Bundled libraries, Virtual AGC patches |
 | `build/` | Your build output (not tracked) |
+
+A few things are worth calling out explicitly:
+
+**`src/sim/SaturnIBStack.{h,cpp}`** is the host-side Saturn Instrument Unit. It owns every interface between the vehicle plant and the AGC that is not inherent to the plant itself: it reads the PIPA accelerometer pulses out of the plant and injects them into `yaAGC`; it watches AGC output channels for ISS lamp states, cage/coarse-align commands, and the GRR/liftoff discrete; it drives the FDAI from the IMU gimbal angles; and it schedules the pre-launch PAD load and state-vector uplinks at the historical times. All of the Apollo 7 launch choreography in the interactive run (`NO ATT` extinguish at T−90, state-vector uplink at T−135, P01→P02 transition, liftoff discrete at T+300) is driven from here.
+
+**`lib_SaturnIBObliq/plant/generated/saturn_ib_stack.c`** is the compiled vehicle dynamics. The model covers both Saturn stages (H-1 cluster + J-2), aerodynamics, mass flow and center-of-mass migration, the ST-124M stable platform, and the LVDC major loop. The file is regenerated from `model/saturn_ib_stack.json` by an external Obliq-2 tool and is not edited by hand.
+
+**`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c`** is the LVDC guidance computer. It is the one hand-edited C module in the whole stack: certain guidance details (IGM major-cycle timing, HSL cutoff prediction, Chi-freeze gating) are maintained here with EDD / TM citations in block comments. The regenerated companion at `lib_SaturnIBObliq/plant/generated/LVDA_LVDC.c` is kept for diffing but is not linked.
+
+**`model/provenance/`** holds the pre-Obliq lineage: the original Simulink `.mdl` and a 1000-s reference CSV / final-state JSON. The current build does not read these, but they are the historical baseline every current result is measured against.
+
+**`reference/`** contains the NASA and IBM source documents the model is built from (TM-X-62831 and the seven-volume LVDC-EDD), plus their machine-extracted markdown / HTML for grep-friendly access. See [`docs/MODEL_REFERENCES.md`](docs/MODEL_REFERENCES.md) for the full scope-and-sources tour.
 
 `model/stable_member_control.json` is an Obliq-2 model of the IMU stable member. It is not used by the build yet: the IMU is modeled in `src/sim/SaturnIBStack.cpp`.
 
