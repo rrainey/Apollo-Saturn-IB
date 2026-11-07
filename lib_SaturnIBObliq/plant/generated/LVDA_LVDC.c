@@ -1,7 +1,7 @@
 /*
  * LVDA_LVDC - Segregated Subsystem
  * Generated C code for subsystem module
- * Generated on: 2026-08-29T03:04:16.655Z
+ * Generated on: 2026-11-07T21:04:53.574Z
  */
 
 #include "LVDA_LVDC.h"
@@ -137,8 +137,8 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
 }
 
 /* IGM terminal Chi latch: hold Add12/Add14 after first terminal major
- * (Add8<=PARAM_epsilon_2_sec / Position_Correction Compare) so atan(vigained)
- * cannot slew Chi_Z as vigained_y collapses. See RTW_VS_OBLIQ_CODEGEN_DISPARITY §1h. */
+ * (Add8<=15 / Position_Correction Compare) so atan(vigained) cannot
+ * slew Chi_Z as vigained_y collapses. See RTW_VS_OBLIQ_CODEGEN_DISPARITY §1h. */
 static int s_obliq_chi_term_hits = 0;
 static int s_obliq_chi_ang_latched = 0;
 static double s_obliq_chi_add12_latched = 0.0;
@@ -842,8 +842,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 (gain = V_ex1_mps → PARAM_V_ex1_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex1_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 (gain = 4151)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4151;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -955,8 +955,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1107,8 +1107,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1204,8 +1204,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1508,8 +1508,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_3 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_3 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1535,8 +1535,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function2 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function2 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1572,8 +1572,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain (gain = V_ex1_mps → PARAM_V_ex1_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function * PARAM_V_ex1_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain (gain = 4151)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function * 4151;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1654,8 +1654,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 (gain = V_ex1_mps → PARAM_V_ex1_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_1 * PARAM_V_ex1_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 (gain = 4151)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_1 * 4151;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2448,8 +2448,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 (gain = 1/V_ex3_mps → (1.0/PARAM_V_ex3_mps))
-            model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Add12 * (1.0/PARAM_V_ex3_mps);
+            // Scale block: LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 (gain = 1/V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Add12 * 1/V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2694,8 +2694,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 (gain = V_ex1_mps → PARAM_V_ex1_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function1 * PARAM_V_ex1_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 (gain = 4151)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function1 * 4151;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2727,8 +2727,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Math_Function5 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Math_Function5 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2854,8 +2854,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Math_Function5 * PARAM_V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 (gain = 4233.2)
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Math_Function5 * 4233.2;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3072,9 +3072,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant */
             // Condition block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant
-            // Evaluate condition: Add8 (T_3_eff) <= epsilon_2 — must track PARAM_epsilon_2_sec
-            // (same threshold as terminal-steering / X-tilde entry), not a bare literal.
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant = (model->signals.LVDC_Iterative_Guidance_Mode_Add8 <= PARAM_epsilon_2_sec);
+            // Evaluate condition: input <= 15
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant = (model->signals.LVDC_Iterative_Guidance_Mode_Add8 <= 15);
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 

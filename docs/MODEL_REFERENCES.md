@@ -49,7 +49,7 @@ The simulation flies the AS-205 vehicle (Apollo 7, launched 1968-10-11) from pre
 
 - The LM, DAP, or RCS — this is a Block II CSM-only configuration.
 - S-IVB restart and TLI — the simulation ends at orbital insertion (~GCS + coast).
-- J-2 thrust tailoff / shutdown transient — the engine stops instantly on cutoff command. This is the known reason the final velocity sits ~7 m/s short of `V_T` at engine-off in the current build; see [`TM_X_62831_TRAJECTORY_COMPARE.md`](TM_X_62831_TRAJECTORY_COMPARE.md).
+- J-2 thrust tailoff / shutdown transient — modelled approximately from AS-205 post-flight Fig 9-3 via the `Thrust_Decay` lookup in `model/saturn_ib_stack.json`. Final velocity now sits ~4 m/s short of `V_T` at engine-off (down from ~7 m/s with the earlier 4-point stub); see [`TM_X_62831_TRAJECTORY_COMPARE.md`](TM_X_62831_TRAJECTORY_COMPARE.md).
 - Ground-system interfaces beyond the pre-launch PAD and state-vector uplinks (no live DSS, no RTCC, no Mission Control loop).
 - GRF (Guidance Reference Failure) branches in the LVDC — the code is present per EDD but not exercised in the nominal scenario.
 
@@ -180,7 +180,7 @@ A representative sample (the complete set has ~60 entries):
 
 A handful of presets carry a `cite: { source: 'tn-hold' }` annotation. These are values inherited from the older Chrysler TN-AP-67-158 reference pack that never flew, retained unchanged because no TM-X-62831 citation has been located. They are audit targets — fixing them means finding the TM table they should have come from, not tuning them to make numerics match.
 
-Current `tn-hold` entries at time of writing: `phi_L_prime_deg`, `lambda_L_deg`, `R_L_m`, `DeltaV_b_mps`, `V_GRD_mps`, `BN_1_sec`, and a few Earth-model helpers (`R_earth_m`, `omega_E_rps`).
+Current `tn-hold` entries at time of writing: `phi_L_prime_deg`, `lambda_L_deg`, `R_L_m`, `V_GRD_mps`, `BN_1_sec`, and a few Earth-model helpers (`R_earth_m`, `omega_E_rps`). (`DeltaV_b_mps = 7.2381` was audited 2026-11-07 and cited to LVDC-EDD Part II, Table 1-3 "PRESETTINGS" — thrust decay velocity bias for S-IVB burn.)
 
 ---
 
@@ -247,18 +247,18 @@ Selected AGC I/O channels the bridge touches. Full details and bit-level documen
 At the time of writing, the AS-205-tm-x-62831 scenario reaches S-IVB engine cutoff with:
 
 - **Altitude at cutoff:** sim 228,104 m vs TM 227,941 m → Δh = +163 m.
-- **Velocity at cutoff:** sim 7773.0 m/s vs TM 7780.67 m/s → ΔV = −7.6 m/s.
+- **Velocity at cutoff:** sim 7776.72 m/s vs TM 7780.67 m/s → ΔV = −3.95 m/s.
 - **Latitude ground-track:** matches TM LATT within ±0.05° (±5 km) throughout the S-IVB burn.
 - **Cutoff flight time:** sim ~614.5 s vs TM 614.63 s.
 
-The remaining −7.6 m/s ΔV equals `PARAM_DeltaV_b_mps = 7.2381` exactly, by design. The HSL polynomial cutoff targets `V = V_T − ΔV_b` so that real J-2 thrust tailoff adds the remaining ΔV_b m/s after the cutoff command. Our plant does not model that tailoff — the engine stops instantly on cutoff command — so V stays at `V_T − ΔV_b`. Closing this last residual is a plant-model item.
+The HSL polynomial cutoff targets `V = V_T − ΔV_b` with `PARAM_DeltaV_b_mps = 7.2381` (LVDC-EDD Part II, Table 1-3), expecting real J-2 thrust tailoff to add ΔV_b m/s after the cutoff command. The plant now approximates that tailoff from AS-205 post-flight Fig 9-3 via the `Thrust_Decay` 16-point lookup in `model/saturn_ib_stack.json` (replaced 2026-11-07; delivers ~3.7 m/s of tail impulse vs the 7.24 the guidance expects). The remaining ~4 m/s discrepancy source remains to be identified.
 
 The full before/after chain across today's fixes and a running log of open items are tracked in [`TM_X_62831_TRAJECTORY_COMPARE.md`](TM_X_62831_TRAJECTORY_COMPARE.md).
 
 ### Known gaps and audit targets
 
-- **J-2 thrust tailoff model** — plant limitation; drives the remaining −7.6 m/s at cutoff (see above).
-- **tn-hold presets** — `phi_L_prime_deg`, `lambda_L_deg`, `R_L_m`, `DeltaV_b_mps`, `V_GRD_mps` and a few others still carry values inherited from TN-AP-67-158 rather than cited to TM-X-62831. Finding the authoritative TM source for each is the audit task.
+- **J-2 thrust tailoff model** — approximated from AS-205 post-flight Fig 9-3; drives the remaining −3.95 m/s at cutoff (see above).
+- **tn-hold presets** — `phi_L_prime_deg`, `lambda_L_deg`, `R_L_m`, `V_GRD_mps` and a few others still carry values inherited from TN-AP-67-158 rather than cited to TM-X-62831. Finding the authoritative TM source for each is the audit task.
 - **Pad-hold ECI frame handling** — during the 300 s on-pad hold, the sim reports longitude in an inertial-at-GRR frame that drifts ~1.25° west of the Earth-fixed pad position by first motion. Does not affect in-flight trajectory but shows up in lat/lon comparisons.
 - **Chi_Z yaw sign convention** — sim Chi_Z and TM CHIY sit at opposite signs through S-IVB burn. Characterized as a reporting-convention artifact (not a steering error): the FCC yaw gain polarity is flipped vs pitch, exactly compensating the opposite-sign Chi_Z convention. See the "Chi_Z yaw bias" section of [`TM_X_62831_TRAJECTORY_COMPARE.md`](TM_X_62831_TRAJECTORY_COMPARE.md).
 

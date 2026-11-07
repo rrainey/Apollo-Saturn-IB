@@ -141,7 +141,11 @@ export const AS205_TM_X_62831_PRESETTINGS: Record<string, PresettingEntry> = {
   DeltaV_b_mps: {
     value: 7.2381,
     units: 'm/s',
-    cite: { source: 'tn-hold', note: 'Thrust-decay bias; confirm vs TM' }
+    cite: {
+      doc: 'LVDC-EDD Part II (satinstunitibm_7)',
+      table: 'Table 1-3 PRESETTINGS',
+      note: 'Thrust decay velocity bias for S-IVB burn (source code C3)'
+    }
   },
   V_GRD_mps: {
     value: 150.0,

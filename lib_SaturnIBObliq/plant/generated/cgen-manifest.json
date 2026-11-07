@@ -2,8 +2,8 @@
   "modelName": "saturn_ib_stack",
   "displayName": "saturn_ib_stack",
   "profile": "saturn-ib-stack",
-  "sourceJson": "model/saturn_ib_stack.json",
-  "generatedAt": "2026-08-29T03:04:16.784Z",
+  "sourceJson": "/home/riley/src/Apollo-Saturn-IB/model/saturn_ib_stack.json",
+  "generatedAt": "2026-11-07T21:04:53.707Z",
   "warnings": [
     "[LVDA_LVDC] Auto-promoted crossing tags → ports in=[MES_DCM,PAD_Ve_mps,PAD_Xe_m,S_IVB_Ve_mps,S_IVB_Xe_m,Ve_mps,Xe_m,bLiftoff__tag,bStageSep] out=[theta_deg]",
     "[LVDA_LVDC] Connection subsystem_4645__wire_4729_enable references non-existent target block subsystem_4645__subsystem_4691",

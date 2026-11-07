@@ -20,7 +20,7 @@
 #define PARAM_lambda_L_deg -80.561141
 #define PARAM_R_L_m 6373385
 #define PARAM_pad_roll_L_deg 100
-#define PARAM_epsilon_2_sec 15
+#define PARAM_epsilon_2_sec 25
 #define PARAM_epsilon_prime_sec 5
 #define PARAM_BN_1_sec 14.4
 #define PARAM_T3_FM_sec 5
@@ -58,18 +58,6 @@
 #define PARAM_mu_earth 398600441800000
 #define PARAM_R_earth_m 6371000
 #define PARAM_omega_E_rps 0.00002321
-
-/**
- * Parameters added by hand: mostly feeding into Source or Gain blocks from the original model
- */
-
-#define PARAM_P_final -1.0352499
-
-/* S-IB Chi Time tilt breakpoints */
-#define PARAM_T_S1_sec1 10
-#define PARAM_T_S1_sec 63.8
-#define PARAM_T_S2_sec 109.8
-#define PARAM_T_S3_sec 134.3
 
 #ifdef __cplusplus
 extern "C" {

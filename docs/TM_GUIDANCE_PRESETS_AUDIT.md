@@ -36,7 +36,6 @@ M02=129761.6, M03=134374, F1/F2/F3, TR1=1.8, TR2=TR3=0, C0=35.
 | `lambda_L_deg`, `R_L_m` | LC-34 | Pad / MES; weak for mid-IGM Chi_Z |
 | `epsilon_2_sec` | 15 | Terminal freeze band; **hardcoded 15** in art-τ path too |
 | `BN_1_sec` | 14.4 | HSL / velocity history |
-| `DeltaV_b_mps` | 7.2381 | Thrust-decay cutoff bias |
 | `delta_T_sec` | 1.6 | IGM cycle; TM OCR unclear |
 | `A0_sec`, `A1` | 458.9, −1.194 | Mask leftovers — **check if still wired** |
 | `T3_FM_sec`, `V_GRD`, `T_HSL` | TN | Cutoff / guard |
@@ -78,7 +77,7 @@ Chi already tracks TM pitch from ~190 s while `nIGMMode=0`. Mode 0→1 @ ~473 s 
 | 1 | **Chi_Z / vigained / ΔV path** (IU §4.4.2–4.4.5) | AP correct; pitch OK; yaw offset ≈ constant — classic wrong Y component or sign in χ_z=atan(v_y/…) |
 | 2 | **SMCZ** enable / sign / `pirads` wiring | Direct additive to Chi_Z; historically caused Chi_Z bias when Gain=`pi` broke |
 | 3 | **Which Chi writer wins** when Time Tilt and IGM Steering both touch DSM | Could mix hold and IGM yaw |
-| 4 | Remaining tn-hold (`epsilon_2`, `DeltaV_b`, `A0/A1` if live) | Secondary; freeze/cutoff more than mid-burn yaw |
+| 4 | Remaining tn-hold (`epsilon_2`, `A0/A1` if live) | Secondary; freeze/cutoff more than mid-burn yaw |
 | 5 | Hardcoded TN `IGM_AP_DCM` | Only if running companion plant, not stack cgen |
 
 ---
@@ -88,7 +87,7 @@ Chi already tracks TM pitch from ~190 s while `nIGMMode=0`. Mode 0→1 @ ~473 s 
 1. **Log mid-burn** (t=300, 450, 600): Product15 \(v\), raw χ_z before sat, `SMCZ_rad`, which enable writes Chi DSM.  
 2. **IU EDD §4.4.5 Chi Computations** vs MDL `atan(v_y/√(1−v_y²))` + SMCZ — confirm sign of \(v_y\) channel.  
 3. **IU §4.4.4 SMC** — when enabled in flight program vs our `SMCZ_enable_bool`.  
-4. Confirm **`A0`/`A1`/`DeltaV_b`** still connected or dead.  
+4. Confirm **`A0`/`A1`** still connected or dead.  
 5. Optionally replace plant `IGM_AP_DCM` with TM AP1–9 for dual-path consistency.
 
 ---

@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-08-29T03:04:16.687Z
+ * Generated on: 2026-11-07T21:04:53.604Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -298,9 +298,15 @@ static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[] = 
 static const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size = 6;
 
 /* Lookup table for S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay */
-static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[] = {0, 0.2, 0.3, 0.5};
-static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[] = {1, 0.05, 0.03, 0};
-static const int S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size = 4;
+static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[] = {
+    0, 0.1, 0.15, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.3,
+    0.4, 0.5, 0.75, 1, 1.5, 2
+};
+static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[] = {
+    1, 1, 1, 0.98, 0.85, 0.55, 0.3, 0.16, 0.1, 0.07,
+    0.045, 0.033, 0.02, 0.013, 0.007, 0
+};
+static const int S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size = 16;
 
 /* Lookup table for S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time */
 static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[] = {
@@ -7834,16 +7840,16 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double output = 0.0;
         
                 // Lookup table data
-                const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
-                const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[16] = {0, 0.1, 0.15, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.3, 0.4, 0.5, 0.75, 1, 1.5, 2};
+                const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[16] = {1, 1, 1, 0.98, 0.85, 0.55, 0.3, 0.16, 0.1, 0.07, 0.045, 0.033, 0.02, 0.013, 0.007, 0};
         
                 if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[0]) {
                     output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[0];
-                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[3]) {
-                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[3];
+                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[15]) {
+                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[15];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < 15; i++) {
                         if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i] && input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i]) / (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i]);
                             output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i] + t * (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i]);

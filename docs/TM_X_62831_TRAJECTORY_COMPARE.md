@@ -384,24 +384,28 @@ T_CO  = T_3i + T_as                                           (4.4.94)   [implic
 
 **Measured impact on `AS-205-tm-x-62831` (chain of today's fixes):**
 
-| Quantity | Pre-fixes | After IGM gate 44→25 | After ε_2 15→25 | **After HSL polynomial** | TM |
-|----------|----------:|---------------------:|----------------:|-------------------------:|---:|
-| IGM engage (fl) | 188 s | 169 s | 169 s | 169 s | 168.11 s |
-| Mode→4 (fl) | 612 s | 610 s | 608 s | 608 s | — |
-| Cutoff (fl) | 617 s | 613 s | 613 s | **~614.5 s** | 614.63 s |
-| h at cutoff | 228,113 m | 228,103 m | 228,103 m | 228,104 m | 227,941 m |
-| V at cutoff | 7,768.5 m/s | 7,753.2 m/s | 7,753.2 m/s | **7,773.0 m/s** | 7,780.67 m/s |
-| Δh at cutoff | +172 m | +162 m | +162 m | +163 m | — |
-| ΔV at cutoff | −12.2 m/s | −19.0 m/s | −19.0 m/s | **−7.6 m/s** | — |
+| Quantity | Pre-fixes | After IGM gate 44→25 | After ε_2 15→25 | After HSL polynomial | **After Fig 9-3 tailoff** | TM |
+|----------|----------:|---------------------:|----------------:|---------------------:|--------------------------:|---:|
+| IGM engage (fl) | 188 s | 169 s | 169 s | 169 s | 169 s | 168.11 s |
+| Mode→4 (fl) | 612 s | 610 s | 608 s | 608 s | 608 s | — |
+| Cutoff (fl) | 617 s | 613 s | 613 s | ~614.5 s | **~614.5 s** | 614.63 s |
+| h at cutoff | 228,113 m | 228,103 m | 228,103 m | 228,104 m | 228,104 m | 227,941 m |
+| V at cutoff | 7,768.5 m/s | 7,753.2 m/s | 7,753.2 m/s | 7,773.0 m/s | **7,776.72 m/s** | 7,780.67 m/s |
+| Δh at cutoff | +172 m | +162 m | +162 m | +163 m | +163 m | — |
+| ΔV at cutoff | −12.2 m/s | −19.0 m/s | −19.0 m/s | −7.6 m/s | **−3.95 m/s** | — |
 
-**The remaining −7.6 m/s matches `PARAM_DeltaV_b_mps = 7.2381` exactly.**
-That is **by design** — the HSL polynomial solves for the time at which
-V reaches `V_T − ΔV_b`, intentionally cutting the engine early so that the
-real J-2 thrust tailoff (plus command-latency / shutdown transients) adds
-the remaining ΔV_b m/s to bring V up to V_T.  Our plant does not model
-J-2 tailoff — the engine stops instantly on cutoff command — so V stays
-at `V_T − ΔV_b`.  Closing this last residual is a plant-model item
-(simulate tailoff) rather than a guidance-logic item.
+The HSL polynomial solves for the time at which V reaches `V_T − ΔV_b`,
+intentionally cutting the engine early so that real J-2 thrust tailoff
+(plus command-latency / shutdown transients) adds the remaining ΔV_b m/s
+to bring V up to V_T. `PARAM_DeltaV_b_mps = 7.2381` is cited to LVDC-EDD
+Part II, Table 1-3 "PRESETTINGS" ("Thrust decay velocity bias for S-IVB
+burn") and is not to be re-tuned.
+
+On 2026-11-07 the J-2 `Thrust_Decay` lookup in `model/saturn_ib_stack.json`
+was replaced (4-point stub → 16-point table read from AS-205 post-flight
+Fig 9-3 in `apollo_07_saturn_ib.pdf` §9.2.4). The new tail delivers
+~3.7 m/s of impulse, closing the ΔV gap from −7.6 to −3.95 m/s. The
+remaining ~4 m/s discrepancy source remains to be identified.
 
 **Regression:** `tests/batch/chi_freeze.sh` still passes — Chi_Z step at
 T_3_eff = 15 crossing is 0.15° (gate: 1.5°).

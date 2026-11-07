@@ -36,7 +36,7 @@
 #define PARAM_R_L_m R_L_m
 #define pad_roll_L_deg 100
 #define PARAM_pad_roll_L_deg pad_roll_L_deg
-#define epsilon_2_sec 15
+#define epsilon_2_sec 25
 #define PARAM_epsilon_2_sec epsilon_2_sec
 #define epsilon_prime_sec 5
 #define PARAM_epsilon_prime_sec epsilon_prime_sec
