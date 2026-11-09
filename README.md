@@ -118,49 +118,68 @@ ctest --test-dir build --output-on-failure
 
 ## Architecture at a glance
 
-Both executables are built on the same static library (`saturnib`) that bundles the vehicle plant, the LVDC guidance computer, the Saturn Instrument Unit ↔ AGC bridge, and Virtual AGC itself:
+The engine is split into two static libraries so that the launch-vehicle
+simulation is usable without a CMC in the loop:
 
 ```
-  ┌────────────────────────────────────────────────────────────────┐
-  │                        saturnib (static)                        │
-  │                                                                 │
-  │  ┌────────────────────┐   ┌───────────────────────────────┐    │
-  │  │  Obliq-2 plant     │   │  LVDC guidance (hand-edited)  │    │
-  │  │  (vehicle dyn,     │◄──┤  lib_SaturnIBObliq/           │    │
-  │  │   S-IB & S-IVB     │   │  native-snapshots/lvda-lvdc/  │    │
-  │  │   stages, aero,    │   │  LVDA_LVDC.c                  │    │
-  │  │   engines, IMU)    │   └───────────────────────────────┘    │
-  │  │                    │                                        │
-  │  │ lib_SaturnIBObliq/ │   ┌───────────────────────────────┐    │
-  │  │ plant/generated/   │   │  Saturn IU ↔ CSM AGC bridge   │    │
-  │  │ saturn_ib_stack.c  │◄──┤  src/sim/SaturnIBStack.cpp    │    │
-  │  └────────────────────┘   │  (PAD load uplink, state-     │    │
-  │                           │   vector uplink, PIPA/CDU,    │    │
-  │                           │   discrete channels, FDAI)    │    │
-  │                           └───────────────────────────────┘    │
-  │                                     │                           │
-  │                                     ▼                           │
-  │                           ┌───────────────────────────────┐    │
-  │                           │  Virtual AGC (yaAGC)          │    │
-  │                           │  third_party/virtualagc/      │    │
-  │                           │  running Colossus 249 ROM     │    │
-  │                           └───────────────────────────────┘    │
+  ┌───────────────────────────────────────────────────────────────┐
+  │                   saturnib  (no yaAGC)                         │
+  │                                                                │
+  │  ┌────────────────────┐   ┌───────────────────────────────┐   │
+  │  │  Obliq-2 plant     │   │  LVDC guidance (hand-edited)  │   │
+  │  │  (vehicle dyn,     │◄──┤  lib_SaturnIBObliq/           │   │
+  │  │   S-IB & S-IVB     │   │  native-snapshots/lvda-lvdc/  │   │
+  │  │   stages, aero,    │   │  LVDA_LVDC.c                  │   │
+  │  │   engines)         │   └───────────────────────────────┘   │
+  │  │                    │                                       │
+  │  │ lib_SaturnIBObliq/ │   ┌───────────────────────────────┐   │
+  │  │ plant/generated/   │   │  SaturnIBStack (plant + IMU   │   │
+  │  │ saturn_ib_stack.c  │◄──┤  physics + FDAI state).       │   │
+  │  └────────────────────┘   │  AGC coupling via virtual     │   │
+  │                           │  IAgcBridge hooks.            │   │
+  │                           │  src/sim/SaturnIBStack.cpp    │   │
+  │                           └───────────────┬───────────────┘   │
+  └───────────────────────────────────────────┼───────────────────┘
+                                              │ hooks (null-impl default)
+  ┌───────────────────────────────────────────┼───────────────────┐
+  │             saturnib_cmc  (links yaAGC)   ▼                   │
+  │                                                                │
+  │  ┌──────────────────────────────────────────────────────────┐ │
+  │  │  SaturnIBAgcBridge  (inherits SaturnIBStack, overrides   │ │
+  │  │  the AGC hooks).  Owns agc_t*, uplink queue, downlink,   │ │
+  │  │  PIPA/CDU injection, ISS turn-on + NO ATT sequencing,    │ │
+  │  │  and the extern "C" yaAGC channel callbacks.             │ │
+  │  │  src/cmc/SaturnIBAgcBridge.cpp                           │ │
+  │  └──────────────────────────────┬───────────────────────────┘ │
+  │                                 │                              │
+  │                                 ▼                              │
+  │                     ┌───────────────────────────┐              │
+  │                     │  Virtual AGC (yaAGC)      │              │
+  │                     │  third_party/virtualagc/  │              │
+  │                     │  Colossus 249 ROM         │              │
+  │                     └───────────────────────────┘              │
   └────────────────────────────────────────────────────────────────┘
                  │                                 │
                  ▼                                 ▼
     ┌────────────────────────┐          ┌────────────────────────┐
     │   batch_sim            │          │   apolloa              │
     │   src/batch/main.cpp   │          │   src/gui/apolloa_main │
-    │                        │          │                        │
+    │   links: saturnib      │          │   links: saturnib +    │
+    │                        │          │          saturnib_cmc  │
     │  - headless            │          │  - DSKY + FDAI panel   │
     │  - JSON scenario in    │          │  - wall-clock pace     │
     │  - final.json + CSV    │          │  - OpenGL/GLUT         │
-    │  - ~150× real time     │          │  - interactive run     │
+    │  - plant-only; no AGC  │          │  - interactive run     │
     │  - deterministic       │          │                        │
     └────────────────────────┘          └────────────────────────┘
 ```
 
-Everything above `batch_sim` and `apolloa` is shared. The two programs differ only in whether a human sits at the DSKY and whether the pace is wall-clock or free-running; the vehicle, guidance, and AGC are byte-for-byte identical between them.
+`batch_sim` links `saturnib` only and never instantiates a CMC — the AGC
+hook points degrade to no-ops through the default `NullAgcBridge`.
+`apolloa` links both libraries; `SaturnStartupHelper` constructs a
+`SaturnIBAgcBridge` which attaches itself as the active `IAgcBridge` and
+is the `SimModel` registered with the clock.  The vehicle and LVDC paths
+in both programs are byte-for-byte identical; only the AGC layer differs.
 
 The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn_ib_stack.json`) is cross-compiled to C by an external tool and lives under `lib_SaturnIBObliq/plant/generated/`, except for `LVDA_LVDC.c` which is hand-edited in `lib_SaturnIBObliq/native-snapshots/lvda-lvdc/` and overrides the regenerated copy. See [`lib_SaturnIBObliq/README.md`](lib_SaturnIBObliq/README.md) for the regeneration workflow.
 
@@ -168,7 +187,8 @@ The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn
 
 | Path | Contents |
 |------|----------|
-| `src/sim/` | Vehicle systems: `SaturnIBStack` (AGC interface, IMU, FDAI, uplink) and the plant bridge |
+| `src/sim/` | Vehicle systems: `SaturnIBStack` (plant + IMU physics + FDAI), Obliq plant adapter, `IAgcBridge` hook interface |
+| `src/cmc/` | Saturn IU ↔ CSM AGC bridge: `SaturnIBAgcBridge`, `UplinkMessage`, yaAGC channel handlers, `SaturnStartupHelper` |
 | `src/support/` | Vectors, quaternions, dates, the simulation clock, logging |
 | `src/batch/`, `src/gui/` | The two programs |
 | `lib_SaturnIBObliq/` | Generated plant and hand-edited LVDC ([details](lib_SaturnIBObliq/README.md)) |
@@ -182,7 +202,9 @@ The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn
 
 A few things are worth calling out explicitly:
 
-**`src/sim/SaturnIBStack.{h,cpp}`** is the host-side Saturn Instrument Unit. It owns every interface between the vehicle plant and the AGC that is not inherent to the plant itself: it reads the PIPA accelerometer pulses out of the plant and injects them into `yaAGC`; it watches AGC output channels for ISS lamp states, cage/coarse-align commands, and the GRR/liftoff discrete; it drives the FDAI from the IMU gimbal angles; and it schedules the pre-launch PAD load and state-vector uplinks at the historical times. All of the Apollo 7 launch choreography in the interactive run (`NO ATT` extinguish at T−90, state-vector uplink at T−135, P01→P02 transition, liftoff discrete at T+300) is driven from here.
+**`src/sim/SaturnIBStack.{h,cpp}`** owns the plant tick, the IMU physics (coarse/fine align, CDU accumulators) and the FDAI state.  It knows nothing about yaAGC — AGC coupling goes through the `IAgcBridge` hook interface (`src/sim/IAgcBridge.h`), whose default implementation is a no-op.
+
+**`src/cmc/SaturnIBAgcBridge.{h,cpp}`** inherits from `SaturnIBStack` and implements the AGC bridge: PAD-load and state-vector uplink scheduling, PIPA injection, CDU drive, ISS turn-on + NO ATT lamp tracking, the GRR/liftoff discrete, and the DSKY downlink buffer.  All Apollo 7 launch choreography in the interactive run (`NO ATT` extinguish at T−90, state-vector uplink at T−135, P01→P02 transition, liftoff discrete at T+300) is driven from here.  This translation unit is the only place that includes `<agc_engine.h>` and references yaAGC symbols; the `extern "C"` yaAGC channel callbacks live alongside it.
 
 **`lib_SaturnIBObliq/plant/generated/saturn_ib_stack.c`** is the compiled vehicle dynamics. The model covers both Saturn stages (H-1 cluster + J-2), aerodynamics, mass flow and center-of-mass migration, the ST-124M stable platform, and the LVDC major loop. The file is regenerated from `model/saturn_ib_stack.json` by an external Obliq-2 tool and is not edited by hand.
 

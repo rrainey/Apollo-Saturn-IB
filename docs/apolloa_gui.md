@@ -2,6 +2,12 @@
 
 An OpenGL/GLUT DSKY and FDAI panel running the plant and yaAGC at wall-clock pace (about 60 Hz). Left-click the DSKY buttons to send keystrokes to the AGC. The panel layout is in `data/panel/*.json`.
 
+`apolloa` links both `saturnib` (plant + IMU) and `saturnib_cmc` (the CMC
+bridge).  `SaturnStartupHelper` constructs a `SaturnIBAgcBridge` which
+attaches itself to the plant through `IAgcBridge` and is the `SimModel`
+the clock ticks.  See the "Architecture at a glance" diagram in the top
+README.
+
 Run it from `data/` so it can find the ROM, pad load and textures:
 
 ```bash
