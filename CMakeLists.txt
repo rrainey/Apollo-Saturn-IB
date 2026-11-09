@@ -14,9 +14,9 @@ option(BUILD_GUI "Build the apolloa interactive panel (needs OpenGL and GLUT)" O
 include(cmake/FetchVirtualAGC.cmake)
 
 # ---------------------------------------------------------------------------
-# saturnib: Obliq plant, host-side vehicle systems, and support code.
-# LVDA_LVDC is compiled from native-snapshots/ (the hand-edited source), not
-# from plant/generated/.  See lib_SaturnIBObliq/README.md.
+# saturnib: pure launch-vehicle engine (Obliq plant + LVDC + IMU physics).
+# Zero yaAGC dependency; batch_sim and tests link only this.
+# LVDA_LVDC is compiled from native-snapshots/ (the hand-edited source).
 # ---------------------------------------------------------------------------
 set(PLANT_GEN_DIR ${CMAKE_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
 set(LVDC_DIR      ${CMAKE_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
@@ -25,8 +25,6 @@ add_library(saturnib STATIC
     src/sim/SaturnIBPlantObliq.c
     src/sim/SaturnIBStack.cpp
     src/sim/SaturnIBStackAdapter.c
-    src/sim/SaturnStartupHelper.cpp
-    src/sim/UplinkMessage.cpp
     src/sim/igm_trace.c
     src/sim/igm_trace_stash.c
     src/sim/ic_trace.c
@@ -44,7 +42,20 @@ target_include_directories(saturnib
     # The LVDA_LVDC.h in native-snapshots must win over the generated one.
     PRIVATE ${LVDC_DIR} ${PLANT_GEN_DIR}
 )
-target_link_libraries(saturnib PUBLIC yaAGC m)
+target_link_libraries(saturnib PUBLIC m)
+
+# ---------------------------------------------------------------------------
+# saturnib_cmc: Saturn-IB ↔ CMC (yaAGC) bridge.  Contains all AGC coupling
+# (uplink, downlink, channel handlers, PIPA/CDU injection).  Links yaAGC.
+# apolloa links this AND saturnib; batch_sim does not.
+# ---------------------------------------------------------------------------
+add_library(saturnib_cmc STATIC
+    src/cmc/SaturnIBAgcBridge.cpp
+    src/cmc/SaturnStartupHelper.cpp
+    src/cmc/UplinkMessage.cpp
+)
+target_include_directories(saturnib_cmc PUBLIC src/cmc)
+target_link_libraries(saturnib_cmc PUBLIC saturnib yaAGC)
 
 # ---------------------------------------------------------------------------
 # batch_sim: headless driver
@@ -69,7 +80,7 @@ if(BUILD_GUI)
         src/gui/stb_image_impl.cpp
     )
     target_include_directories(apolloa PRIVATE src/gui third_party third_party/stb)
-    target_link_libraries(apolloa PRIVATE saturnib OpenGL::GL OpenGL::GLU GLUT::GLUT)
+    target_link_libraries(apolloa PRIVATE saturnib saturnib_cmc OpenGL::GL OpenGL::GLU GLUT::GLUT)
 endif()
 
 # ---------------------------------------------------------------------------

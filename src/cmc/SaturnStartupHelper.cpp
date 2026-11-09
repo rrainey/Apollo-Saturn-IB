@@ -1,5 +1,5 @@
 #include "SaturnStartupHelper.h"
-#include "SaturnIBStack.h"
+#include "SaturnIBAgcBridge.h"
 
 SaturnStartupHelper::SaturnStartupHelper() = default;
 
@@ -10,7 +10,7 @@ SaturnStartupHelper::~SaturnStartupHelper()
     delete m_pLogger;
 }
 
-SaturnIBStack *SaturnStartupHelper::GetLaunchVehicle()
+SaturnIBAgcBridge *SaturnStartupHelper::GetLaunchVehicle()
 {
     if (!m_pVehicle) Initialize();
     return m_pVehicle;
@@ -27,6 +27,6 @@ void SaturnStartupHelper::Initialize()
     m_pClock->SetCurrentSimulationTime( dtStart_utc );
     m_pClock->Thaw();
 
-    m_pVehicle = new SaturnIBStack();
+    m_pVehicle = new SaturnIBAgcBridge();
     m_pClock->Register( m_pVehicle );
 }
