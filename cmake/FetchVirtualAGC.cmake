@@ -5,10 +5,15 @@
 # To move to a newer Virtual AGC: change VIRTUALAGC_COMMIT, refresh the patch
 # in third_party/virtualagc-patches/, delete third_party/virtualagc/, reconfigure.
 
+# Anchor paths at the Apollo-Saturn-IB tree so this works whether we are
+# built standalone or as a subdirectory of another project (e.g. DSKY-matic).
+# CMAKE_CURRENT_LIST_DIR here is Apollo-Saturn-IB/cmake/.
+set(_asib_root "${CMAKE_CURRENT_LIST_DIR}/..")
+
 set(VIRTUALAGC_URL "https://github.com/virtualagc/virtualagc.git" CACHE STRING "Virtual AGC repository")
 set(VIRTUALAGC_COMMIT "9a60b41bad3156caeb191c7718652d57dba639b3")
-set(VIRTUALAGC_PATCH "${CMAKE_SOURCE_DIR}/third_party/virtualagc-patches/yaagc-embed-tweaks.patch")
-set(VIRTUALAGC_DIR "${CMAKE_SOURCE_DIR}/third_party/virtualagc")
+set(VIRTUALAGC_PATCH "${_asib_root}/third_party/virtualagc-patches/yaagc-embed-tweaks.patch")
+set(VIRTUALAGC_DIR "${_asib_root}/third_party/virtualagc")
 
 find_package(Git REQUIRED)
 
