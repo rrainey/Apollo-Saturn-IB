@@ -1,8 +1,8 @@
 /**
- * IGM interface trace — shared schema for RTW vs Obliq dual harness.
+ * IGM interface trace schema.
  *
- * batch-sim owns the CSV contract. Both SaturnIBStack backends fill
- * IgmTraceSample via FillIgmTrace(). Missing fields use NAN.
+ * batch-sim owns the CSV contract. SaturnIBStack fills IgmTraceSample via
+ * FillIgmTrace() from the Obliq plant; missing fields use NAN.
  *
  * Cadence: typically every IGM major cycle (1.6 s) or every outer step.
  *
@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-/** IGM major-cycle sample time (s) — MDL / RTW mask delta_T */
+/** IGM major-cycle sample time (s). */
 #ifndef IGM_TRACE_DT_SEC
 #define IGM_TRACE_DT_SEC 1.6
 #endif
@@ -42,7 +42,7 @@ typedef struct IgmTraceSample_tag {
   double SMCY_rad;
   double SMCZ_rad;
 
-  /* Chi→Ψ (Obliq Wave C; often NAN on RTW until hooked) */
+  /* Chi→Ψ (Obliq Wave C). */
   double Psi_P_deg;
   double Psi_Y_deg;
 
@@ -60,7 +60,7 @@ typedef struct IgmTraceSample_tag {
   /* Plant diagnostic */
   double elev_cmd_deg;
 
-  /* Product15 internals (Obliq; RTW via IGM_TRACE_STASH) */
+  /* Product15 internals (Obliq; or legacy stash via -DIGM_TRACE_STASH). */
   double phi_T_rad;
   double chi_a_cmd_rad;
   double chi_b_cmd_rad;
@@ -71,7 +71,7 @@ typedef struct IgmTraceSample_tag {
   double chi_a_rad; /* raw atan(dVx/dVz) before rate/φ/π/2 */
   double sw_a;      /* χ̇_α switch (rate term into chi_a_cmd) */
 
-  /* Matched-input ΔV path (RTW stash; NAN on Obliq until filled) */
+  /* Matched-input ΔV path (legacy stash; NAN on Obliq until filled). */
   double phi_iT_rad;
   double GS_x;
   double GS_y;

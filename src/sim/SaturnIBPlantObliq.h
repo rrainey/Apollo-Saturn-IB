@@ -2,8 +2,8 @@
  * Obliq-backed Saturn IB plant step (200 Hz).
  *
  * Default: full saturn_ib_stack with LVDA_LVDC segregated_atomic.
- * SaturnIBStack.cpp stays RTW-free; ExtIn/Out packing is in
- * SaturnIBStackRtwAdapter.
+ * SaturnIBStack.cpp holds no plant internals; ExtIn/Out packing is in
+ * SaturnIBStackAdapter.
  */
 #pragma once
 

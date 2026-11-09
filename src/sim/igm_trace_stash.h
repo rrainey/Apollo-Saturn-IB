@@ -1,6 +1,7 @@
 /**
- * Optional RTW Product15 / ΔV stash — filled under -DIGM_TRACE_STASH in
- * Saturn_IB_Stack.c at IGM major-cycle sites (before rtb temps are reused).
+ * Optional Product15 / ΔV stash — legacy diagnostic, filled under
+ * -DIGM_TRACE_STASH at IGM major-cycle sites in the plant. Not wired on
+ * the current Obliq path; retained for historical trace comparisons.
  */
 #pragma once
 

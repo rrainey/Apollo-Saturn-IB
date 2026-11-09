@@ -64,7 +64,7 @@ extern "C" {
 typedef struct agc_t agc_t;
 };
 
-/* ExternalInputs/Outputs: see SaturnIBExternalIO.h (RTW-layout compatible). */
+/* ExternalInputs/Outputs: see SaturnIBExternalIO.h. */
 
 class UplinkMessage;
 
@@ -223,7 +223,7 @@ protected:
     std::string m_pad_load_file;         // "" or "-" disables auto pad-load
     double      m_pad_load_start_sec;    // elapsed-time threshold
 
-    /* Obliq plant + RTW-shaped I/O (no Simulink model pointer). */
+    /* Obliq plant + ExtIn/Out I/O structs (no Simulink model pointer). */
     SaturnIBPlantObliq * m_pPlant = nullptr;
     ExternalInputs_saturn_ib_stack m_inputs{};
     ExternalOutputs_saturn_ib_stack m_outputs{};
@@ -423,9 +423,9 @@ protected:
     void WriteUplinkKeycode( int nKeycode );
 
     /**
-     * Execute one plant time step (Obliq backend)
+     * Execute one plant time step (Obliq backend).
      */
-    void rt_OneStep();
+    void StepPlant();
 
     /**
      * Update PIPA Counters to reflect velocity changes sensed by the CM IMU

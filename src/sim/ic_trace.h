@@ -1,5 +1,5 @@
 /**
- * Initial Conditions (<S5>) trace — RTW BlockIO snapshot for matched compare.
+ * Initial Conditions (<S5>) trace — plant-state snapshot for matched compare.
  *
  * batch-sim writes JSON via --ic-trace PATH (typically once at t≈0).
  * See obliq-2 examples/saturn-ib/IC_MATCHED_COMPARE_PLAN.md.

@@ -1,9 +1,6 @@
 /**
- * Saturn IB stack ExternalInputs / ExternalOutputs — RTW-layout compatible,
- * no MATLAB / Simulink headers required.
- *
- * Layout must match Saturn_IB_Stack_grt_malloc_rtw/Saturn_IB_Stack.h so
- * batch_sim / ApolloA field access stays identical across backends.
+ * Saturn IB stack ExternalInputs / ExternalOutputs — plain C structs. These are the consumer-facing I/O
+ * types for batch_sim and apolloa.
  */
 #pragma once
 

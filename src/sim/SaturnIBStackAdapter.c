@@ -1,16 +1,17 @@
 /**
  * Apply ExtIn → step → collect ExtOut for saturn_ib_stack (LVDA_LVDC segregated).
- * OUT11 packing matches SaturnIBStack.cpp / batch_sim RTW layout:
+ * OUT11 packing matches the ExternalIO layout shared by SaturnIBStack.cpp and
+ * batch_sim:
  *   [0..2] lat,lon,h  [3..5] Xe  [6..8] Ve  [9..11] IMU stub
  *   [12] alpha  [13] |Vb|  [14..17] q  [18..20] omega_b  [21..23] Vb  [24] mass
  */
-#include "SaturnIBStackRtwAdapter.h"
+#include "SaturnIBStackAdapter.h"
 
 #include <math.h>
 #include <string.h>
 
-#ifndef SATURNIB_RTW_A_M
-#define SATURNIB_RTW_A_M 6378136.3
+#ifndef SATURNIB_EARTH_RADIUS_M
+#define SATURNIB_EARTH_RADIUS_M 6378136.3
 #endif
 #ifndef SATURNIB_WGS84_E2
 #define SATURNIB_WGS84_E2 6.6943800042608068e-3
@@ -51,7 +52,7 @@ static double n3(const double *v) {
 }
 
 /**
- * ECI → geodetic lat/lon/h (WGS-84 e2, RTW a).
+ * ECI → geodetic lat/lon/h (WGS-84 e2, Earth radius constant above).
  * lon = atan2(y,x) − θ_GMST(t) with live sidereal angle at the sample
  * (matches plant ECI_to_LLA: −Earth_s_Rotation_Sum + atan2).
  * Passing gmst_rad=0 yields ECI right ascension — do not use that for OUT11.
@@ -60,7 +61,7 @@ static void eci_to_lla(
   double x, double y, double z, double gmst_rad,
   double *lat_deg, double *lon_deg, double *h_m
 ) {
-  const double a = SATURNIB_RTW_A_M;
+  const double a = SATURNIB_EARTH_RADIUS_M;
   const double e2 = SATURNIB_WGS84_E2;
   /* Rotate ECI → ECEF-like for lat/h: RotZ(+GMST)·Xe */
   const double c = cos(gmst_rad);
@@ -238,7 +239,7 @@ void saturn_ib_stack_collect_external_outputs(
   }
 }
 
-void saturn_ib_stack_rtw_step(
+void saturn_ib_stack_io_step(
   saturn_ib_stack_t *model,
   const ExternalInputs_saturn_ib_stack *in,
   ExternalOutputs_saturn_ib_stack *out
@@ -246,4 +247,17 @@ void saturn_ib_stack_rtw_step(
   saturn_ib_stack_apply_external_inputs(model, in);
   saturn_ib_stack_step(model);
   saturn_ib_stack_collect_external_outputs(model, out);
+}
+
+/*
+ * Compatibility alias: obliq-2 cgen emits smoke_main.c calling the historical
+ * name. Our host build never links smoke_main, but the generated tree's
+ * standalone smoke target expects this symbol.
+ */
+void saturn_ib_stack_rtw_step(
+  saturn_ib_stack_t *model,
+  const ExternalInputs_saturn_ib_stack *in,
+  ExternalOutputs_saturn_ib_stack *out
+) {
+  saturn_ib_stack_io_step(model, in, out);
 }

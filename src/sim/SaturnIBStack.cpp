@@ -17,8 +17,8 @@ using namespace std;
 #include "ChannelQueue.h"
 
 /*
- * Obliq backend: no RTW plant. SaturnIBPlantObliq owns dynamics;
- * ExternalInputs/Outputs live as members (see SaturnIBStack.h).
+ * SaturnIBPlantObliq owns dynamics; ExternalInputs/Outputs live as members
+ * on SaturnIBStack (see SaturnIBStack.h).
  */
 
 using namespace sim;
@@ -177,7 +177,7 @@ SaturnIBStack::FillIcTrace(struct IcTraceSample_tag *out, double t_sec) const
     if (!out)
         return false;
     ic_trace_clear(out);
-    /* Obliq plant does not yet expose live <S5> BlockIO; use RTW backend. */
+    /* Obliq plant does not yet expose live <S5> BlockIO. */
     return false;
 }
 
@@ -600,7 +600,7 @@ SaturnIBStack::TimeStep( double dDeltaT_sec )
 
         m_pCurrentUplinkMessage = new UplinkMessage();
 
-        // Live OUT22 on-pad ECI (same source rt_OneStep uses pre-liftoff).
+        // Live OUT22 on-pad ECI (same source StepPlant uses pre-liftoff).
         Vector3d vECIPos_meters = Vector3d( pModelOut->OUT22[OUT22_Xe_x_m],
                                             pModelOut->OUT22[OUT22_Xe_y_m],
                                             pModelOut->OUT22[OUT22_Xe_z_m] );
@@ -1032,7 +1032,7 @@ SaturnIBStack::TimeStep( double dDeltaT_sec )
 
         // Step the Saturn IB vehicle model
 
-        rt_OneStep();
+        StepPlant();
 
         // Emit unprogrammed increments to AGC to account for measured velocity changes
 
@@ -1470,9 +1470,9 @@ SaturnIBStack::FineResolverQuantization( double dAngle_deg )
     return (double) ((int) ( dAngle_deg / 360.0 * 32768.0 ) * 360.0 / 32768.0 );
 }
 
-/* Obliq plant step + host entity propagation (RTW-free). */
+/* Obliq plant step + host entity propagation. */
 void
-SaturnIBStack::rt_OneStep()
+SaturnIBStack::StepPlant()
 {
     SaturnIBPlantObliq_step(m_pPlant, &m_inputs, &m_outputs);
 

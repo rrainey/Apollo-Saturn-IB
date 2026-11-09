@@ -2,14 +2,14 @@
  * Obliq-backed Saturn IB plant step (200 Hz).
  *
  * Default backend: full `saturn_ib_stack` with LVDA_LVDC segregated_atomic.
- * Maps ExternalInputs ↔ saturn_ib_stack_rtw_step ↔ ExternalOutputs.
+ * Maps ExternalInputs ↔ saturn_ib_stack_io_step ↔ ExternalOutputs.
  */
 #include "SaturnIBPlantObliq.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "SaturnIBStackRtwAdapter.h"
+#include "SaturnIBStackAdapter.h"
 #include "saturn_ib_stack.h"
 #include "igm_trace.h"
 
@@ -51,7 +51,7 @@ void SaturnIBPlantObliq_step(
 )
 {
   if (!plant || !in || !out) return;
-  saturn_ib_stack_rtw_step(&plant->model, in, out);
+  saturn_ib_stack_io_step(&plant->model, in, out);
   plant->time_sec = plant->model.time;
 }
 

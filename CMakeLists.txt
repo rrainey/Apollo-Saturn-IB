@@ -24,7 +24,7 @@ set(LVDC_DIR      ${CMAKE_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lv
 add_library(saturnib STATIC
     src/sim/SaturnIBPlantObliq.c
     src/sim/SaturnIBStack.cpp
-    src/sim/SaturnIBStackRtwAdapter.c
+    src/sim/SaturnIBStackAdapter.c
     src/sim/SaturnStartupHelper.cpp
     src/sim/UplinkMessage.cpp
     src/sim/igm_trace.c
