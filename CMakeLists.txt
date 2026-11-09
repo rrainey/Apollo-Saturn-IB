@@ -18,8 +18,8 @@ include(cmake/FetchVirtualAGC.cmake)
 # Zero yaAGC dependency; batch_sim and tests link only this.
 # LVDA_LVDC is compiled from native-snapshots/ (the hand-edited source).
 # ---------------------------------------------------------------------------
-set(PLANT_GEN_DIR ${CMAKE_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
-set(LVDC_DIR      ${CMAKE_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
+set(PLANT_GEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
+set(LVDC_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
 
 add_library(saturnib STATIC
     src/sim/SaturnIBPlantObliq.c
