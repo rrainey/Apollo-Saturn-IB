@@ -41,6 +41,14 @@ cd "$OBLIQ"
 # Host bridge lives in src/; strip cgen's copy if emitted
 rm -f "$OUT/saturn_ib_stack_rtw_adapter.c" "$OUT/saturn_ib_stack_rtw_adapter.h"
 
+# cgen's smoke_main still includes the (now-deleted) rtw adapter header.
+# Point it at our host adapter, which provides the ExternalInputs/Outputs
+# types and the saturn_ib_stack_rtw_step compatibility alias.
+if [[ -f "$OUT/smoke_main.c" ]]; then
+  sed -i 's|#include "saturn_ib_stack_rtw_adapter.h"|#include "SaturnIBStackAdapter.h"|' \
+    "$OUT/smoke_main.c"
+fi
+
 # Standalone smoke CMake for generated tree (batch_sim uses lib CMakeLists).
 # LVDA_LVDC sources come from the native snapshot (hand-edit root).
 cat > "$OUT/CMakeLists.txt" << 'CMAKE'
