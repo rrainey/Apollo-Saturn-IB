@@ -88,5 +88,20 @@ int SaturnIBPlantObliq_fill_igm_trace(
     lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad;
   out->SMCZ_rad =
     lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
+
+  /* LVDC S-frame state vectors (sensor-path view, Eqns 4.3.1-5).
+     Product18 = X_S, Product6 = V_S. */
+  {
+    const double *xs = lv->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18;
+    const double *vs = lv->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6;
+    out->XS_x = xs[0]; out->XS_y = xs[1]; out->XS_z = xs[2];
+    out->VS_x = vs[0]; out->VS_y = vs[1]; out->VS_z = vs[2];
+  }
+
+  /* HSL entry inputs (EDD §4.4.2.4). vigained = V_T − |V|_S. */
+  out->V_S_mag_mps = lv->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
+  out->vigained_mps = PARAM_V_T_mps - out->V_S_mag_mps;
+  out->T_HSL_bias_sec =
+    lv->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Sum;
   return 0;
 }

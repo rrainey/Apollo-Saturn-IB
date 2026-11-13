@@ -46,7 +46,8 @@ typedef struct IgmTraceSample_tag {
   double Psi_P_deg;
   double Psi_Y_deg;
 
-  /* S-frame / accel inputs to IGM (when available) */
+  /* S-frame / accel inputs to IGM (when available). XS/VS come from the
+     LVDC's S_Frame_Eqns_4_3_1_5 Product18 / Product6 vectors. */
   double XS_x;
   double XS_y;
   double XS_z;
@@ -56,6 +57,12 @@ typedef struct IgmTraceSample_tag {
   double A_x;
   double A_y;
   double A_z;
+
+  /* LVDC-visible HSL entry inputs (sensor-path). vigained = V_T − |V|_S;
+     entry gate is (T_3_i ≤ T_HSL_bias) && (vigained < V_GRD). */
+  double V_S_mag_mps;
+  double vigained_mps;
+  double T_HSL_bias_sec;
 
   /* Plant diagnostic */
   double elev_cmd_deg;
