@@ -10,6 +10,22 @@ There are two ways to run it:
 
 - **`batch_sim`** runs headless from a JSON file as fast as the CPU allows (about 150× real time), and writes a final-state JSON and a 1 Hz CSV. Runs are deterministic.
 
+## Simulation Fidelity
+
+The simulation is validated against the pre-flight operational trajectory in NASA TM-X-62831, *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision 1*. The LVDC guidance implementation integrates sensor data (ST-124M stabilized platform PIPAs) per EDD §4.3.1 Eqs. 4.3.1-5; no plant state vectors are read directly by the LVDC side.
+
+Measured residuals at S-IVB guidance cutoff on the `AS-205-tm-x-62831` scenario (`data/examples/AS-205-tm-x-62831.json`, `--run-time 960`):
+
+| Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
+|---|---|---|---|
+| Space-fixed velocity | 7780.7 m/s | 7779.2 m/s | −1.5 m/s |
+| Altitude | 227.94 km | 227.60 km | −0.34 km |
+| Flight time (post-liftoff) | 614.63 s | 613.00 s | −1.6 s |
+
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The residuals above are well inside that envelope.
+
+The guidance loop runs on the EDD cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
+
 ## Build
 
 You need CMake 3.16+, a C++17 compiler, git and network access for the first configure. The GUI also needs OpenGL and GLUT (`apt install freeglut3-dev` on Ubuntu). Pass `-DBUILD_GUI=OFF` to skip it.
