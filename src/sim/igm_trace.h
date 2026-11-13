@@ -77,6 +77,12 @@ typedef struct IgmTraceSample_tag {
   double G_S_prev_y;
   double G_S_prev_z;
 
+  /* Diagnostic: HSL polynomial state (does it activate?) */
+  double hsl_V_samples;
+  double hsl_V_curr;
+  double hsl_V_prev;
+  double hsl_V_prev2;
+
   /* Diagnostic: snapshot inputs for V_0/X_0 timing audit. */
   double PAD_Ve_x;
   double PAD_Ve_y;

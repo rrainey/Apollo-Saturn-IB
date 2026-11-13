@@ -158,13 +158,13 @@ static double s_obliq_chi_add14_latched = 0.0;
  * two most-recent cycle lengths (nominal 1.6 s IGM major).  They are
  * refreshed on each IGM major cycle (see the Math_Function3 update site)
  * and consumed by the HSL_Cutoff_Timing gate below. */
-static double s_hsl_V_curr = 0.0;
-static double s_hsl_V_prev = 0.0;
-static double s_hsl_V_prev2 = 0.0;
-static double s_hsl_dT_curr = 1.6;
-static double s_hsl_dT_prev = 1.6;
-static int s_hsl_V_samples = 0;   /* 0..3; need 3 for polynomial */
-static double s_hsl_last_Vref = -1.0; /* last Math_Function3 we consumed */
+double s_hsl_V_curr = 0.0;
+double s_hsl_V_prev = 0.0;
+double s_hsl_V_prev2 = 0.0;
+double s_hsl_dT_curr = 1.6;
+double s_hsl_dT_prev = 1.6;
+int s_hsl_V_samples = 0;   /* 0..3; need 3 for polynomial */
+double s_hsl_last_Vref = -1.0; /* last Math_Function3 we consumed */
 
 /* EDD §4.3.1 Boost Navigation integration state.  The LVDC's own plumbline
  * (S-frame) position/velocity is integrated from the stabilized-platform
@@ -1441,18 +1441,27 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3 = (((_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0 < 0)) ? ((-sqrt((-_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0)))) : (sqrt(_eval_LVDC_Iterative_Guidance_Mode_Math_Function3_in0)));
 
             /* HSL polynomial state refresh (EDD §4.4.2.4 inputs to Eq. 4.4.91).
-             * Shift the V-history pipeline every IGM major cycle.  Guard against
-             * double-shifts within one cycle by tracking the last Vref consumed. */
+             * Shift the V-history pipeline exactly ONCE per IGM major cycle.
+             *
+             * Prior "if (Vnow != last_Vref)" guard fired on every RK4 stage
+             * (compute_outputs runs 4× per outer step; each stage has a
+             * slightly different X_S → Math_Function3), so the pipeline
+             * filled with 3 sub-step samples of ONE outer step instead of
+             * 3 BML samples.  The polynomial then saw ΔV_per_sample ≈ 0 and
+             * got a degenerate A1/A2, so its tgo_poly collapsed and the
+             * cutoff path fell back to the linear Sum.  Gate on sample_tick
+             * so the shift fires once at each BML boundary. */
             {
-                const double Vnow = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
-                if (Vnow != s_hsl_last_Vref) {
+                static unsigned long long s_hsl_last_tick = (unsigned long long)-1;
+                if (model->sample_tick != s_hsl_last_tick) {
                     s_hsl_V_prev2 = s_hsl_V_prev;
                     s_hsl_V_prev  = s_hsl_V_curr;
-                    s_hsl_V_curr  = Vnow;
+                    s_hsl_V_curr  = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
                     s_hsl_dT_prev = s_hsl_dT_curr;
                     s_hsl_dT_curr = PARAM_delta_T_sec;
-                    s_hsl_last_Vref = Vnow;
+                    s_hsl_last_Vref = s_hsl_V_curr;
                     if (s_hsl_V_samples < 3) s_hsl_V_samples++;
+                    s_hsl_last_tick = model->sample_tick;
                 }
             }
     }
@@ -3226,8 +3235,12 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_Add12 */
                 {
+                /* Per-tick guard: s_obliq_chi_* state updates must fire once
+                 * per BML, not once per RK4 stage. */
+                static unsigned long long s_chi_add12_last_tick = (unsigned long long)-1;
                 int _term = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant ? 1 : 0;
-                if (!_term) {
+                int _advance = (model->sample_tick != s_chi_add12_last_tick);
+                if (!_term && _advance) {
                     s_obliq_chi_term_hits = 0;
                     s_obliq_chi_ang_latched = 0;
                 }
@@ -3235,8 +3248,9 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                     model->signals.LVDC_Iterative_Guidance_Mode_Add12 = s_obliq_chi_add12_latched;
                 } else {
                     model->signals.LVDC_Iterative_Guidance_Mode_Add12 = model->signals.LVDC_Iterative_Guidance_Mode_Trigonometric_Function4 - model->signals.LVDC_Iterative_Guidance_Mode_Add13 - model->signals.LVDC_Iterative_Guidance_Mode_Add7 - model->signals.LVDC_Iterative_Guidance_Mode_const_;
-                    if (_term) s_obliq_chi_add12_latched = model->signals.LVDC_Iterative_Guidance_Mode_Add12;
+                    if (_term && _advance) s_obliq_chi_add12_latched = model->signals.LVDC_Iterative_Guidance_Mode_Add12;
                 }
+                if (_advance) s_chi_add12_last_tick = model->sample_tick;
             }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
@@ -3276,17 +3290,21 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_Add14 */
                 {
+                /* Per-tick guard matches the Add12 block above. */
+                static unsigned long long s_chi_add14_last_tick = (unsigned long long)-1;
                 int _term = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Compare_To_Constant ? 1 : 0;
+                int _advance = (model->sample_tick != s_chi_add14_last_tick);
                 if (_term && s_obliq_chi_ang_latched) {
                     model->signals.LVDC_Iterative_Guidance_Mode_Add14 = s_obliq_chi_add14_latched;
                 } else {
                     model->signals.LVDC_Iterative_Guidance_Mode_Add14 = model->signals.LVDC_Iterative_Guidance_Mode_Trigonometric_Function3 - model->signals.LVDC_Iterative_Guidance_Mode_Add15;
-                    if (_term) {
+                    if (_term && _advance) {
                         s_obliq_chi_add14_latched = model->signals.LVDC_Iterative_Guidance_Mode_Add14;
                         s_obliq_chi_term_hits++;
                         if (s_obliq_chi_term_hits >= 2) s_obliq_chi_ang_latched = 1;
                     }
                 }
+                if (_advance) s_chi_add14_last_tick = model->sample_tick;
             }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
