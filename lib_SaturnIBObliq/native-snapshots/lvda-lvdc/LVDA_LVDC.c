@@ -166,6 +166,26 @@ static double s_hsl_dT_prev = 1.6;
 static int s_hsl_V_samples = 0;   /* 0..3; need 3 for polynomial */
 static double s_hsl_last_Vref = -1.0; /* last Math_Function3 we consumed */
 
+/* EDD §4.3.1 Boost Navigation integration state.  The LVDC's own plumbline
+ * (S-frame) position/velocity is integrated from the stabilized-platform
+ * velocity V_m (= model->inputs.V_m_bar_mps, from the ST-124M PIPAs per
+ * §4.2.1-8) plus the gravity model of Eqs. 4.3.6-12.  State persists across
+ * BML sweeps; the trap update of V_Sg is split around the gravity block
+ * (predictor at the integration site, corrector after Eqs. 4.3.6-12 writes
+ * Add1 ≡ G_S).  See the EDD §4.3.1 "Integration" blocks below. */
+double s_X_S[3]      = {0.0, 0.0, 0.0};  /* plumbline position (m) */
+double s_V_Sg[3]     = {0.0, 0.0, 0.0};  /* gravity-side velocity (m/s) */
+double s_G_S_prev[3] = {0.0, 0.0, 0.0};  /* previous-BML G_S (m/s^2) */
+double s_V_0[3]      = {0.0, 0.0, 0.0};  /* Earth-rot vel at pad in plumbline */
+double s_V_m_offset[3] = {0.0, 0.0, 0.0};/* pre-GRR integrator value to subtract */
+int    s_sframe_init = 0;                 /* one-shot init guard at GRR */
+/* The LVDA_LVDC `compute_outputs` function is called multiple times per
+ * outer step by the RK4 stages (k1..k4); without these guards the state
+ * updates below would fire four times each BML.  We advance state only
+ * on the first call per sample_tick. */
+static unsigned long long s_sframe_last_tick = (unsigned long long)-1;
+static unsigned long long s_corrector_last_tick = (unsigned long long)-1;
+
 /*
  * Compute outputs from inputs and states
  * This is the algebraic evaluation - no state changes
@@ -1283,58 +1303,105 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             // Using parameter: DeltaV_b_mps → PARAM_DeltaV_b_mps
             model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Constant3 = PARAM_DeltaV_b_mps;
     }
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch2 */
-            // If block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch2
-            // If control is true/nonzero, output = input2, else output = input1
-            // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->inputs.bLiftoff__tag) {
-                // Copy input2 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch2[i] = model->inputs.Ve_mps[i];
-                }
-            } else {
-                // Copy input1 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch2[i] = model->inputs.PAD_Ve_mps[i];
-                }
-            }
-    }
-
     /* Stage_Sep_3 */
     // Condition block: Stage_Sep_3
     // Evaluate condition: input >= 1.38
     model->signals.Stage_Sep_3 = (model->signals.T3_Timer_Switch >= 1.38);
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch1 */
-            // If block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch1
-            // If control is true/nonzero, output = input2, else output = input1
-            // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->signals.Stage_Sep_3) {
-                // Copy input2 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch1[i] = model->inputs.S_IVB_Ve_mps[i];
-                }
-            } else {
-                // Copy input1 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch1[i] = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch2[i];
-                }
-            }
-    }
+    /* EDD §4.3.1 Boost Navigation — Position and Velocity (Eqs. 4.3.1-5).
+     *
+     * Replaces the previous Switch1/Switch2/MES_DCM × plant_Ve velocity path
+     * and the parallel Switch3/Switch5/MES_DCM × plant_Xe position path
+     * (removed below at the old Product18 site).  Those paths read plant
+     * ground-truth Xe/Ve directly; the LVDC is a flight computer and the
+     * only velocity measurement it has is the stabilized-platform PIPA
+     * accumulator V_m (§4.2.1-8, exposed as model->inputs.V_m_bar_mps
+     * at 0.05 m/s pulse quantization from the ST-124M).
+     *
+     * Integration is on the BML cadence (1.6 s).  Gravity G_S is computed
+     * by the Eqs. 4.3.6-12 subsystem later in this sweep from the X_S
+     * written below.  The trap update of V_Sg per Eq. 4.3.4 needs the
+     * end-of-interval G_S; we apply an Euler predictor here and correct
+     * to the trap value after the gravity block runs (see "EDD §4.3.1
+     * corrector" below).
+     */
     if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6 */
-            // Matrix multiply block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6
-            // Matrix-vector multiplication: [3x3] × [3] = [3]
+        /* Flight-program initialization (EDD §4.3.1: "the trapezoidal
+         * integration scheme determines the vehicle position and velocity
+         * from initial conditions, accelerometer data, and earth
+         * gravitation").  Initialization follows §3.3 Flight Program
+         * Initialization; the LVDC loads X_0 and V_0 from the Presetting
+         * Table at T4+T4PL1.  Here we snapshot X_0 and V_0 on the first
+         * BML at or after liftoff (when the plant's PAD vectors and
+         * MES_DCM are populated with valid values) and begin integration
+         * on that same BML.  Before liftoff the plant's platform
+         * integrators are zero (V_m = 0) and the EDD integration has not
+         * yet started, so we hold X_S = X_0 and V_S = V_0 as constants. */
+        if (!s_sframe_init && model->inputs.bLiftoff) {
             for (int i = 0; i < 3; i++) {
-                model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6[i] = 0.0;
+                s_X_S[i] = 0.0;
+                s_V_0[i] = 0.0;
                 for (int k = 0; k < 3; k++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6[i] += model->inputs.MES_DCM[i][k] * model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch1[k];
+                    s_X_S[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Xe_m[k];
+                    s_V_0[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Ve_mps[k];
                 }
+                /* EDD §4.2.3: "The pulse accumulations must be initialized
+                 * to zero at GRR."  The plant's ST-124M integrator has
+                 * been accumulating specific force since t=0 (including
+                 * the 1-g pad reaction).  Snapshot its liftoff value so
+                 * the LVDC's effective V_m starts at zero here. */
+                s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
+                /* G_S_prev stays at zero on the init BML; refreshed to
+                 * the real value at the end of the gravity block below. */
+                s_V_Sg[i] = 0.0;
             }
+            s_sframe_init = 1;
+        }
+
+        const double dT = 1.6;  /* BML cadence */
+        /* EDD §4.2.8 sensor path, with GRR zero-reset per §4.2.3. */
+        const double V_m[3] = {
+            model->inputs.V_m_bar_mps[0] - s_V_m_offset[0],
+            model->inputs.V_m_bar_mps[1] - s_V_m_offset[1],
+            model->inputs.V_m_bar_mps[2] - s_V_m_offset[2],
+        };
+        /* Memory2 is the plant-provided V_m delay; subtract the same
+         * offset so the trap (V_m + V_m_past) term stays zero-based. */
+        const double V_m_past_raw[3] = {
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[0],
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[1],
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[2],
+        };
+        const double V_m_past[3] = {
+            V_m_past_raw[0] - s_V_m_offset[0],
+            V_m_past_raw[1] - s_V_m_offset[1],
+            V_m_past_raw[2] - s_V_m_offset[2],
+        };
+
+        if (s_sframe_init && model->sample_tick != s_sframe_last_tick) {
+            /* Eq. 4.3.1 - ΔX_Sg = (V_Sg + ½·G_S_prev·ΔT) · ΔT   */
+            /* Eq. 4.3.2 - ΔX_mf = ½·(V_m + [V_m]_past) · ΔT      */
+            /* Eq. 4.3.3 - X_S  += ΔX_Sg + ΔX_mf + V_0·ΔT         */
+            for (int i = 0; i < 3; i++) {
+                const double dX_Sg = (s_V_Sg[i] + 0.5 * s_G_S_prev[i] * dT) * dT;
+                const double dX_mf = 0.5 * (V_m[i] + V_m_past[i]) * dT;
+                s_X_S[i] += dX_Sg + dX_mf + s_V_0[i] * dT;
+            }
+
+            /* V_Sg Euler predictor; trap correction applied after gravity. */
+            for (int i = 0; i < 3; i++) {
+                s_V_Sg[i] += s_G_S_prev[i] * dT;
+            }
+            s_sframe_last_tick = model->sample_tick;
+        }
+
+        /* Eq. 4.3.5 - V_S = V_m + V_Sg + V_0.  Pre-init: V_Sg = 0, V_0 = 0,
+         * V_m = 0 (platform integrator not released until liftoff), so
+         * Product6/Product18 stay at zero until the first-liftoff BML. */
+        for (int i = 0; i < 3; i++) {
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6[i]  = V_m[i] + s_V_Sg[i] + s_V_0[i];
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18[i] = s_X_S[i];
+        }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1923,54 +1990,10 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             model->signals.LVDC_Iterative_Guidance_Mode_MS4_Transform_Matrix_S_Frame_to_4_Frame_MS4_matrix_Mux2[2][1] = model->signals.LVDC_Iterative_Guidance_Mode_MS4_Transform_Matrix_S_Frame_to_4_Frame_MS4_matrix__32;
             model->signals.LVDC_Iterative_Guidance_Mode_MS4_Transform_Matrix_S_Frame_to_4_Frame_MS4_matrix_Mux2[2][2] = model->signals.LVDC_Iterative_Guidance_Mode_MS4_Transform_Matrix_S_Frame_to_4_Frame_MS4_matrix__33;
     }
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch3 */
-            // If block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch3
-            // If control is true/nonzero, output = input2, else output = input1
-            // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->inputs.bLiftoff__tag) {
-                // Copy input2 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch3[i] = model->inputs.Xe_m[i];
-                }
-            } else {
-                // Copy input1 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch3[i] = model->inputs.PAD_Xe_m[i];
-                }
-            }
-    }
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch5 */
-            // If block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch5
-            // If control is true/nonzero, output = input2, else output = input1
-            // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->signals.Stage_Sep_3) {
-                // Copy input2 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch5[i] = model->inputs.S_IVB_Xe_m[i];
-                }
-            } else {
-                // Copy input1 to output
-                for (int i = 0; i < 3; i++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch5[i] = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch3[i];
-                }
-            }
-    }
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-
-            /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18 */
-            // Matrix multiply block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18
-            // Matrix-vector multiplication: [3x3] × [3] = [3]
-            for (int i = 0; i < 3; i++) {
-                model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18[i] = 0.0;
-                for (int k = 0; k < 3; k++) {
-                    model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18[i] += model->inputs.MES_DCM[i][k] * model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Switch5[k];
-                }
-            }
-    }
+    /* Switch3 / Switch5 / Product18 blocks removed: X_S is now produced
+     * by the Eqs. 4.3.1-5 integration above (writes Product18 directly).
+     * The leaked plant-position path (model->inputs.{Xe_m, PAD_Xe_m,
+     * S_IVB_Xe_m}) is no longer consumed. */
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Product6 */
@@ -2362,6 +2385,36 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             for (int i = 0; i < 3; i++) {
                 model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Estimated_Gravitational_Acceleration_Eqns_4_3_6_12_Add1[i] = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Estimated_Gravitational_Acceleration_Eqns_4_3_6_12_Product2[i] + model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Estimated_Gravitational_Acceleration_Eqns_4_3_6_12_Product1[i];
             }
+    }
+
+    /* EDD §4.3.1 corrector: upgrade V_Sg from the Euler predictor applied
+     * at the integration site above to the trapezoidal form of Eq. 4.3.4
+     * now that the new G_S (= Add1) is available.
+     *
+     *   Predicted:  V_Sg_pred = V_Sg_(n-1) + G_S_prev · dT          (Euler)
+     *   Correct:    V_Sg_n    = V_Sg_(n-1) + ½·(G_S_new + G_S_prev) · dT  (Eq. 4.3.4)
+     *   Delta:      V_Sg_n − V_Sg_pred = ½·(G_S_new − G_S_prev) · dT
+     *
+     * We patch Product6 with the same delta so consumers of V_S past
+     * this point in the BML sweep (IGM Product7 at the S→4-frame
+     * transform) read the corrected value.  Earlier consumers
+     * (IGM Math_Function3/4 at line ~1341, feeding HSL polynomial)
+     * already read the Euler-predicted V_S; the bias ≈ ½·(G_S_new −
+     * G_S_prev)·dT is < 0.01 m/s per BML and cancels in the polynomial's
+     * second-difference coefficient A2. */
+    if (s_sframe_init &&
+        model->sample_tick != s_corrector_last_tick &&
+        (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        const double dT = 1.6;
+        for (int i = 0; i < 3; i++) {
+            const double G_S_new =
+                model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Estimated_Gravitational_Acceleration_Eqns_4_3_6_12_Add1[i];
+            const double delta = 0.5 * (G_S_new - s_G_S_prev[i]) * dT;
+            s_V_Sg[i] += delta;
+            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6[i] += delta;
+            s_G_S_prev[i] = G_S_new;
+        }
+        s_corrector_last_tick = model->sample_tick;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 

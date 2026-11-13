@@ -103,5 +103,15 @@ int SaturnIBPlantObliq_fill_igm_trace(
   out->vigained_mps = PARAM_V_T_mps - out->V_S_mag_mps;
   out->T_HSL_bias_sec =
     lv->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Sum;
+
+  out->V_m_raw_x = lv->inputs.V_m_bar_mps[0];
+  out->V_m_raw_y = lv->inputs.V_m_bar_mps[1];
+  out->V_m_raw_z = lv->inputs.V_m_bar_mps[2];
+
+  {
+    extern double s_V_Sg[3], s_G_S_prev[3];
+    out->V_Sg_x = s_V_Sg[0]; out->V_Sg_y = s_V_Sg[1]; out->V_Sg_z = s_V_Sg[2];
+    out->G_S_prev_x = s_G_S_prev[0]; out->G_S_prev_y = s_G_S_prev[1]; out->G_S_prev_z = s_G_S_prev[2];
+  }
   return 0;
 }

@@ -36,7 +36,10 @@ const char *igm_trace_csv_header(void)
          "dV_x,dV_y,dV_z,"
          "T_star_l,L_y,"
          "rate_lim_mf,tau1_mp,T1_mp,tau3_mp,T3_mp,"
-         "V_S_mag_mps,vigained_mps,T_HSL_bias_sec";
+         "V_S_mag_mps,vigained_mps,T_HSL_bias_sec,"
+         "V_m_raw_x,V_m_raw_y,V_m_raw_z,"
+         "V_Sg_x,V_Sg_y,V_Sg_z,"
+         "G_S_prev_x,G_S_prev_y,G_S_prev_z";
 }
 
 void igm_trace_clear(IgmTraceSample *s)
@@ -106,6 +109,11 @@ void igm_trace_clear(IgmTraceSample *s)
   z.V_S_mag_mps = nan;
   z.vigained_mps = nan;
   z.T_HSL_bias_sec = nan;
+  z.V_m_raw_x = nan;
+  z.V_m_raw_y = nan;
+  z.V_m_raw_z = nan;
+  z.V_Sg_x = nan; z.V_Sg_y = nan; z.V_Sg_z = nan;
+  z.G_S_prev_x = nan; z.G_S_prev_y = nan; z.G_S_prev_z = nan;
   *s = z;
 }
 
@@ -174,7 +182,12 @@ int igm_trace_write_row(FILE *f, const IgmTraceSample *s)
   emit(f, s->T3_mp, 0);
   emit(f, s->V_S_mag_mps, 0);
   emit(f, s->vigained_mps, 0);
-  emit(f, s->T_HSL_bias_sec, 1);
+  emit(f, s->T_HSL_bias_sec, 0);
+  emit(f, s->V_m_raw_x, 0);
+  emit(f, s->V_m_raw_y, 0);
+  emit(f, s->V_m_raw_z, 0);
+  emit(f, s->V_Sg_x, 0); emit(f, s->V_Sg_y, 0); emit(f, s->V_Sg_z, 0);
+  emit(f, s->G_S_prev_x, 0); emit(f, s->G_S_prev_y, 0); emit(f, s->G_S_prev_z, 1);
   fputc('\n', f);
   return 0;
 }

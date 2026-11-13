@@ -64,6 +64,19 @@ typedef struct IgmTraceSample_tag {
   double vigained_mps;
   double T_HSL_bias_sec;
 
+  /* Diagnostic: raw V_m_bar_mps from plant (pre-GRR-offset). */
+  double V_m_raw_x;
+  double V_m_raw_y;
+  double V_m_raw_z;
+
+  /* Diagnostic: EDD integration state (static locals in LVDA_LVDC.c). */
+  double V_Sg_x;
+  double V_Sg_y;
+  double V_Sg_z;
+  double G_S_prev_x;
+  double G_S_prev_y;
+  double G_S_prev_z;
+
   /* Plant diagnostic */
   double elev_cmd_deg;
 
