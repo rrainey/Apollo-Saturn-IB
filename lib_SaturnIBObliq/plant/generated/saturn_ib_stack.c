@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-07T21:04:53.604Z
+ * Generated on: 2026-11-13T16:21:37.969Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -470,6 +470,9 @@ void saturn_ib_stack_init(saturn_ib_stack_t* model, double dt) {
     model->dt = dt;
     model->sample_tick = 0ULL;
     model->use_rk4 = 1; /* RK4 integration (4th order) */
+#ifdef OBLIQ_ASSERTS
+    model->stop_requested = 0;
+#endif
 
     /* Zero all structures */
     memset(&model->inputs, 0, sizeof(model->inputs));
@@ -513,10 +516,10 @@ void saturn_ib_stack_init(saturn_ib_stack_t* model, double dt) {
     model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A = -1;
 
     /* Initialize segregated subsystems */
-    LVDA_LVDC_init(&model->LVDA_LVDC);
-    model->LVDA_LVDC.dt = model->dt;
-    model->LVDA_LVDC.time = model->time;
-    model->LVDA_LVDC.sample_tick = model->sample_tick;
+    LVDA_LVDC_init(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC);
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.dt = model->dt;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.time = model->time;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.sample_tick = model->sample_tick;
 
 
     /* Initialize enable states */
@@ -1477,7 +1480,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900047 (from Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900047
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900047_0 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900047_1 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900047_2 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
@@ -1486,7 +1489,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900052 (from Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900052
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900052_0 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900052_1 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
             model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900052_2 = model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
@@ -1719,14 +1722,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[33] = {0.0021, 0.0021, 0.0206, 0.0203, 0.0201, 0.0191, 0.0178, 0.0165, 0.0155, 0.0147, 0.014, 0.0132, 0.0124, 0.0121, 0.0114, 0.0109, 0.0104, 0.01, 0.0097, 0.0094, 0.0091, 0.0086, 0.0084, 0.0081, 0.0079, 0.0076, 0.0074, 0.0072, 0.0071, 0.0069, 0.0066, 0.0065, 0.0064};
+                const int S_IB_Stage_Vehicle_Mass_Properties_CG_Y_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_CG_Y_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[S_IB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[S_IB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i]);
@@ -1749,14 +1755,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[33] = {25.144, 25.144, 25.0557, 24.7247, 24.4584, 23.3056, 22.0548, 20.999, 20.0932, 19.3229, 18.6591, 18.0941, 17.6068, 17.1932, 16.8385, 16.5392, 16.2823, 16.0685, 15.8906, 15.7477, 15.6373, 15.5551, 15.4957, 15.4585, 15.4409, 15.4422, 15.4591, 15.4918, 15.5375, 15.5959, 15.6648, 15.7444, 15.8332};
+                const int S_IB_Stage_Vehicle_Mass_Properties_CG_X_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_CG_X_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[S_IB_Stage_Vehicle_Mass_Properties_CG_X_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[S_IB_Stage_Vehicle_Mass_Properties_CG_X_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_CG_X_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i]);
@@ -1779,14 +1788,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[33] = {-0.0079, -0.0079, -0.0079, -0.0076, -0.0076, -0.007, -0.0066, -0.0062, -0.0058, -0.0055, -0.0051, -0.005, -0.0046, -0.0044, -0.0043, -0.0041, -0.0038, -0.0037, -0.0036, -0.0034, -0.0033, -0.0032, -0.003, -0.0028, -0.0028, -0.0028, -0.0028, -0.0025, -0.0025, -0.0025, -0.0025, -0.0023, -0.0023};
+                const int S_IB_Stage_Vehicle_Mass_Properties_CG_Z_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_CG_Z_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[S_IB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[S_IB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i]);
@@ -1828,13 +1840,13 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory (from Saturn_Instrument_Unit_IU > ST_124M_Stabilized_Platform) */
-    // Unit Delay block: Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory (output phase)
+    // Unit Delay: Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory[i] = model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory_state[i];
     }
 
     /* Memory5 */
-    // Unit Delay block: Memory5 (output phase)
+    // Unit Delay: Memory5 (output phase)
     model->signals.Memory5 = model->states.Memory5_state;
 
     /* MES_Transform_Constant2 (from MES_Transform) */
@@ -2409,29 +2421,29 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Segregated subsystem: LVDA_LVDC */
-    model->LVDA_LVDC.time = model->time;
-    model->LVDA_LVDC.dt = model->dt;
-    model->LVDA_LVDC.sample_tick = model->sample_tick;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A;
-    model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.time = model->time;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.dt = model->dt;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.sample_tick = model->sample_tick;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A;
 
     /* Pre-segregated input refresh: LVDA_LVDC crossing ports */
     {
@@ -2495,46 +2507,46 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                     }
             }
     }
-    memcpy(&model->LVDA_LVDC.inputs.Theta_deg, &model->signals.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory, sizeof(model->LVDA_LVDC.inputs.Theta_deg));
-    memcpy(&model->LVDA_LVDC.inputs.V_m_bar_mps, &model->signals.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Accelerometer_Quantization, sizeof(model->LVDA_LVDC.inputs.V_m_bar_mps));
-    model->LVDA_LVDC.inputs.bSIBPropellantSensorDry = model->signals.S_IB_Stage_Vehicle_Mass_Properties_Propellant_Sensor_Dry;
-    model->LVDA_LVDC.inputs.bLiftoff = model->signals.Memory5;
-    memcpy(&model->LVDA_LVDC.inputs.MES_DCM, &model->signals.MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux2, sizeof(model->LVDA_LVDC.inputs.MES_DCM));
-    memcpy(&model->LVDA_LVDC.inputs.PAD_Ve_mps, &model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product, sizeof(model->LVDA_LVDC.inputs.PAD_Ve_mps));
-    memcpy(&model->LVDA_LVDC.inputs.PAD_Xe_m, &model->signals.On_Pad_Initial_Conditions_Product, sizeof(model->LVDA_LVDC.inputs.PAD_Xe_m));
-    memcpy(&model->LVDA_LVDC.inputs.S_IVB_Ve_mps, &model->signals.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_transform_to_Inertial_axes_Product, sizeof(model->LVDA_LVDC.inputs.S_IVB_Ve_mps));
-    memcpy(&model->LVDA_LVDC.inputs.S_IVB_Xe_m, &model->signals.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze, sizeof(model->LVDA_LVDC.inputs.S_IVB_Xe_m));
-    memcpy(&model->LVDA_LVDC.inputs.Ve_mps, &model->signals.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_transform_to_Inertial_axes_Product, sizeof(model->LVDA_LVDC.inputs.Ve_mps));
-    memcpy(&model->LVDA_LVDC.inputs.Xe_m, &model->signals.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze, sizeof(model->LVDA_LVDC.inputs.Xe_m));
-    model->LVDA_LVDC.inputs.bLiftoff__tag = model->signals.T_L_prime;
-    LVDA_LVDC_compute_outputs(&model->LVDA_LVDC);
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A;
-    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A = model->LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A;
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Theta_deg, &model->signals.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Theta_deg));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.V_m_bar_mps, &model->signals.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Accelerometer_Quantization, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.V_m_bar_mps));
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.bSIBPropellantSensorDry = model->signals.S_IB_Stage_Vehicle_Mass_Properties_Propellant_Sensor_Dry;
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.bLiftoff = model->signals.Memory5;
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.MES_DCM, &model->signals.MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux2, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.MES_DCM));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.PAD_Ve_mps, &model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.PAD_Ve_mps));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.PAD_Xe_m, &model->signals.On_Pad_Initial_Conditions_Product, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.PAD_Xe_m));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.S_IVB_Ve_mps, &model->signals.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_transform_to_Inertial_axes_Product, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.S_IVB_Ve_mps));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.S_IVB_Xe_m, &model->signals.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.S_IVB_Xe_m));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Ve_mps, &model->signals.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_transform_to_Inertial_axes_Product, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Ve_mps));
+    memcpy(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Xe_m, &model->signals.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze, sizeof(model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.Xe_m));
+    model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.inputs.bLiftoff__tag = model->signals.T_L_prime;
+    LVDA_LVDC_compute_outputs(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC);
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_X_deg;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Y_deg;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_Chi_Z_deg;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCY_rad;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_DeltaT_b_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_1_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nTerminalSteeringMode;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_P_C_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_alpha_f;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_tau_3_N_sec;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T1_Timer_A;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T2_Timer_A;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T3_Timer_A;
+    model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_T4_Timer_A;
 
     /* Post-segregated refresh: S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool (live LVDA_LVDC outs) */
     {
             // Evaluate block: S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bUllageMotorStart;
+            double _eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bUllageMotorStart;
             model->signals.S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2543,7 +2555,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVEngineStart;
+            double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVEngineStart;
             model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2552,7 +2564,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IVB_Stage_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IVB_Stage_enable_bool_in0 = model->LVDA_LVDC.outputs.bSimulinkSIVBEnable;
+            double _eval_S_IVB_Stage_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSimulinkSIVBEnable;
             model->signals.S_IVB_Stage_enable_bool = (_eval_S_IVB_Stage_enable_bool_in0 != 0);
     }
 
@@ -2561,7 +2573,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVCutoff;
+            double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVCutoff;
             model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2570,7 +2582,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2579,7 +2591,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2588,7 +2600,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2597,7 +2609,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2606,7 +2618,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2615,7 +2627,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2624,7 +2636,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2633,7 +2645,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+            double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
             model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2642,7 +2654,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIBStageSep;
+            double _eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
             model->signals.S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2651,7 +2663,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // Evaluate block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool
             // Expression: in(0)!=0
             // Input variables
-            double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVBurn;
+            double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn;
             model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool = (_eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 != 0);
     }
 
@@ -2660,7 +2672,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // If block: S_IB_Stage_Vehicle_Mass_Properties_Switch
             // If control is true/nonzero, output = input2, else output = input1
             // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->LVDA_LVDC.outputs.bSIBStageSep) {
+            if (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep) {
                 // Copy input2 to output
                 for (int i = 0; i < 3; i++) {
                     model->signals.S_IB_Stage_Vehicle_Mass_Properties_Switch[i] = model->signals.S_IB_Stage_Vehicle_Mass_Properties_Post_separation_CG[i];
@@ -2700,7 +2712,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Memory3 */
-    // Unit Delay block: Memory3 (output phase)
+    // Unit Delay: Memory3 (output phase)
     model->signals.Memory3 = model->states.Memory3_state;
 
     /* Logical_Operator */
@@ -2766,7 +2778,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
@@ -2775,7 +2787,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
             model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
@@ -2966,7 +2978,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IVB_Stage_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IVB_Stage_enable_bool_in0 = model->LVDA_LVDC.outputs.bSimulinkSIVBEnable;
+    double _eval_S_IVB_Stage_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSimulinkSIVBEnable;
     model->signals.S_IVB_Stage_enable_bool = (_eval_S_IVB_Stage_enable_bool_in0 != 0);
 
     /* S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r (from S_IVB_Stage > Custom_Variable_Mass_6DoF_Quaternion) */
@@ -3510,7 +3522,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // If block: S_IB_Stage_Vehicle_Mass_Properties_Switch1
             // If control is true/nonzero, output = input2, else output = input1
             // Switch criteria: u2 ~= 0 (threshold=0)
-            model->signals.S_IB_Stage_Vehicle_Mass_Properties_Switch1 = model->LVDA_LVDC.outputs.bSIBStageSep ? model->signals.S_IB_Stage_Vehicle_Mass_Properties_Post_separation_Mass_approximate : model->signals.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg;
+            model->signals.S_IB_Stage_Vehicle_Mass_Properties_Switch1 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep ? model->signals.S_IB_Stage_Vehicle_Mass_Properties_Post_separation_Mass_approximate : model->signals.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg;
     }
 
     /* S_IB_Stage_Product1 (from S_IB_Stage) */
@@ -4009,42 +4021,26 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_COESA_Atmosphere_Model (from S_IB_Stage) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Atmosphere block: S_IB_Stage_COESA_Atmosphere_Model (COESA table, n=41)
+            // Atmosphere block: S_IB_Stage_COESA_Atmosphere_Model (U.S. Standard Atmosphere 1976 formulae, altitude clamped to -5000..86000 m)
             {
-                double S_IB_Stage_COESA_Atmosphere_Model_atm_h_in = model->signals.S_IB_Stage_ECI_to_LLA_Add17;
-                const double S_IB_Stage_COESA_Atmosphere_Model_atm_h[41] = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 65000, 70000, 75000, 80000};
-                const double S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[41] = {288.15, 281.65, 275.15, 268.66, 262.17, 255.68, 249.19, 242.7, 236.22, 229.73, 223.25, 216.65, 216.65, 216.65, 216.65, 216.65, 216.65, 218.57, 220.56, 222.54, 224.53, 226.51, 228.49, 233.74, 239.28, 244.82, 250.35, 255.88, 261.4, 266.93, 270.65, 270.65, 268.66, 263.52, 258.02, 252.52, 247.02, 233.3, 219.58, 208.4, 198.64};
-                const double S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[41] = {340.29, 336.43, 332.53, 328.58, 324.59, 320.55, 316.45, 312.31, 308.11, 303.85, 299.53, 295.07, 295.07, 295.07, 295.07, 295.07, 295.07, 296.38, 297.72, 299.06, 300.4, 301.72, 303.04, 306.49, 310.1, 313.67, 317.19, 320.68, 324.12, 327.53, 329.8, 329.8, 328.58, 325.42, 322, 318.55, 315.07, 306.21, 297.07, 289.4, 282.54};
-                const double S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[41] = {101325, 89876, 79501, 70121, 61660, 54048, 47217, 41105, 35651, 30800, 26436, 22632, 19330, 14102, 10353, 7565, 5529, 4047, 2971, 2188, 1616, 1197, 889, 663.4, 498, 376, 287.1, 220, 170, 132, 102.9, 79.78, 61.66, 47.29, 36.05, 27.3, 20.55, 10.81, 5.52, 2.71, 1.052};
-                const double S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[41] = {1.225, 1.1117, 1.0066, 0.90925, 0.81935, 0.73643, 0.66011, 0.59002, 0.52579, 0.46706, 0.41351, 0.36392, 0.31108, 0.227, 0.16647, 0.12165, 0.08891, 0.064512, 0.046939, 0.034256, 0.025085, 0.01841, 0.013555, 0.009887, 0.007257, 0.005366, 0.003996, 0.002995, 0.002259, 0.001714, 0.001317, 0.001027, 0.000806, 0.000623, 0.000479, 0.000368, 0.000288, 0.000162, 0.000087, 0.000046, 0.000018};
-                double S_IB_Stage_COESA_Atmosphere_Model_atm_t = 0.0;
-                int S_IB_Stage_COESA_Atmosphere_Model_atm_i = 0;
-                int S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge = 0; /* 0=interp, -1=low, 1=high */
-                if (S_IB_Stage_COESA_Atmosphere_Model_atm_h_in <= S_IB_Stage_COESA_Atmosphere_Model_atm_h[0]) {
-                    S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge = -1;
-                } else if (S_IB_Stage_COESA_Atmosphere_Model_atm_h_in >= S_IB_Stage_COESA_Atmosphere_Model_atm_h[40]) {
-                    S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge = 1;
-                } else {
-                    for (int i = 0; i < 40; i++) {
-                        if (S_IB_Stage_COESA_Atmosphere_Model_atm_h_in >= S_IB_Stage_COESA_Atmosphere_Model_atm_h[i] && S_IB_Stage_COESA_Atmosphere_Model_atm_h_in <= S_IB_Stage_COESA_Atmosphere_Model_atm_h[i + 1]) {
-                            S_IB_Stage_COESA_Atmosphere_Model_atm_i = i;
-                            S_IB_Stage_COESA_Atmosphere_Model_atm_t = (S_IB_Stage_COESA_Atmosphere_Model_atm_h_in - S_IB_Stage_COESA_Atmosphere_Model_atm_h[i]) / (S_IB_Stage_COESA_Atmosphere_Model_atm_h[i + 1] - S_IB_Stage_COESA_Atmosphere_Model_atm_h[i]);
-                            break;
-                        }
-                    }
-                }
-                if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_temperature_K = S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[0];
-                else if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_temperature_K = S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[40];
-                else model->signals.S_IB_Stage_COESA_Atmosphere_Model_temperature_K = S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i] + S_IB_Stage_COESA_Atmosphere_Model_atm_t * (S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[0];
-                else if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[40];
-                else model->signals.S_IB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i] + S_IB_Stage_COESA_Atmosphere_Model_atm_t * (S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[0];
-                else if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[40];
-                else model->signals.S_IB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i] + S_IB_Stage_COESA_Atmosphere_Model_atm_t * (S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[0];
-                else if (S_IB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[40];
-                else model->signals.S_IB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i] + S_IB_Stage_COESA_Atmosphere_Model_atm_t * (S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IB_Stage_COESA_Atmosphere_Model_atm_i]);
+                static const double S_IB_Stage_COESA_Atmosphere_Model_atm_Hb[7] = { 0.0, 11000.0, 20000.0, 32000.0, 47000.0, 51000.0, 71000.0 };
+                static const double S_IB_Stage_COESA_Atmosphere_Model_atm_Tb[7] = { 288.15, 216.65, 216.65, 228.65, 270.65, 270.65, 214.65 };
+                static const double S_IB_Stage_COESA_Atmosphere_Model_atm_Lb[7] = { -0.0065, 0.0, 0.001, 0.0028, 0.0, -0.0028, -0.002 };
+                static const double S_IB_Stage_COESA_Atmosphere_Model_atm_Pb[7] = { 101325.00000000000, 22632.063973462926, 5474.8886696777790, 868.01868475522895, 110.90630555496627, 66.938873118687496, 3.9564204280407402 };
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_gmr = 9.80665 * 0.0289644 / 8.31432;
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_z = fmin(86000.0, fmax(-5000.0, model->signals.S_IB_Stage_ECI_to_LLA_Add17));
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_H = 6356766.0 * S_IB_Stage_COESA_Atmosphere_Model_atm_z / (6356766.0 + S_IB_Stage_COESA_Atmosphere_Model_atm_z); /* geopotential altitude */
+                int S_IB_Stage_COESA_Atmosphere_Model_atm_b = 0;
+                while (S_IB_Stage_COESA_Atmosphere_Model_atm_b < 6 && S_IB_Stage_COESA_Atmosphere_Model_atm_H >= S_IB_Stage_COESA_Atmosphere_Model_atm_Hb[S_IB_Stage_COESA_Atmosphere_Model_atm_b + 1]) S_IB_Stage_COESA_Atmosphere_Model_atm_b++;
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_dH = S_IB_Stage_COESA_Atmosphere_Model_atm_H - S_IB_Stage_COESA_Atmosphere_Model_atm_Hb[S_IB_Stage_COESA_Atmosphere_Model_atm_b];
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_T = S_IB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] + S_IB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] * S_IB_Stage_COESA_Atmosphere_Model_atm_dH;
+                const double S_IB_Stage_COESA_Atmosphere_Model_atm_P = (S_IB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] == 0.0)
+                    ? S_IB_Stage_COESA_Atmosphere_Model_atm_Pb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] * exp(-S_IB_Stage_COESA_Atmosphere_Model_atm_gmr * S_IB_Stage_COESA_Atmosphere_Model_atm_dH / S_IB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IB_Stage_COESA_Atmosphere_Model_atm_b])
+                    : S_IB_Stage_COESA_Atmosphere_Model_atm_Pb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] * pow(S_IB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IB_Stage_COESA_Atmosphere_Model_atm_b] / S_IB_Stage_COESA_Atmosphere_Model_atm_T, S_IB_Stage_COESA_Atmosphere_Model_atm_gmr / S_IB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IB_Stage_COESA_Atmosphere_Model_atm_b]);
+                model->signals.S_IB_Stage_COESA_Atmosphere_Model_temperature_K = S_IB_Stage_COESA_Atmosphere_Model_atm_T;
+                model->signals.S_IB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = sqrt(1.4 * 8.31432 * S_IB_Stage_COESA_Atmosphere_Model_atm_T / 0.0289644);
+                model->signals.S_IB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IB_Stage_COESA_Atmosphere_Model_atm_P;
+                model->signals.S_IB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IB_Stage_COESA_Atmosphere_Model_atm_P * 0.0289644 / (8.31432 * S_IB_Stage_COESA_Atmosphere_Model_atm_T);
             }
     }
 
@@ -4118,14 +4114,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
-                if (input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[0]) {
+                if (S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[0]) {
                     output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[0];
-                } else if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[6]) {
-                    output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[6];
+                } else if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1]) {
+                    output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1; i++) {
                         if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i] && input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i]) / (S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i + 1] - S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i]);
                             output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i] + t * (S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i + 1] - S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i]);
@@ -4179,15 +4178,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double input2 = model->signals.S_IB_Stage_Aerodynamic_Forces_and_Moments_Angle_Conversion;
                 double output = 0.0;
         
-                // Lookup table dimensions
-                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows = 7;
-                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols = 9;
-        
-                // Input breakpoints
+                // Lookup table dimensions / breakpoints
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[7] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[9] = {0, 2, 4, 6, 8, 10, 12, 14, 15};
-        
-                // Output table
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_table[7][9] = {
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
@@ -4197,6 +4190,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                     {0, 0.14, 0.3, 0.52, 0.8, 1.18, 1.5, 1.9, 2.15},
                     {0, 0.08, 0.21, 0.4, 0.6, 0.9, 1.18, 1.5, 1.7}
                 };
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows = 7;
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols = 9;
         
                 // Find indices and interpolation factors
                 int i0 = 0, i1 = 0;
@@ -4207,11 +4202,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input1 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[0]) {
                     i0 = i1 = 0;
                     t1 = 0.0;
-                } else if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[6]) {
-                    i0 = i1 = 6;
+                } else if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1]) {
+                    i0 = i1 = S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1;
                     t1 = 0.0;
                 } else {
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1; i++) {
                         if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[i] && input1 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[i + 1]) {
                             i0 = i;
                             i1 = i + 1;
@@ -4227,11 +4222,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input2 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[0]) {
                     j0 = j1 = 0;
                     t2 = 0.0;
-                } else if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[8]) {
-                    j0 = j1 = 8;
+                } else if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1]) {
+                    j0 = j1 = S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1;
                     t2 = 0.0;
                 } else {
-                    for (int j = 0; j < 8; j++) {
+                    for (int j = 0; j < S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1; j++) {
                         if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[j] && input2 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[j + 1]) {
                             j0 = j;
                             j1 = j + 1;
@@ -4316,15 +4311,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double input2 = model->signals.S_IB_Stage_Aerodynamic_Forces_and_Moments_Angle_Conversion1;
                 double output = 0.0;
         
-                // Lookup table dimensions
-                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows = 7;
-                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols = 9;
-        
-                // Input breakpoints
+                // Lookup table dimensions / breakpoints
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[7] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[9] = {0, 2, 4, 6, 8, 10, 12, 14, 15};
-        
-                // Output table
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_table[7][9] = {
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
@@ -4334,6 +4323,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                     {0, 0.14, 0.3, 0.52, 0.8, 1.18, 1.5, 1.9, 2.15},
                     {0, 0.08, 0.21, 0.4, 0.6, 0.9, 1.18, 1.5, 1.7}
                 };
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows = 7;
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols = 9;
         
                 // Find indices and interpolation factors
                 int i0 = 0, i1 = 0;
@@ -4344,11 +4335,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input1 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[0]) {
                     i0 = i1 = 0;
                     t1 = 0.0;
-                } else if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[6]) {
-                    i0 = i1 = 6;
+                } else if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1]) {
+                    i0 = i1 = S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1;
                     t1 = 0.0;
                 } else {
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1; i++) {
                         if (input1 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[i] && input1 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[i + 1]) {
                             i0 = i;
                             i1 = i + 1;
@@ -4364,11 +4355,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input2 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[0]) {
                     j0 = j1 = 0;
                     t2 = 0.0;
-                } else if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[8]) {
-                    j0 = j1 = 8;
+                } else if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1]) {
+                    j0 = j1 = S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1;
                     t2 = 0.0;
                 } else {
-                    for (int j = 0; j < 8; j++) {
+                    for (int j = 0; j < S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1; j++) {
                         if (input2 >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[j] && input2 <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[j + 1]) {
                             j0 = j;
                             j1 = j + 1;
@@ -4520,14 +4511,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay_outputs[i]);
@@ -4544,20 +4538,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time_outputs[i]);
@@ -4792,14 +4789,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay_outputs[i]);
@@ -4816,20 +4816,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time_outputs[i]);
@@ -5000,20 +5003,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time_outputs[i]);
@@ -5073,14 +5079,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay_outputs[i]);
@@ -5206,14 +5215,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay_outputs[i]);
@@ -5230,20 +5242,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time_outputs[i]);
@@ -5375,14 +5390,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay_outputs[i]);
@@ -5399,20 +5417,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time_outputs[i]);
@@ -5610,20 +5631,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time_outputs[i]);
@@ -5683,14 +5707,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay_outputs[i]);
@@ -5958,20 +5985,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time_outputs[i]);
@@ -6031,14 +6061,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay_outputs[i]);
@@ -6306,20 +6339,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     if (model->enable_states.S_IB_Stage_enabled) {
             // 1D Lookup block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time
             {
-                double input = model->LVDA_LVDC.outputs.T1_sec;
+                double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
                 double output = 0.0;
         
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[8] = {0, 20, 40, 60, 80, 100, 120, 140};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[8] = {859000, 895819, 923597, 956249, 984994, 997243, 993749, 979176};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_size = 8;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[7]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[7];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time_outputs[i]);
@@ -6379,14 +6415,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[4] = {0, 0.2, 0.3, 0.5};
                 const double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[4] = {1, 0.05, 0.03, 0};
+                const int S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_size = 4;
         
-                if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[0]) {
+                if (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[0]) {
                     output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[0];
-                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[3]) {
-                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[3];
+                } else if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_size - 1]) {
+                    output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[i] && input <= S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[i]) / (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_inputs[i]);
                             output = S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[i] + t * (S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[i + 1] - S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay_outputs[i]);
@@ -6550,14 +6589,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[12] = {0, 0.02, 0.1, 0.7, 1, 1.1, 1.2, 1.4, 1.46, 1.6, 1.8, 2.7};
                 const double S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[12] = {0, 170000, 180000, 172000, 167000, 160000, 158000, 157000, 157000, 75000, 25000, 0};
+                const int S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_size = 12;
         
-                if (input <= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[0]) {
+                if (S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[0]) {
                     output = S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[0];
-                } else if (input >= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[11]) {
-                    output = S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[11];
+                } else if (input >= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_size - 1]) {
+                    output = S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 11; i++) {
+                    for (int i = 0; i < S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_size - 1; i++) {
                         if (input >= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[i] && input <= S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[i]) / (S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[i + 1] - S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_inputs[i]);
                             output = S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[i] + t * (S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[i + 1] - S_IB_Stage_Retrorocket_Motors_S_IB_Retrorocket_Thrust_outputs[i]);
@@ -6705,7 +6747,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* On_Pad_Earth_Gravity_Model_Demux (from On_Pad > Earth_Gravity_Model) */
     // Demux block: On_Pad_Earth_Gravity_Model_Demux
-    // Demux presumed vector input (type map scalar)
+    // Demux vector input
     model->signals.On_Pad_Earth_Gravity_Model_Demux_0 = model->signals.On_Pad_Initial_Conditions_Product[0];
     model->signals.On_Pad_Earth_Gravity_Model_Demux_1 = model->signals.On_Pad_Initial_Conditions_Product[1];
     model->signals.On_Pad_Earth_Gravity_Model_Demux_2 = model->signals.On_Pad_Initial_Conditions_Product[2];
@@ -7143,7 +7185,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* LES_Jettison */
     // Condition block: LES_Jettison
     // Evaluate condition: input >= 163.11
-    model->signals.LES_Jettison = (model->LVDA_LVDC.outputs.T1_sec >= 163.11);
+    model->signals.LES_Jettison = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 163.11);
 
     /* S_IVB_Stage_Vehicle_Mass_Properties_Switch (from S_IVB_Stage > Vehicle_Mass_Properties) */
     if (model->enable_states.S_IVB_Stage_enabled) {
@@ -7168,7 +7210,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Ullage_Jettison */
     // Condition block: Ullage_Jettison
     // Evaluate condition: input >= 156.41
-    model->signals.Ullage_Jettison = (model->LVDA_LVDC.outputs.T1_sec >= 156.41);
+    model->signals.Ullage_Jettison = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 156.41);
 
     /* S_IVB_Stage_Vehicle_Mass_Properties_Switch1 (from S_IVB_Stage > Vehicle_Mass_Properties) */
     if (model->enable_states.S_IVB_Stage_enabled) {
@@ -7199,42 +7241,26 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IVB_Stage_COESA_Atmosphere_Model (from S_IVB_Stage) */
     if (model->enable_states.S_IVB_Stage_enabled) {
-            // Atmosphere block: S_IVB_Stage_COESA_Atmosphere_Model (COESA table, n=41)
+            // Atmosphere block: S_IVB_Stage_COESA_Atmosphere_Model (U.S. Standard Atmosphere 1976 formulae, altitude clamped to -5000..86000 m)
             {
-                double S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in = model->signals.S_IVB_Stage_Constant;
-                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_h[41] = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 65000, 70000, 75000, 80000};
-                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[41] = {288.15, 281.65, 275.15, 268.66, 262.17, 255.68, 249.19, 242.7, 236.22, 229.73, 223.25, 216.65, 216.65, 216.65, 216.65, 216.65, 216.65, 218.57, 220.56, 222.54, 224.53, 226.51, 228.49, 233.74, 239.28, 244.82, 250.35, 255.88, 261.4, 266.93, 270.65, 270.65, 268.66, 263.52, 258.02, 252.52, 247.02, 233.3, 219.58, 208.4, 198.64};
-                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[41] = {340.29, 336.43, 332.53, 328.58, 324.59, 320.55, 316.45, 312.31, 308.11, 303.85, 299.53, 295.07, 295.07, 295.07, 295.07, 295.07, 295.07, 296.38, 297.72, 299.06, 300.4, 301.72, 303.04, 306.49, 310.1, 313.67, 317.19, 320.68, 324.12, 327.53, 329.8, 329.8, 328.58, 325.42, 322, 318.55, 315.07, 306.21, 297.07, 289.4, 282.54};
-                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[41] = {101325, 89876, 79501, 70121, 61660, 54048, 47217, 41105, 35651, 30800, 26436, 22632, 19330, 14102, 10353, 7565, 5529, 4047, 2971, 2188, 1616, 1197, 889, 663.4, 498, 376, 287.1, 220, 170, 132, 102.9, 79.78, 61.66, 47.29, 36.05, 27.3, 20.55, 10.81, 5.52, 2.71, 1.052};
-                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[41] = {1.225, 1.1117, 1.0066, 0.90925, 0.81935, 0.73643, 0.66011, 0.59002, 0.52579, 0.46706, 0.41351, 0.36392, 0.31108, 0.227, 0.16647, 0.12165, 0.08891, 0.064512, 0.046939, 0.034256, 0.025085, 0.01841, 0.013555, 0.009887, 0.007257, 0.005366, 0.003996, 0.002995, 0.002259, 0.001714, 0.001317, 0.001027, 0.000806, 0.000623, 0.000479, 0.000368, 0.000288, 0.000162, 0.000087, 0.000046, 0.000018};
-                double S_IVB_Stage_COESA_Atmosphere_Model_atm_t = 0.0;
-                int S_IVB_Stage_COESA_Atmosphere_Model_atm_i = 0;
-                int S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge = 0; /* 0=interp, -1=low, 1=high */
-                if (S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in <= S_IVB_Stage_COESA_Atmosphere_Model_atm_h[0]) {
-                    S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge = -1;
-                } else if (S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in >= S_IVB_Stage_COESA_Atmosphere_Model_atm_h[40]) {
-                    S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge = 1;
-                } else {
-                    for (int i = 0; i < 40; i++) {
-                        if (S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in >= S_IVB_Stage_COESA_Atmosphere_Model_atm_h[i] && S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in <= S_IVB_Stage_COESA_Atmosphere_Model_atm_h[i + 1]) {
-                            S_IVB_Stage_COESA_Atmosphere_Model_atm_i = i;
-                            S_IVB_Stage_COESA_Atmosphere_Model_atm_t = (S_IVB_Stage_COESA_Atmosphere_Model_atm_h_in - S_IVB_Stage_COESA_Atmosphere_Model_atm_h[i]) / (S_IVB_Stage_COESA_Atmosphere_Model_atm_h[i + 1] - S_IVB_Stage_COESA_Atmosphere_Model_atm_h[i]);
-                            break;
-                        }
-                    }
-                }
-                if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_temperature_K = S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[0];
-                else if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_temperature_K = S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[40];
-                else model->signals.S_IVB_Stage_COESA_Atmosphere_Model_temperature_K = S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i] + S_IVB_Stage_COESA_Atmosphere_Model_atm_t * (S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IVB_Stage_COESA_Atmosphere_Model_atm_T_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[0];
-                else if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[40];
-                else model->signals.S_IVB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i] + S_IVB_Stage_COESA_Atmosphere_Model_atm_t * (S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IVB_Stage_COESA_Atmosphere_Model_atm_a_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[0];
-                else if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[40];
-                else model->signals.S_IVB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i] + S_IVB_Stage_COESA_Atmosphere_Model_atm_t * (S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IVB_Stage_COESA_Atmosphere_Model_atm_P_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i]);
-                if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == -1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[0];
-                else if (S_IVB_Stage_COESA_Atmosphere_Model_atm_use_edge == 1) model->signals.S_IVB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[40];
-                else model->signals.S_IVB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i] + S_IVB_Stage_COESA_Atmosphere_Model_atm_t * (S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i + 1] - S_IVB_Stage_COESA_Atmosphere_Model_atm_rho_y[S_IVB_Stage_COESA_Atmosphere_Model_atm_i]);
+                static const double S_IVB_Stage_COESA_Atmosphere_Model_atm_Hb[7] = { 0.0, 11000.0, 20000.0, 32000.0, 47000.0, 51000.0, 71000.0 };
+                static const double S_IVB_Stage_COESA_Atmosphere_Model_atm_Tb[7] = { 288.15, 216.65, 216.65, 228.65, 270.65, 270.65, 214.65 };
+                static const double S_IVB_Stage_COESA_Atmosphere_Model_atm_Lb[7] = { -0.0065, 0.0, 0.001, 0.0028, 0.0, -0.0028, -0.002 };
+                static const double S_IVB_Stage_COESA_Atmosphere_Model_atm_Pb[7] = { 101325.00000000000, 22632.063973462926, 5474.8886696777790, 868.01868475522895, 110.90630555496627, 66.938873118687496, 3.9564204280407402 };
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_gmr = 9.80665 * 0.0289644 / 8.31432;
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_z = fmin(86000.0, fmax(-5000.0, model->signals.S_IVB_Stage_Constant));
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_H = 6356766.0 * S_IVB_Stage_COESA_Atmosphere_Model_atm_z / (6356766.0 + S_IVB_Stage_COESA_Atmosphere_Model_atm_z); /* geopotential altitude */
+                int S_IVB_Stage_COESA_Atmosphere_Model_atm_b = 0;
+                while (S_IVB_Stage_COESA_Atmosphere_Model_atm_b < 6 && S_IVB_Stage_COESA_Atmosphere_Model_atm_H >= S_IVB_Stage_COESA_Atmosphere_Model_atm_Hb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b + 1]) S_IVB_Stage_COESA_Atmosphere_Model_atm_b++;
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_dH = S_IVB_Stage_COESA_Atmosphere_Model_atm_H - S_IVB_Stage_COESA_Atmosphere_Model_atm_Hb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b];
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_T = S_IVB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] + S_IVB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] * S_IVB_Stage_COESA_Atmosphere_Model_atm_dH;
+                const double S_IVB_Stage_COESA_Atmosphere_Model_atm_P = (S_IVB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] == 0.0)
+                    ? S_IVB_Stage_COESA_Atmosphere_Model_atm_Pb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] * exp(-S_IVB_Stage_COESA_Atmosphere_Model_atm_gmr * S_IVB_Stage_COESA_Atmosphere_Model_atm_dH / S_IVB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b])
+                    : S_IVB_Stage_COESA_Atmosphere_Model_atm_Pb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] * pow(S_IVB_Stage_COESA_Atmosphere_Model_atm_Tb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b] / S_IVB_Stage_COESA_Atmosphere_Model_atm_T, S_IVB_Stage_COESA_Atmosphere_Model_atm_gmr / S_IVB_Stage_COESA_Atmosphere_Model_atm_Lb[S_IVB_Stage_COESA_Atmosphere_Model_atm_b]);
+                model->signals.S_IVB_Stage_COESA_Atmosphere_Model_temperature_K = S_IVB_Stage_COESA_Atmosphere_Model_atm_T;
+                model->signals.S_IVB_Stage_COESA_Atmosphere_Model_speed_of_sound_mps = sqrt(1.4 * 8.31432 * S_IVB_Stage_COESA_Atmosphere_Model_atm_T / 0.0289644);
+                model->signals.S_IVB_Stage_COESA_Atmosphere_Model_pressure_Pa = S_IVB_Stage_COESA_Atmosphere_Model_atm_P;
+                model->signals.S_IVB_Stage_COESA_Atmosphere_Model_density_kgpm3 = S_IVB_Stage_COESA_Atmosphere_Model_atm_P * 0.0289644 / (8.31432 * S_IVB_Stage_COESA_Atmosphere_Model_atm_T);
             }
     }
 
@@ -7321,14 +7347,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
-                if (input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[0]) {
+                if (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[0]) {
                     output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[0];
-                } else if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[6]) {
-                    output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[6];
+                } else if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1]) {
+                    output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size - 1; i++) {
                         if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i] && input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i]) / (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i + 1] - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[i]);
                             output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i] + t * (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i + 1] - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[i]);
@@ -7382,15 +7411,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double input2 = model->signals.S_IVB_Stage_Aerodynamic_Forces_and_Moments_Angle_Conversion;
                 double output = 0.0;
         
-                // Lookup table dimensions
-                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows = 7;
-                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols = 9;
-        
-                // Input breakpoints
+                // Lookup table dimensions / breakpoints
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[7] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[9] = {0, 2, 4, 6, 8, 10, 12, 14, 15};
-        
-                // Output table
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_table[7][9] = {
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
@@ -7400,6 +7423,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                     {0, 0.14, 0.3, 0.52, 0.8, 1.18, 1.5, 1.9, 2.15},
                     {0, 0.08, 0.21, 0.4, 0.6, 0.9, 1.18, 1.5, 1.7}
                 };
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows = 7;
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols = 9;
         
                 // Find indices and interpolation factors
                 int i0 = 0, i1 = 0;
@@ -7410,11 +7435,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input1 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[0]) {
                     i0 = i1 = 0;
                     t1 = 0.0;
-                } else if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[6]) {
-                    i0 = i1 = 6;
+                } else if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1]) {
+                    i0 = i1 = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1;
                     t1 = 0.0;
                 } else {
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_rows - 1; i++) {
                         if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[i] && input1 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[i + 1]) {
                             i0 = i;
                             i1 = i + 1;
@@ -7430,11 +7455,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input2 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[0]) {
                     j0 = j1 = 0;
                     t2 = 0.0;
-                } else if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[8]) {
-                    j0 = j1 = 8;
+                } else if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1]) {
+                    j0 = j1 = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1;
                     t2 = 0.0;
                 } else {
-                    for (int j = 0; j < 8; j++) {
+                    for (int j = 0; j < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_cols - 1; j++) {
                         if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[j] && input2 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input2[j + 1]) {
                             j0 = j;
                             j1 = j + 1;
@@ -7519,15 +7544,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double input2 = model->signals.S_IVB_Stage_Aerodynamic_Forces_and_Moments_Angle_Conversion1;
                 double output = 0.0;
         
-                // Lookup table dimensions
-                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows = 7;
-                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols = 9;
-        
-                // Input breakpoints
+                // Lookup table dimensions / breakpoints
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[7] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[9] = {0, 2, 4, 6, 8, 10, 12, 14, 15};
-        
-                // Output table
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_table[7][9] = {
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
                     {0, 0.22, 0.44, 0.68, 0.9, 1.15, 1.38, 1.62, 1.75},
@@ -7537,6 +7556,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                     {0, 0.14, 0.3, 0.52, 0.8, 1.18, 1.5, 1.9, 2.15},
                     {0, 0.08, 0.21, 0.4, 0.6, 0.9, 1.18, 1.5, 1.7}
                 };
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows = 7;
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols = 9;
         
                 // Find indices and interpolation factors
                 int i0 = 0, i1 = 0;
@@ -7547,11 +7568,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input1 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[0]) {
                     i0 = i1 = 0;
                     t1 = 0.0;
-                } else if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[6]) {
-                    i0 = i1 = 6;
+                } else if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1]) {
+                    i0 = i1 = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1;
                     t1 = 0.0;
                 } else {
-                    for (int i = 0; i < 6; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_rows - 1; i++) {
                         if (input1 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[i] && input1 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input1[i + 1]) {
                             i0 = i;
                             i1 = i + 1;
@@ -7567,11 +7588,11 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 if (input2 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[0]) {
                     j0 = j1 = 0;
                     t2 = 0.0;
-                } else if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[8]) {
-                    j0 = j1 = 8;
+                } else if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1]) {
+                    j0 = j1 = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1;
                     t2 = 0.0;
                 } else {
-                    for (int j = 0; j < 8; j++) {
+                    for (int j = 0; j < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_cols - 1; j++) {
                         if (input2 >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[j] && input2 <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_beta_input2[j + 1]) {
                             j0 = j;
                             j1 = j + 1;
@@ -7781,14 +7802,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[32] = {147.26, 148.58, 151.5, 151.98, 155, 159.18, 160, 180, 186.88, 190, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 477, 480, 500, 520, 540, 560, 580, 592.91};
                 const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[32] = {0, 0, 748098.2226975828, 866037.2226751632, 880691.440595036, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 1005382.6012595629, 959550.6675768418, 809715.4997679456, 783273.9995663756, 783273.9995663756, 783273.9995663756, 783273.9995663756, 783273.9995663756, 783273.9995663756, 783273.9995663756};
+                const int S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size = 32;
         
-                if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[0]) {
+                if (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[0]) {
                     output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[0];
-                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[31]) {
-                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[31];
+                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size - 1]) {
+                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 31; i++) {
+                    for (int i = 0; i < S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size - 1; i++) {
                         if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[i] && input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[i]) / (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_inputs[i]);
                             output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[i] + t * (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[i]);
@@ -7842,14 +7866,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[16] = {0, 0.1, 0.15, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.3, 0.4, 0.5, 0.75, 1, 1.5, 2};
                 const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[16] = {1, 1, 1, 0.98, 0.85, 0.55, 0.3, 0.16, 0.1, 0.07, 0.045, 0.033, 0.02, 0.013, 0.007, 0};
+                const int S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size = 16;
         
-                if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[0]) {
+                if (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[0]) {
                     output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[0];
-                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[15]) {
-                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[15];
+                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size - 1]) {
+                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 15; i++) {
+                    for (int i = 0; i < S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_size - 1; i++) {
                         if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i] && input <= S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i]) / (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_inputs[i]);
                             output = S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i] + t * (S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_Decay_outputs[i]);
@@ -7935,14 +7962,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[11] = {0, 0.2, 0.25, 0.7, 1.7, 2.7, 3.7, 4, 5.2, 6, 9.7};
                 const double S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[11] = {0, 15500, 17000, 16500, 16300, 16200, 14500, 9000, 2500, 1800, 0};
+                const int S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_size = 11;
         
-                if (input <= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[0]) {
+                if (S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[0]) {
                     output = S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[0];
-                } else if (input >= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[10]) {
-                    output = S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[10];
+                } else if (input >= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_size - 1]) {
+                    output = S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_size - 1; i++) {
                         if (input >= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[i] && input <= S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[i]) / (S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[i + 1] - S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[i]);
                             output = S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[i] + t * (S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[i + 1] - S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_outputs[i]);
@@ -8014,7 +8044,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Memory1 */
-    // Unit Delay block: Memory1 (output phase)
+    // Unit Delay: Memory1 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.Memory1[i] = model->states.Memory1_state[i];
     }
@@ -8127,7 +8157,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Memory2 */
-    // Unit Delay block: Memory2 (output phase)
+    // Unit Delay: Memory2 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.Memory2[i] = model->states.Memory2_state[i];
     }
@@ -8287,7 +8317,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     }
 
     /* Memory4 */
-    // Unit Delay block: Memory4 (output phase)
+    // Unit Delay: Memory4 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.Memory4[i] = model->states.Memory4_state[i];
     }
@@ -8304,7 +8334,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // (constant value initialized in _init)
 
     /* Memory6 */
-    // Unit Delay block: Memory6 (output phase)
+    // Unit Delay: Memory6 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.Memory6[i] = model->states.Memory6_state[i];
     }
@@ -8313,7 +8343,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // If block: Switch7
     // If control is true/nonzero, output = input2, else output = input1
     // Switch criteria: u2 ~= 0 (threshold=0)
-    if (model->LVDA_LVDC.outputs.bSIBStageSep) {
+    if (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep) {
         // Copy input2 to output
         for (int i = 0; i < 3; i++) {
             model->signals.Switch7[i] = (model->signals.Ground);
@@ -8485,7 +8515,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900057 (from Initial_Conditions > MES_Transform > MES_Transform > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900057
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900057_0 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900057_1 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900057_2 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
@@ -8494,7 +8524,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900062 (from Initial_Conditions > MES_Transform > MES_Transform > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900062
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900062_0 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900062_1 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
             model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900062_2 = model->signals.Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
@@ -8695,9 +8725,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Mux_expand_9_demux_900129 */
     // Demux block: Mux_expand_9_demux_900129
     // Demux vector input
-    model->signals.Mux_expand_9_demux_900129_0 = model->LVDA_LVDC.outputs.theta_deg[0];
-    model->signals.Mux_expand_9_demux_900129_1 = model->LVDA_LVDC.outputs.theta_deg[1];
-    model->signals.Mux_expand_9_demux_900129_2 = model->LVDA_LVDC.outputs.theta_deg[2];
+    model->signals.Mux_expand_9_demux_900129_0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[0];
+    model->signals.Mux_expand_9_demux_900129_1 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[1];
+    model->signals.Mux_expand_9_demux_900129_2 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[2];
 
     /* S_IB_Stage_Angle_Conversion10 (from S_IB_Stage) */
     if (model->enable_states.S_IB_Stage_enabled) {
@@ -9329,9 +9359,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Mux1_expand_9_demux_900134 */
     // Demux block: Mux1_expand_9_demux_900134
     // Demux vector input
-    model->signals.Mux1_expand_9_demux_900134_0 = model->LVDA_LVDC.outputs.theta_deg[0];
-    model->signals.Mux1_expand_9_demux_900134_1 = model->LVDA_LVDC.outputs.theta_deg[1];
-    model->signals.Mux1_expand_9_demux_900134_2 = model->LVDA_LVDC.outputs.theta_deg[2];
+    model->signals.Mux1_expand_9_demux_900134_0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[0];
+    model->signals.Mux1_expand_9_demux_900134_1 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[1];
+    model->signals.Mux1_expand_9_demux_900134_2 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.theta_deg[2];
 
     /* S_IVB_Stage_Angle_Conversion10 (from S_IVB_Stage) */
     if (model->enable_states.S_IVB_Stage_enabled) {
@@ -9382,7 +9412,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* On_Pad_ECI_to_LLA_Demux (from On_Pad > ECI_to_LLA) */
     // Demux block: On_Pad_ECI_to_LLA_Demux
-    // Demux presumed vector input (type map scalar)
+    // Demux vector input
     model->signals.On_Pad_ECI_to_LLA_Demux_0 = model->signals.On_Pad_Initial_Conditions_Product[0];
     model->signals.On_Pad_ECI_to_LLA_Demux_1 = model->signals.On_Pad_Initial_Conditions_Product[1];
     model->signals.On_Pad_ECI_to_LLA_Demux_2 = model->signals.On_Pad_Initial_Conditions_Product[2];
@@ -9796,7 +9826,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900087 (from On_Pad > Initial_Conditions > MES_Transform > MES_Transform > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900087
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900087_0 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900087_1 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900087_2 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
@@ -9805,7 +9835,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900092 (from On_Pad > Initial_Conditions > MES_Transform > MES_Transform > E_Frame_to_s_Frame_MES_matrix) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
             // Demux block: On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900092
-            // Demux presumed vector input (type map scalar)
+            // Demux vector input
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900092_0 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900092_1 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900092_2 = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
@@ -10136,14 +10166,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[6] = {0, 0.51, 1.2, 1.54, 2.14, 6.28};
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[6] = {17.95, 17.9109, 18.2259, 20.2936, 25.3718, 35.6068};
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size = 6;
         
-                if (input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[0]) {
+                if (S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[0]) {
                     output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[0];
-                } else if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[5]) {
-                    output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[5];
+                } else if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1]) {
+                    output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1; i++) {
                         if (input >= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i] && input <= S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i]) / (S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i + 1] - S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i]);
                             output = S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i] + t * (S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i + 1] - S_IB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i]);
@@ -10176,7 +10209,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             // If block: S_IB_Stage_Aerodynamic_Forces_and_Moments_Switch
             // If control is true/nonzero, output = input2, else output = input1
             // Switch criteria: u2 ~= 0 (threshold=0)
-            if (model->LVDA_LVDC.outputs.bSIBStageSep) {
+            if (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep) {
                 // Copy input2 to output
                 for (int i = 0; i < 3; i++) {
                     model->signals.S_IB_Stage_Aerodynamic_Forces_and_Moments_Switch[i] = model->signals.S_IB_Stage_Aerodynamic_Forces_and_Moments_Post_separation_CG[i];
@@ -10356,14 +10389,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[33] = {42782, 42782, 43191, 44541, 45361, 50230, 50293, 62379, 68482, 74605, 80743, 86896, 93055, 99216, 105379, 111540, 117719, 123909, 130100, 136295, 142475, 148652, 154847, 161049, 167264, 173502, 179739, 185962, 192161, 198312, 204449, 210509, 216249};
+                const int S_IB_Stage_Vehicle_Mass_Properties_Ixx_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_Ixx_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[S_IB_Stage_Vehicle_Mass_Properties_Ixx_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[S_IB_Stage_Vehicle_Mass_Properties_Ixx_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_Ixx_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i]);
@@ -10386,14 +10422,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[33] = {2817336, 2517336, 2854758, 2988393, 3097544, 3543473, 4013504, 4397718, 4716876, 4978079, 5193914, 5369698, 5513863, 5629776, 5723518, 5797431, 5856868, 5902608, 5938224, 5963453, 5985578, 5996581, 6005593, 6009655, 6014230, 6016490, 6020537, 6026361, 6032428, 6044729, 6055422, 6072821, 6094787};
+                const int S_IB_Stage_Vehicle_Mass_Properties_Iyy_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_Iyy_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[S_IB_Stage_Vehicle_Mass_Properties_Iyy_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[S_IB_Stage_Vehicle_Mass_Properties_Iyy_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_Iyy_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i]);
@@ -10416,14 +10455,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[33] = {179218, 179225, 180020, 182752, 185149, 196236, 210314, 224456, 238644, 252875, 267134, 281431, 295745, 310078, 324423, 338778, 353202, 367663, 382121, 396580, 411038, 425426, 439815, 454204, 468588, 482967, 497330, 511673, 525995, 540243, 554412, 568480, 582491};
                 const double S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[33] = {2817336, 2517336, 2854758, 2988393, 3097544, 3543473, 4013504, 4397718, 4716876, 4978079, 5193914, 5369698, 5513863, 5629776, 5723518, 5797431, 5856868, 5902608, 5938224, 5963453, 5985578, 5996581, 6005593, 6009655, 6014230, 6016490, 6020537, 6026361, 6032428, 6044729, 6055422, 6072821, 6094787};
+                const int S_IB_Stage_Vehicle_Mass_Properties_Izz_size = 33;
         
-                if (input <= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[0]) {
+                if (S_IB_Stage_Vehicle_Mass_Properties_Izz_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[0]) {
                     output = S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[0];
-                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[32]) {
-                    output = S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[32];
+                } else if (input >= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[S_IB_Stage_Vehicle_Mass_Properties_Izz_size - 1]) {
+                    output = S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[S_IB_Stage_Vehicle_Mass_Properties_Izz_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 32; i++) {
+                    for (int i = 0; i < S_IB_Stage_Vehicle_Mass_Properties_Izz_size - 1; i++) {
                         if (input >= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[i] && input <= S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[i + 1]) {
                             double t = (input - S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[i]) / (S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Izz_inputs[i]);
                             output = S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[i] + t * (S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[i + 1] - S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[i]);
@@ -10705,7 +10747,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_1 > Triggered_Timer > Timer_Initialization) */
@@ -10740,7 +10782,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_2 > Triggered_Timer > Timer_Initialization) */
@@ -10775,7 +10817,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_3 > Triggered_Timer > Timer_Initialization) */
@@ -10810,7 +10852,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bOECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_4 > Triggered_Timer > Timer_Initialization) */
@@ -10823,7 +10865,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_5 > Triggered_Timer > Timer_Initialization) */
@@ -10836,7 +10878,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_6 > Triggered_Timer > Timer_Initialization) */
@@ -10849,7 +10891,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_7 > Triggered_Timer > Timer_Initialization) */
@@ -10862,7 +10904,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bIECO;
+    double _eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
     model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Triggered_Timer_Timer_Initialization_Data_Store_Write (from S_IB_Stage > H_1_Engine_Cluster > Engine_8 > Triggered_Timer > Timer_Initialization) */
@@ -10909,7 +10951,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIBStageSep;
+    double _eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
     model->signals.S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IB_Stage_Retrorocket_Motors_Time_Since_Engine_Start_Timer_Initialization_Data_Store_Write (from S_IB_Stage > Retrorocket_Motors > Time_Since_Engine_Start > Timer_Initialization) */
@@ -10934,14 +10976,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[34] = {17.5931, 17.5926, 17.5479, 16.3594, 14.8766, 13.7122, 12.7645, 11.9749, 11.2929, 11.195, 10.6636, 10.1311, 9.686, 9.3113, 8.9933, 8.7211, 8.4874, 8.2865, 8.1142, 7.964, 7.8369, 7.7273, 7.6347, 7.5571, 7.5236, 7.514, 8.3239, 8.2453, 8.2425, 8.2453, 8.217, 8.216, 8.216, 8.216};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_CG_X_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_CG_X_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_X_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_X_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_CG_X_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_X_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_X_outputs[i]);
@@ -10964,14 +11009,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[34] = {-0.0968, -0.0968, -0.0966, -0.0891, -0.0796, -0.0719, -0.0657, -0.0605, -0.0557, -0.0551, -0.0513, -0.0474, -0.0441, -0.0414, -0.0389, -0.0366, -0.0347, -0.0331, -0.0314, -0.03, -0.0286, -0.0276, -0.0266, -0.0256, -0.025, -0.0249, -0.0238, -0.0229, -0.0229, -0.0228, -0.0226, -0.0226, -0.0226, -0.0226};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_Y_outputs[i]);
@@ -10994,14 +11042,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[34] = {-0.0328, -0.0328, -0.0327, -0.0301, -0.0269, -0.0242, -0.0219, -0.0201, -0.0184, -0.0183, -0.0169, -0.0156, -0.0144, -0.0134, -0.0126, -0.0118, -0.0112, -0.0106, -0.0101, -0.0096, -0.009, -0.0086, -0.0083, -0.0079, -0.0078, -0.0076, -0.0078, -0.0074, -0.0074, -0.0074, -0.0074, -0.0074, -0.0074, -0.0074};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_CG_Z_outputs[i]);
@@ -11229,14 +11280,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[6] = {0, 0.51, 1.2, 1.54, 2.14, 6.28};
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[6] = {17.95, 17.9109, 18.2259, 20.2936, 25.3718, 35.6068};
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size = 6;
         
-                if (input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[0]) {
+                if (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[0]) {
                     output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[0];
-                } else if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[5]) {
-                    output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[5];
+                } else if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1]) {
+                    output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_size - 1; i++) {
                         if (input >= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i] && input <= S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i]) / (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i + 1] - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_inputs[i]);
                             output = S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i] + t * (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i + 1] - S_IVB_Stage_Aerodynamic_Forces_and_Moments_CP_m_outputs[i]);
@@ -11431,14 +11485,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[34] = {13294, 13294, 13294, 13298, 13303, 13307, 13311, 13315, 13318, 13319, 13322, 13325, 13329, 13332, 13334, 13338, 13340, 13343, 13346, 13349, 13351, 13354, 13357, 13359, 13361, 13361, 13453, 13456, 13456, 13576, 13511, 13593, 13642, 13642};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_Ixx_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_Ixx_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[S_IVB_Stage_Vehicle_Mass_Properties_Ixx_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[S_IVB_Stage_Vehicle_Mass_Properties_Ixx_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_Ixx_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Ixx_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Ixx_outputs[i]);
@@ -11461,14 +11518,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[34] = {356888, 356912, 359090, 416336, 486596, 540625, 584100, 619892, 650469, 654832, 678390, 701074, 720881, 736855, 750242, 761591, 771303, 779584, 786634, 792844, 798039, 802626, 806568, 809927, 811425, 811860, 1119399, 1123582, 1123726, 1124798, 1125260, 1125364, 1125673, 1125673};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_Iyy_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_Iyy_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[S_IVB_Stage_Vehicle_Mass_Properties_Iyy_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[S_IVB_Stage_Vehicle_Mass_Properties_Iyy_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_Iyy_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Iyy_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Iyy_outputs[i]);
@@ -11491,14 +11551,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 // Lookup table data
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[34] = {30679, 30680, 30768, 33383, 37429, 41455, 45517, 49647, 53949, 54630, 58719, 63592, 68474, 73349, 78223, 83102, 87977, 92857, 97731, 102607, 107484, 112361, 117240, 122120, 124558, 125318, 130828, 135700, 135898, 136955, 137000, 137659, 137853, 137883};
                 const double S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[34] = {356888, 356912, 359090, 416336, 486596, 540625, 584100, 619892, 650469, 654832, 678390, 701674, 720881, 736855, 750242, 761591, 771303, 779584, 786634, 792844, 798039, 802626, 806568, 809927, 811425, 811860, 1119399, 1123582, 1123726, 1124798, 1125260, 1125364, 1125673, 1125673};
+                const int S_IVB_Stage_Vehicle_Mass_Properties_Izz_size = 34;
         
-                if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[0]) {
+                if (S_IVB_Stage_Vehicle_Mass_Properties_Izz_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[0]) {
                     output = S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[0];
-                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[33]) {
-                    output = S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[33];
+                } else if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[S_IVB_Stage_Vehicle_Mass_Properties_Izz_size - 1]) {
+                    output = S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[S_IVB_Stage_Vehicle_Mass_Properties_Izz_size - 1];
                 } else {
                     // Linear interpolation
-                    for (int i = 0; i < 33; i++) {
+                    for (int i = 0; i < S_IVB_Stage_Vehicle_Mass_Properties_Izz_size - 1; i++) {
                         if (input >= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[i] && input <= S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[i + 1]) {
                             double t = (input - S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[i]) / (S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Izz_inputs[i]);
                             output = S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[i] + t * (S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[i + 1] - S_IVB_Stage_Vehicle_Mass_Properties_Izz_outputs[i]);
@@ -11665,7 +11728,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVEngineStart;
+    double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVEngineStart;
     model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Timer_Initialization_Data_Store_Write (from S_IVB_Stage > J_2_Engine > Thrust_Model > Time_Since_Engine_Start > Timer_Initialization) */
@@ -11678,7 +11741,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVCutoff;
+    double _eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVCutoff;
     model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Timer_Initialization_Data_Store_Write (from S_IVB_Stage > J_2_Engine > Thrust_Model > Time_Since_Shutdown > Timer_Initialization) */
@@ -11725,7 +11788,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bUllageMotorStart;
+    double _eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bUllageMotorStart;
     model->signals.S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool = (_eval_S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_enable_bool_in0 != 0);
 
     /* S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_Data_Store_Write (from S_IVB_Stage > Ullage_Rocket_Motors > Time_Since_Engine_Start > Timer_Initialization) */
@@ -11825,20 +11888,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // 1D Lookup block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll
     {
-        double input = model->LVDA_LVDC.outputs.T1_sec;
+        double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
         double output = 0.0;
         
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[6] = {0, 40, 40, 100, 100, 160};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[6] = {0.3, 0.3, 0.23, 0.23, 0.15, 0.15};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_size = 6;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[5]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[5];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_roll_outputs[i]);
@@ -11853,20 +11919,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // 1D Lookup block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg
     {
-        double input = model->LVDA_LVDC.outputs.T1_sec;
+        double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
         double output = 0.0;
         
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[6] = {0, 90, 90, 120, 120, 160};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[6] = {1.8, 1.8, 1.2, 1.2, 1, 1};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_size = 6;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[5]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[5];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_outputs[i]);
@@ -11888,20 +11957,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // 1D Lookup block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec
     {
-        double input = model->LVDA_LVDC.outputs.T1_sec;
+        double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
         double output = 0.0;
         
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[6] = {0, 90, 90, 120, 120, 160};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[6] = {1.5, 1.5, 1.1, 1.1, 0.6, 0.6};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_size = 6;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[5]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[5];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_outputs[i]);
@@ -11916,20 +11988,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // 1D Lookup block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll
     {
-        double input = model->LVDA_LVDC.outputs.T1_sec;
+        double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
         double output = 0.0;
         
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[6] = {0, 40, 40, 100, 100, 160};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[6] = {0.36, 0.36, 0.21, 0.21, 0.13, 0.13};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_size = 6;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[5]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[5];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll_outputs[i]);
@@ -11956,9 +12031,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     // Demux block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux
     // Demux vector input
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_0 = model->LVDA_LVDC.outputs.Psi_deg[0];
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_1 = model->LVDA_LVDC.outputs.Psi_deg[1];
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_2 = model->LVDA_LVDC.outputs.Psi_deg[2];
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.Psi_deg[0];
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_1 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.Psi_deg[1];
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_2 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.Psi_deg[2];
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     // Source block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant (constant)
@@ -11968,7 +12043,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // If block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch1
     // If control is true/nonzero, output = input2, else output = input1
     // Switch criteria: u2 ~= 0 (threshold=0)
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch1 = model->LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_1;
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch1 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_1;
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     // Limit block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation (lower = -2.5, upper = 2.5)
@@ -11991,7 +12066,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // If block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch2
     // If control is true/nonzero, output = input2, else output = input1
     // Switch criteria: u2 ~= 0 (threshold=0)
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch2 = model->LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux1_1;
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch2 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux1_1;
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Sum4 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Sum4 = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation + model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch2;
@@ -12048,7 +12123,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // If block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch
     // If control is true/nonzero, output = input2, else output = input1
     // Switch criteria: u2 ~= 0 (threshold=0)
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch = model->LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_2;
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux_2;
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation2 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     // Limit block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation2 (lower = -2.5, upper = 2.5)
@@ -12058,7 +12133,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // If block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch3
     // If control is true/nonzero, output = input2, else output = input1
     // Switch criteria: u2 ~= 0 (threshold=0)
-    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch3 = model->LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux1_2;
+    model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch3 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn ? model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Constant : model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Demux1_2;
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Sum3 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > Spatial_Attitude_Control_System) */
     model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Sum3 = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Switch3 + model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Saturation2;
@@ -12226,14 +12301,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[4] = {0, 140, 140, 800};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[4] = {0.6, 0.6, 0.3, 0.3};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_size = 4;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[3]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[3];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a0_deg_deg_s_IV_outputs[i]);
@@ -12261,14 +12339,17 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[4] = {0, 140, 140, 800};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[4] = {0.4, 0.4, 0.2, 0.2};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_size = 4;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[3]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[3];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_deg_deg_per_sec_s_IV_outputs[i]);
@@ -12316,20 +12397,23 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // 1D Lookup block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2
     {
-        double input = model->LVDA_LVDC.outputs.T1_sec;
+        double input = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec;
         double output = 0.0;
         
         // Lookup table data
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[6] = {0, 30, 60, 80, 110, 160};
         const double Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[6] = {0, 0, 5, 5, 0, 0};
+        const int Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_size = 6;
         
-        if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[0]) {
+        if (Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_size <= 0) {
+            output = 0.0;
+        } else if (input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[0]) {
             output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[0];
-        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[5]) {
-            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[5];
+        } else if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_size - 1]) {
+            output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_size - 1];
         } else {
             // Linear interpolation
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_size - 1; i++) {
                 if (input >= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[i] && input <= Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[i + 1]) {
                     double t = (input - Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[i]) / (Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_inputs[i]);
                     output = Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[i] + t * (Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[i + 1] - Saturn_Instrument_Unit_IU_Flight_Control_Computer_g2_deg_m_per_sec_2_outputs[i]);
@@ -12398,13 +12482,13 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product2 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // Vector element-wise *
     for (int i = 0; i < 3; i++) {
-        model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product2[i] = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Mux7[i] * model->LVDA_LVDC.outputs.Psi_deg[i];
+        model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product2[i] = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Mux7[i] * model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.Psi_deg[i];
     }
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product9 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer) */
     // Vector element-wise *
     for (int i = 0; i < 3; i++) {
-        model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product9[i] = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Mux[i] * model->LVDA_LVDC.outputs.Psi_deg[i];
+        model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product9[i] = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Mux[i] * model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.Psi_deg[i];
     }
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Demux1 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > S_IB_Attitude_Error_Filters) */
@@ -12465,7 +12549,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Logical_Operator
     // Expression: !(in(0))
     // Input variables
-    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Logical_Operator_in0 = model->LVDA_LVDC.outputs.bSwitchpoin5;
+    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Logical_Operator_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSwitchpoin5;
     model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Logical_Operator = (!_eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Logical_Operator_in0);
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > S_IVB_Pitch_Yaw_Attitude_Rate_Filters) */
@@ -12536,7 +12620,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Logical_Operator
     // Expression: !(in(0))
     // Input variables
-    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Logical_Operator_in0 = model->LVDA_LVDC.outputs.bSwitchpoin5;
+    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Logical_Operator_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSwitchpoin5;
     model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Logical_Operator = (!_eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Logical_Operator_in0);
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1 (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > S_IVB_Pitch_Yaw_Attitude_Error_Filters) */
@@ -12593,7 +12677,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate block: Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool
     // Expression: in(0)!=0
     // Input variables
-    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 = model->LVDA_LVDC.outputs.bSIVBurn;
+    double _eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVBurn;
     model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool = (_eval_Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enable_bool_in0 != 0);
 
     /* Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_Data_Store_Write (from Saturn_Instrument_Unit_IU > Flight_Control_Computer > S_IVB_Stage_Timer > Timer_Initialization) */
@@ -12774,28 +12858,28 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* Saturn_Instrument_Unit_IU_Switchpoint_1 (from Saturn_Instrument_Unit_IU) */
     // Condition block: Saturn_Instrument_Unit_IU_Switchpoint_1
     // Evaluate condition: input >= 40.0
-    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_1 = (model->LVDA_LVDC.outputs.T1_sec >= 40.0);
+    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_1 = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 40.0);
 
     /* Saturn_Instrument_Unit_IU_Switchpoint_2 (from Saturn_Instrument_Unit_IU) */
     // Condition block: Saturn_Instrument_Unit_IU_Switchpoint_2
     // Evaluate condition: input >= 100.0
-    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_2 = (model->LVDA_LVDC.outputs.T1_sec >= 100.0);
+    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_2 = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 100.0);
 
     /* Saturn_Instrument_Unit_IU_Switchpoint_3 (from Saturn_Instrument_Unit_IU) */
     // Condition block: Saturn_Instrument_Unit_IU_Switchpoint_3
     // Evaluate condition: input >= 140.0
-    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_3 = (model->LVDA_LVDC.outputs.T1_sec >= 140.0);
+    model->signals.Saturn_Instrument_Unit_IU_Switchpoint_3 = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 140.0);
 
     /* Out22_Xe_demux */
     // Demux block: Out22_Xe_demux
-    // Demux presumed vector input (type map scalar)
+    // Demux vector input
     model->signals.Out22_Xe_demux_0 = model->signals.On_Pad_Initial_Conditions_Product[0];
     model->signals.Out22_Xe_demux_1 = model->signals.On_Pad_Initial_Conditions_Product[1];
     model->signals.Out22_Xe_demux_2 = model->signals.On_Pad_Initial_Conditions_Product[2];
 
     /* Out22_Ve_demux */
     // Demux block: Out22_Ve_demux
-    // Demux presumed vector input (type map scalar)
+    // Demux vector input
     model->signals.Out22_Ve_demux_0 = model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product[0];
     model->signals.Out22_Ve_demux_1 = model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product[1];
     model->signals.Out22_Ve_demux_2 = model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product[2];
@@ -12813,7 +12897,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->signals.Out22_pack[7] = model->signals.Out22_Ve_demux_1;
     model->signals.Out22_pack[8] = model->signals.Out22_Ve_demux_2;
 
-    /* Deferred discrete state updates (unit_delay / Memory) */
+    /* Deferred discrete state updates (unit_delay) */
 
     /* Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory state update */
     // Unit Delay state update: Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory
@@ -12827,7 +12911,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* Memory3 state update */
     // Unit Delay state update: Memory3
-    model->states.Memory3_state = model->LVDA_LVDC.outputs.bSIBStageSep;
+    model->states.Memory3_state = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
 
     /* Memory1 state update */
     // Unit Delay state update: Memory1
@@ -12866,10 +12950,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->outputs.CM_IMU_OGA_rad = model->signals.CM_ISS_Demux1_2;
     memcpy(&model->outputs.Out11, &model->signals.Mux, sizeof(model->outputs.Out11));
     memcpy(&model->outputs.Out12, &model->signals.Mux1, sizeof(model->outputs.Out12));
-    model->outputs.bStageSep = model->LVDA_LVDC.outputs.bSIBStageSep;
-    model->outputs.bIECO = model->LVDA_LVDC.outputs.bIECO;
-    model->outputs.bOECO = model->LVDA_LVDC.outputs.bOECO;
-    model->outputs.bS_IVB_EngineStart = model->LVDA_LVDC.outputs.bSIVEngineStart;
+    model->outputs.bStageSep = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
+    model->outputs.bIECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
+    model->outputs.bOECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
+    model->outputs.bS_IVB_EngineStart = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVEngineStart;
     memcpy(&model->outputs.veh_q_ECI, &model->signals.Switch2, sizeof(model->outputs.veh_q_ECI));
     model->outputs.bLiftoff = model->signals.T_L_prime;
     model->outputs.BodyToSM_Phi_deg = model->signals.CM_ISS_Angle_Conversion6;
@@ -12877,6 +12961,13 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->outputs.BodyToSM_Psi_deg = model->signals.CM_ISS_Angle_Conversion5;
     memcpy(&model->outputs.Out22, &model->signals.Out22_pack, sizeof(model->outputs.Out22));
 
+}
+
+/*
+ * UH60 P3: no Memory (delayMode:memory) blocks — major-step hold no-op
+ */
+void saturn_ib_stack_update_memory_states(saturn_ib_stack_t* model) {
+    (void)model;
 }
 
 /*
@@ -13218,455 +13309,564 @@ void saturn_ib_stack_step(saturn_ib_stack_t* model) {
     /* Evaluate algebraic relationships */
     saturn_ib_stack_evaluate_algebraic(model);
 
-    /* RK4 Integration (Runge-Kutta 4th order) */
-    /* RK4 temporary variables */
+    /* RK4 Integration (Runge-Kutta 4th order); algebra re-evaluated at each stage */
+    /* RK4 temporary variables. The snapshot is static because a model struct
+       can be too large for the stack (notably under WebAssembly). */
+    static saturn_ib_stack_t rk4_major;
     saturn_ib_stack_states_t k1, k2, k3, k4;
-    saturn_ib_stack_states_t temp_states;
-    double h = model->dt;
-    double half_h = h * 0.5;
+    const double h = model->dt;
+    const double half_h = h * 0.5;
+    const double t0 = model->time;
 
-    /* Calculate k1 = f(t, y) */
-    saturn_ib_stack_derivatives(
-        model->time,
-        model,
-        &model->states,
-        &k1
-    );
+    /* Calculate k1 = f(t, y) from the major-step evaluation */
+    saturn_ib_stack_derivatives(t0, model, &model->states, &k1);
+    rk4_major = *model;
 
-    /* Calculate k2 = f(t + h/2, y + h/2 * k1) */
+    /* Calculate k2 = f(t0 + half_h, y + half_h * k1) */
     for (int i = 0; i < 3; i++) {
-        temp_states.CM_ISS_velocity_in_SM_frame_states[i] = model->states.CM_ISS_velocity_in_SM_frame_states[i] + half_h * k1.CM_ISS_velocity_in_SM_frame_states[i];
+        model->states.CM_ISS_velocity_in_SM_frame_states[i] = rk4_major.states.CM_ISS_velocity_in_SM_frame_states[i] + half_h * k1.CM_ISS_velocity_in_SM_frame_states[i];
     }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k1.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + half_h * k1.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + half_h * k1.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k1.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
-    }
-
-    saturn_ib_stack_derivatives(
-        model->time + half_h,
-        model,
-        &temp_states,
-        &k2
-    );
-
-    /* Calculate k3 = f(t + h/2, y + h/2 * k2) */
-    for (int i = 0; i < 3; i++) {
-        temp_states.CM_ISS_velocity_in_SM_frame_states[i] = model->states.CM_ISS_velocity_in_SM_frame_states[i] + half_h * k2.CM_ISS_velocity_in_SM_frame_states[i];
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k2.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k1.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + half_h * k2.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + half_h * k2.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k2.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
-    }
-    for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
-    }
-
-    saturn_ib_stack_derivatives(
-        model->time + half_h,
-        model,
-        &temp_states,
-        &k3
-    );
-
-    /* Calculate k4 = f(t + h, y + h * k3) */
-    for (int i = 0; i < 3; i++) {
-        temp_states.CM_ISS_velocity_in_SM_frame_states[i] = model->states.CM_ISS_velocity_in_SM_frame_states[i] + h * k3.CM_ISS_velocity_in_SM_frame_states[i];
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
-    }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
-    }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + h * k3.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 1; j++) {
-            temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
         }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
+        }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
+        }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
+        }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + h * k3.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
+        }
     }
-    for (int i = 0; i < 3; i++) {
-        temp_states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + h * k3.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
+        }
     }
-    for (int i = 0; i < 1; i++) {
-        temp_states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + h * k3.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + half_h * k1.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k1.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k1.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + half_h * k1.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + half_h * k1.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k1.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
     }
     for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
     }
     for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
     }
     for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
     }
     for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
     }
     for (int i = 0; i < 2; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
     }
     for (int i = 0; i < 1; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
     }
     for (int i = 0; i < 3; i++) {
-        temp_states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + h * k3.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
+        model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + half_h * k1.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
     }
+    model->time = t0 + half_h;
+    saturn_ib_stack_evaluate_algebraic(model);
+    saturn_ib_stack_derivatives(model->time, model, &model->states, &k2);
+    *model = rk4_major; /* undo the stage evaluation */
 
-    saturn_ib_stack_derivatives(
-        model->time + h,
-        model,
-        &temp_states,
-        &k4
-    );
+    /* Calculate k3 = f(t0 + half_h, y + half_h * k2) */
+    for (int i = 0; i < 3; i++) {
+        model->states.CM_ISS_velocity_in_SM_frame_states[i] = rk4_major.states.CM_ISS_velocity_in_SM_frame_states[i] + half_h * k2.CM_ISS_velocity_in_SM_frame_states[i];
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k2.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + half_h * k2.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k2.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + half_h * k2.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + half_h * k2.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + half_h * k2.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + half_h * k2.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + half_h * k2.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
+    }
+    model->time = t0 + half_h;
+    saturn_ib_stack_evaluate_algebraic(model);
+    saturn_ib_stack_derivatives(model->time, model, &model->states, &k3);
+    *model = rk4_major; /* undo the stage evaluation */
+
+    /* Calculate k4 = f(t0 + h, y + h * k3) */
+    for (int i = 0; i < 3; i++) {
+        model->states.CM_ISS_velocity_in_SM_frame_states[i] = rk4_major.states.CM_ISS_velocity_in_SM_frame_states[i] + h * k3.CM_ISS_velocity_in_SM_frame_states[i];
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + h * k3.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_1_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_1_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_2_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_2_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_3_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_3_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_4_A_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] = rk4_major.states.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i] + h * k3.S_IB_Stage_H_1_Engine_Cluster_Engine_4_B_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + h * k3.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 1; j++) {
+                model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_Calculate_DCM_Euler_Angles_q0_q1_q2_q3_states[i][j];
+            }
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_p_q_r_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = rk4_major.states.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] + h * k3.S_IVB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i] + h * k3.S_IVB_Stage_J_2_Engine_Thrust_Model_Pitch_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 3; i++) {
+            model->states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] = rk4_major.states.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i] + h * k3.S_IVB_Stage_J_2_Engine_Thrust_Model_Yaw_Actuator_states[i];
+        }
+    }
+    if (model->enable_states.S_IVB_Stage_enabled) {
+        for (int i = 0; i < 1; i++) {
+            model->states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] = rk4_major.states.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i] + h * k3.S_IVB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg_states[i];
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Body_Rate_Gyros_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn3_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn4_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Error_Filters_Transfer_Fcn5_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Attitude_Rate_Error_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn6_states[i];
+    }
+    for (int i = 0; i < 2; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IB_Y_Z_Acceleration_Filters_Transfer_Fcn7_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn10_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn11_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Rate_Filters_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn1_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn2_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn8_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Pitch_Yaw_Attitude_Error_Filters_Transfer_Fcn9_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator_Pitch_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 1; i++) {
+        model->states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i] + h * k3.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Spatial_Attitude_Control_System_Derived_Rate_Modulator1_Transfer_Fcn_states[i];
+    }
+    for (int i = 0; i < 3; i++) {
+        model->states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] = rk4_major.states.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i] + h * k3.Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Integrating_Accelerometers_states[i];
+    }
+    model->time = t0 + h;
+    saturn_ib_stack_evaluate_algebraic(model);
+    saturn_ib_stack_derivatives(model->time, model, &model->states, &k4);
+    *model = rk4_major; /* undo the stage evaluation */
 
     /* Update states using RK4 formula: y[n+1] = y[n] + h/6 * (k1 + 2*k2 + 2*k3 + k4) */
     for (int i = 0; i < 3; i++) {
@@ -14066,6 +14266,9 @@ void saturn_ib_stack_step(saturn_ib_stack_t* model) {
         );
     }
 
+    /* Memory major-step hold (delayMode:memory) — post-integration latch */
+    saturn_ib_stack_update_memory_states(model);
+
     /* Evaluate enable states for next step */
     saturn_ib_stack_evaluate_enable_states(model);
 
@@ -14074,3 +14277,18 @@ void saturn_ib_stack_step(saturn_ib_stack_t* model) {
     model->sample_tick++;
 
 }
+
+#ifdef OBLIQ_ASSERTS
+int saturn_ib_stack_assert_count(void) {
+    return 0;
+}
+
+int saturn_ib_stack_assert_result(const saturn_ib_stack_t* model, int index, obliq_assert_result_t* r) {
+    (void)model; (void)index; (void)r;
+    return -1;
+}
+
+int saturn_ib_stack_stop_requested(const saturn_ib_stack_t* model) {
+    return model->stop_requested;
+}
+#endif /* OBLIQ_ASSERTS */

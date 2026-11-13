@@ -14,11 +14,14 @@ The JSON model alone does not reproduce the simulation, because `LVDA_LVDC.c` ha
 
 ## Regenerating
 
-The generated parent plant reproduces exactly, apart from its timestamp, with Obliq-2 commit `6e6f503`. **Current Obliq-2 releases do not work yet**: output from 3.7.1 no longer has the `LVDA_LVDC` member that `src/sim/SaturnIBPlantObliq.c` expects.
+The generated parent plant tracks Obliq-2 3.8.4. The segregated subsystem
+field in `saturn_ib_stack_t` has moved to its path-qualified name
+`Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC`, and `SaturnIBPlantObliq.c`
+reads it there.
 
 ```bash
-OBLIQ_ROOT=/path/to/obliq-2-at-6e6f503 ./scripts/regen-fullstack.sh               # generated files only
-OBLIQ_ROOT=/path/to/obliq-2-at-6e6f503 ./scripts/regen-fullstack.sh --initialize  # also overwrite the hand edits
+OBLIQ_ROOT=/path/to/obliq-2 ./scripts/regen-fullstack.sh               # generated files only
+OBLIQ_ROOT=/path/to/obliq-2 ./scripts/regen-fullstack.sh --initialize  # also overwrite the hand edits
 ```
 
 - Diagram, parameter or gain changes: edit the JSON, regenerate, rebuild.

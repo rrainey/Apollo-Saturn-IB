@@ -4,7 +4,7 @@ set(LVDC_SNAP "${CMAKE_CURRENT_SOURCE_DIR}/../../native-snapshots/lvda-lvdc")
 add_library(saturn_ib_stack STATIC
   saturn_ib_stack.c
   ${LVDC_SNAP}/LVDA_LVDC.c
-  ../../../src/sim/SaturnIBStackRtwAdapter.c
+  ../../../src/sim/SaturnIBStackAdapter.c
 )
 target_include_directories(saturn_ib_stack PUBLIC
   ${LVDC_SNAP}

@@ -3,7 +3,13 @@
   "displayName": "saturn_ib_stack",
   "profile": "saturn-ib-stack",
   "sourceJson": "/home/riley/src/Apollo-Saturn-IB/model/saturn_ib_stack.json",
-  "generatedAt": "2026-11-07T21:04:53.707Z",
+  "generatedAt": "2026-11-13T16:21:38.068Z",
+  "generator": {
+    "name": "obliq-2",
+    "version": "3.8.4",
+    "commit": "b4ba737cd724390c2b7c381f8fd089f0d70589af",
+    "dirty": false
+  },
   "warnings": [
     "[LVDA_LVDC] Auto-promoted crossing tags → ports in=[MES_DCM,PAD_Ve_mps,PAD_Xe_m,S_IVB_Ve_mps,S_IVB_Xe_m,Ve_mps,Xe_m,bLiftoff__tag,bStageSep] out=[theta_deg]",
     "[LVDA_LVDC] Connection subsystem_4645__wire_4729_enable references non-existent target block subsystem_4645__subsystem_4691",
@@ -28,9 +34,7 @@
     "[LVDA_LVDC] Connection subsystem_6772__wire_6787_enable references non-existent target block subsystem_6772__subsystem_6779",
     "[LVDA_LVDC] Connection subsystem_6796__wire_6811_enable references non-existent target block subsystem_6796__subsystem_6803",
     "[LVDA_LVDC] Connection wire_6878_enable references non-existent target block subsystem_4819",
-    "[LVDA_LVDC] Connection sheet_label_T3_sec_sheet_label_source_4634_to_wire_6870_subsystem_4819__wire_6361 references non-existent target block subsystem_4819__sheet_label_sink_4970",
-    "[LVDA_LVDC] Connection sheet_label_V_subsystem_4819__sheet_label_source_4952_to_subsystem_4819__wire_6397_subsystem_4819__subsystem_5148__wire_5196 references non-existent target block subsystem_4819__subsystem_5148__sheet_label_sink_5167",
-    "[undefined] Self-feedback import 'bStageSep' relinked to local driver of output port 11 (avoid one-step latch)",
+    "[LVDA_LVDC] Self-feedback import 'bStageSep' relinked to local driver of output port 11 (avoid one-step latch)",
     "Connection subsystem_1315__subsystem_1910__subsystem_1923__subsystem_1961__wire_1976_enable references non-existent target block subsystem_1315__subsystem_1910__subsystem_1923__subsystem_1961__subsystem_1968",
     "Connection subsystem_1315__subsystem_1910__subsystem_2031__subsystem_2069__wire_2084_enable references non-existent target block subsystem_1315__subsystem_1910__subsystem_2031__subsystem_2069__subsystem_2076",
     "Connection subsystem_1315__subsystem_1910__subsystem_2139__subsystem_2177__wire_2192_enable references non-existent target block subsystem_1315__subsystem_1910__subsystem_2139__subsystem_2177__subsystem_2184",
@@ -46,15 +50,6 @@
     "Connection subsystem_4191__subsystem_4239__subsystem_4379__wire_4394_enable references non-existent target block subsystem_4191__subsystem_4239__subsystem_4379__subsystem_4386",
     "Connection wire_7136_enable references non-existent target block subsystem_3007",
     "Connection wire_7199_enable references non-existent target block subsystem_1315",
-    "Connection sheet_label_bStageSep_sheet_label_source_198_to_wire_7113_subsystem_1315__wire_2993 references non-existent target block subsystem_1315__sheet_label_sink_1897",
-    "Connection sheet_label_Cg_m_subsystem_1315__sheet_label_source_1886_to_subsystem_1315__wire_2946_subsystem_1315__subsystem_1333__wire_1388 references non-existent target block subsystem_1315__subsystem_1333__sheet_label_sink_1353",
-    "Connection sheet_label_Xe_m_subsystem_1315__sheet_label_source_1888_to_wire_7091 references non-existent target block sheet_label_sink_219",
-    "Connection sheet_label_Ve_mps_subsystem_1315__sheet_label_source_1889_to_wire_7092 references non-existent target block sheet_label_sink_202",
-    "Connection sheet_label_q_ECI_subsystem_1315__sheet_label_source_1890_to_wire_7104 references non-existent target block sheet_label_sink_231",
-    "Connection sheet_label_Cg_m_subsystem_3007__sheet_label_source_3751_to_subsystem_3007__wire_4127_subsystem_3007__subsystem_3201__wire_3253 references non-existent target block subsystem_3007__subsystem_3201__sheet_label_sink_3220",
-    "Connection sheet_label_Xe_m_subsystem_3007__sheet_label_source_3753_to_wire_7163 references non-existent target block sheet_label_sink_212",
-    "Connection sheet_label_Ve_mps_subsystem_3007__sheet_label_source_3754_to_wire_7145 references non-existent target block sheet_label_sink_216",
-    "Connection sheet_label_q_ECI_subsystem_3007__sheet_label_source_3755_to_wire_7153 references non-existent target block sheet_label_sink_209",
     "Enable signal for 'S_IB_Stage' should be bool or int type, got 'double'",
     "Enable signal for 'S_IB_Stage_H_1_Engine_Cluster_Engine_1_Triggered_Timer_Timer_Initialization' should be bool or int type, got 'double'",
     "Enable signal for 'S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Timer_Initialization' should be bool or int type, got 'double'",
@@ -79,18 +74,179 @@
   ],
   "stats": {
     "blocksProcessed": 1381,
-    "connectionsProcessed": 2031,
+    "connectionsProcessed": 2022,
     "subsystemsFlattened": 119,
     "statesGenerated": 71,
     "enabledSubsystems": 15,
     "segregatedSubsystems": 1
   },
+  "inputs": [
+    {
+      "name": "LaunchDate",
+      "cType": "double",
+      "dims": [
+        6
+      ]
+    },
+    {
+      "name": "A_z_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "CG_LLA_deg_m",
+      "cType": "double",
+      "dims": [
+        3
+      ]
+    },
+    {
+      "name": "q_ECItoSM",
+      "cType": "double",
+      "dims": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "T_L_prime_sec",
+      "cType": "double",
+      "dims": []
+    }
+  ],
+  "outputs": [
+    {
+      "name": "FDAI_Roll_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "FDAI_Pitch_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "FDAI_Yaw_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "FDAI_RollDot_dps",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "FDAI_PitchDot_dps",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "FDAI_YawDot_dps",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "CM_IMU_PIPA_Pulses",
+      "cType": "double",
+      "dims": [
+        3
+      ]
+    },
+    {
+      "name": "CM_IMU_IGA_rad",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "CM_IMU_MGA_Rad",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "CM_IMU_OGA_rad",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "Out11",
+      "cType": "double",
+      "dims": [
+        25
+      ]
+    },
+    {
+      "name": "Out12",
+      "cType": "double",
+      "dims": [
+        22
+      ]
+    },
+    {
+      "name": "bStageSep",
+      "cType": "bool",
+      "dims": []
+    },
+    {
+      "name": "bIECO",
+      "cType": "bool",
+      "dims": []
+    },
+    {
+      "name": "bOECO",
+      "cType": "bool",
+      "dims": []
+    },
+    {
+      "name": "bS_IVB_EngineStart",
+      "cType": "bool",
+      "dims": []
+    },
+    {
+      "name": "veh_q_ECI",
+      "cType": "double",
+      "dims": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "bLiftoff",
+      "cType": "bool",
+      "dims": []
+    },
+    {
+      "name": "BodyToSM_Phi_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "BodyToSM_Theta_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "BodyToSM_Psi_deg",
+      "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "Out22",
+      "cType": "double",
+      "dims": [
+        9
+      ]
+    }
+  ],
   "files": [
-    "saturn_ib_stack.c",
     "saturn_ib_stack.h",
-    "saturn_ib_stack_rtw_adapter.c",
+    "saturn_ib_stack.c",
+    "LVDA_LVDC.h",
+    "LVDA_LVDC.c",
     "saturn_ib_stack_rtw_adapter.h",
+    "saturn_ib_stack_rtw_adapter.c",
+    "smoke_main.c",
     "CMakeLists.txt",
-    "smoke_main.c"
+    "library.properties",
+    "README.md"
   ]
 }

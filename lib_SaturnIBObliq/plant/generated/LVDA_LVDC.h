@@ -4,9 +4,13 @@
 #include <stdbool.h>
 #include <math.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 /*
  * Subsystem / host model parameters
- * Source blocks reference PARAM_<name>; bare #define omitted on name collisions
+ * Source blocks reference PARAM_<name>
  */
 #define PARAM_i_deg 31.605
 #define PARAM_lambda_0_deg 119

@@ -6,8 +6,39 @@
 #include <string.h>
 #include <math.h>
 
+/* M_PI is POSIX, not ISO C: define it for strict C99 compilers */
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 /* Segregated subsystem headers */
 #include "LVDA_LVDC.h"
+
+/* Assert blocks: compiled only when OBLIQ_ASSERTS is defined */
+#ifdef OBLIQ_ASSERTS
+#ifndef OBLIQ_ASSERT_RESULT_DEFINED
+#define OBLIQ_ASSERT_RESULT_DEFINED
+typedef enum {
+    OBLIQ_ASSERT_NOT_CHECKED = 0,
+    OBLIQ_ASSERT_PASSED = 1,
+    OBLIQ_ASSERT_FAILED = 2
+} obliq_assert_status_t;
+
+typedef struct {
+    const char* name;            /* block name */
+    const char* qualified_name;  /* flattened name, unique in the model */
+    const char* block_id;        /* editor block id */
+    int stops_on_failure;
+    obliq_assert_status_t status;
+    unsigned long checks;        /* steps checked */
+    unsigned long failures;      /* steps failed */
+    double first_fail_time;      /* -1 when none */
+    double first_fail_value;
+    int first_fail_index;        /* flat element index; -1 for a scalar or when none */
+    double worst_violation;      /* largest amount outside the condition */
+} obliq_assert_result_t;
+#endif
+#endif
 
 /*
  * Model Parameters
@@ -1794,7 +1825,7 @@ typedef struct {
     int S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization_trig_prev; /* Previous trigger level for rising-edge S_IVB_Stage_Ullage_Rocket_Motors_Time_Since_Engine_Start_Timer_Initialization */
     int Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_enabled; /* Enable state for Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization */
     int Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization_trig_prev; /* Previous trigger level for rising-edge Saturn_Instrument_Unit_IU_Flight_Control_Computer_S_IVB_Stage_Timer_Timer_Initialization */
-} enable_states_t;
+} saturn_ib_stack_enable_states_t;
 
 
 /* Main model structure containing all signals and states */
@@ -1804,12 +1835,15 @@ typedef struct {
     saturn_ib_stack_signals_t signals;
     saturn_ib_stack_states_t states;
     saturn_ib_stack_data_stores_t data_stores;
-    enable_states_t enable_states;
-    LVDA_LVDC_t LVDA_LVDC; /* Segregated subsystem */
+    saturn_ib_stack_enable_states_t enable_states;
+    LVDA_LVDC_t Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC; /* Segregated subsystem */
     double time;
     double dt; /* Time step */
     unsigned long long sample_tick; /* Fundamental steps since t=0 (multi-rate hits) */
     int use_rk4; /* Integration method: 1=RK4, 0=Euler */
+#ifdef OBLIQ_ASSERTS
+    int stop_requested; /* set by an Assert that stops on failure */
+#endif
 } saturn_ib_stack_t;
 
 /*
@@ -1819,6 +1853,8 @@ typedef struct {
 void saturn_ib_stack_init(saturn_ib_stack_t* model, double dt);
 /* Evaluate algebraic relationships (pure function, no state changes) */
 void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model);
+/* UH60 P3: Memory major-step hold — latch after RK4/Euler */
+void saturn_ib_stack_update_memory_states(saturn_ib_stack_t* model);
 /* Re-apply integrator ICs from x(0) after algebraic IC signals are live */
 void saturn_ib_stack_reseed_integrator_ics(saturn_ib_stack_t* model);
 /* After apply ExtU: algebra → enables → integrator ICs → algebra */
@@ -1829,6 +1865,15 @@ void saturn_ib_stack_step(saturn_ib_stack_t* model);
 void saturn_ib_stack_derivatives(double t, const saturn_ib_stack_t* model, const saturn_ib_stack_states_t* current_states, saturn_ib_stack_states_t* state_derivatives);
 /* Update enable states based on enable inputs */
 void saturn_ib_stack_evaluate_enable_states(saturn_ib_stack_t* model);
+#ifdef OBLIQ_ASSERTS
+/* Number of Assert blocks reported by saturn_ib_stack_assert_result */
+int saturn_ib_stack_assert_count(void);
+/* Result of Assert block i; returns 0, or -1 for a bad index */
+int saturn_ib_stack_assert_result(const saturn_ib_stack_t* model, int index, obliq_assert_result_t* result);
+/* Non-zero once an Assert set to stop on failure has failed */
+int saturn_ib_stack_stop_requested(const saturn_ib_stack_t* model);
+#endif
+
 
 #ifdef __cplusplus
 }

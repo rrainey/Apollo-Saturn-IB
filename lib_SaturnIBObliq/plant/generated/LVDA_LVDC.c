@@ -1,7 +1,7 @@
 /*
  * LVDA_LVDC - Segregated Subsystem
  * Generated C code for subsystem module
- * Generated on: 2026-11-07T21:04:53.574Z
+ * Generated on: 2026-11-13T16:21:37.937Z
  */
 
 #include "LVDA_LVDC.h"
@@ -158,7 +158,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     /* Compute block outputs in dependency order */
 
     /* LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 */
-    // Unit Delay block: LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 (output phase)
+    // Unit Delay: LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2[i] = model->states.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2_state[i];
     }
@@ -623,7 +623,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* Memory */
-    // Unit Delay block: Memory (output phase)
+    // Unit Delay: Memory (output phase)
     model->signals.Memory = model->states.Memory_state;
 
     /* Logical_Operator3 */
@@ -690,35 +690,35 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_T3_FM = (model->signals.T3_Timer_Switch >= 5.0);
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 (output phase)
     model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4_state;
 
     /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2 */
-    // Unit Delay block: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2 (output phase)
+    // Unit Delay: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2 (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[i] = model->states.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2_state[i];
     }
@@ -842,8 +842,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 (gain = 4151)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4151;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 (gain = V_ex1_mps → PARAM_V_ex1_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_Gain2 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex1_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_First_Phase_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -955,8 +955,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_first_BML_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1107,8 +1107,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Gain = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1204,8 +1204,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Gain1 = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1360,7 +1360,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* LVDC_Iterative_Guidance_Mode_Memory1 */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_Memory1 (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_Memory1 (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_Memory1 = model->states.LVDC_Iterative_Guidance_Mode_Memory1_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1374,7 +1374,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* LVDC_Iterative_Guidance_Mode_Memory2 */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_Memory2 (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_Memory2 (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_Memory2 = model->states.LVDC_Iterative_Guidance_Mode_Memory2_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1508,8 +1508,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_3 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain6 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_3 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1535,8 +1535,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function2 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function2 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1572,8 +1572,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain (gain = 4151)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function * 4151;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain (gain = V_ex1_mps → PARAM_V_ex1_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function * PARAM_V_ex1_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -1654,8 +1654,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 (gain = 4151)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_1 * 4151;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 (gain = V_ex1_mps → PARAM_V_ex1_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain1 = model->signals.LVDC_Iterative_Guidance_Mode_Demux4_1 * PARAM_V_ex1_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2448,8 +2448,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 (gain = 1/V_ex3_mps)
-            model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Add12 * 1/V_ex3_mps;
+            // Scale block: LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 (gain = 1/V_ex3_mps → (1.0/PARAM_V_ex3_mps))
+            model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Improved_Estimate_of_Total_time_to_go_Add12 * (1.0/PARAM_V_ex3_mps);
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2694,8 +2694,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 (gain = 4151)
-            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function1 * 4151;
+            // Scale block: LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 (gain = V_ex1_mps → PARAM_V_ex1_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Gain3 = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Intermediate_Parameters_Math_Function1 * PARAM_V_ex1_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2727,8 +2727,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Math_Function5 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_1_K_3_K_4_Eqns_4_4_51_67_Math_Function5 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -2854,8 +2854,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
             /* LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 */
-            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 (gain = 4233.2)
-            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Math_Function5 * 4233.2;
+            // Scale block: LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 (gain = V_ex3_mps → PARAM_V_ex3_mps)
+            model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Gain5 = model->signals.LVDC_Iterative_Guidance_Mode_Position_Correction_Terms_Position_Correction_Terms_part_2_K_1_K_2_Eqns_4_4_68_80_Math_Function5 * PARAM_V_ex3_mps;
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3325,7 +3325,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* LVDC_Iterative_Guidance_Mode_loop */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_loop (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_loop (output phase)
     for (int i = 0; i < 3; i++) {
         model->signals.LVDC_Iterative_Guidance_Mode_loop[i] = model->states.LVDC_Iterative_Guidance_Mode_loop_state[i];
     }
@@ -3406,7 +3406,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     model->signals.LVDC_Iterative_Guidance_Mode_SMCY_enable_bool = (_eval_LVDC_Iterative_Guidance_Mode_SMCY_enable_bool_in0 != 0);
 
     /* LVDC_Iterative_Guidance_Mode_SMCY_SMCY */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCY_SMCY (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCY_SMCY (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCY_SMCY = model->states.LVDC_Iterative_Guidance_Mode_SMCY_SMCY_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3416,11 +3416,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last = model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last_state;
 
     /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 = model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3511,7 +3511,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_enable_bool = (_eval_LVDC_Iterative_Guidance_Mode_SMCZ_enable_bool_in0 != 0);
 
     /* LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ = model->states.LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -3521,11 +3521,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
 
     /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 = model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2_state;
 
     /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last */
-    // Unit Delay block: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last (output phase)
+    // Unit Delay: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last (output phase)
     model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last = model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last_state;
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -4390,7 +4390,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     // Evaluate condition: input >= 1.1
     model->signals.Ullage_Ignition_3 = (model->signals.T3_Timer_Switch >= 1.1);
 
-    /* Deferred discrete state updates (unit_delay / Memory) */
+    /* Deferred discrete state updates (unit_delay) */
 
     /* LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 state update */
     // Unit Delay state update: LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2

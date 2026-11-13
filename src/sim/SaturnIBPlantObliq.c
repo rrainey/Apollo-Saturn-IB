@@ -67,7 +67,9 @@ int SaturnIBPlantObliq_fill_igm_trace(
   out->t_sec = t_sec;
 
   const saturn_ib_stack_t *m = &plant->model;
-  const LVDA_LVDC_t *lv = &m->LVDA_LVDC;
+  /* obliq-2 3.8.3+ qualifies segregated-subsystem instance fields with the
+     parent path. The LVDA_LVDC sits under IU/LVDA_LVDC in the model. */
+  const LVDA_LVDC_t *lv = &m->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC;
 
   out->igm_enable = lv->enable_states.LVDC_Iterative_Guidance_Mode_enabled ? 1.0 : 0.0;
   out->T_1_i_sec =
