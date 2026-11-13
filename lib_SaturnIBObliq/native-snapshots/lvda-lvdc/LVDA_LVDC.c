@@ -1327,6 +1327,21 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
      * to the trap value after the gravity block runs (see "EDD §4.3.1
      * corrector" below).
      */
+    /* GRR zero-reset (EDD §4.2.3) fires at the *exact* tick where the
+     * plant's bLiftoff goes 1, NOT at the next BML.  If we wait for the
+     * BML boundary, up to 1.6 s of post-liftoff specific-force integration
+     * gets swept into s_V_m_offset — causing V_m_eff to under-count by
+     * that amount for the rest of the burn (~17 m/s on tm-x-62831).
+     * Detect-and-latch at every sample_tick; the tick guard keeps it
+     * idempotent across the four RK4-stage calls per outer step. */
+    if (s_preset_loaded && !s_grr_latched && model->inputs.bLiftoff) {
+        for (int i = 0; i < 3; i++) {
+            s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
+            s_V_m_past[i] = 0.0;
+        }
+        s_grr_latched = 1;
+    }
+
     if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
         /* Flight-program initialization proceeds in two stages per EDD:
          *   (a) Platform initialization at T4+T4PL1: the Presetting Table
@@ -1337,18 +1352,12 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
          *   (b) GRR (§4.2.3): the platform ΔV accumulator is zeroed.
          *       The LVDC's effective V_m = ∫specific force from GRR to now.
          *
-         * Our plant doesn't expose explicit T4+T4PL1 or GRR discretes,
-         * so we approximate: load V_0/X_0 on the first BML with valid
-         * MES_DCM/PAD_* inputs (sample_tick = 320 → t = 1.6 s, essentially
-         * t=0 for the launch-moment V_0 definition), and latch GRR on the
-         * first BML with bLiftoff=true. */
+         * Platform-init runs on the first valid BML (sample_tick > 0 →
+         * t = 1.6 s).  GRR is handled above at tick-precise latency. */
         if (!s_preset_loaded && model->sample_tick > 0ULL) {
-            /* Platform-init presetting.  Fires at first valid BML
-             * (t = 1.6 s), capturing MES × PAD_{Xe,Ve}: the pad position
-             * and velocity vectors in launch-plumbline before Earth
-             * rotation has had time to drift the measurement.  Later
-             * snapshots would be rotated by ω_E·t and would mis-define
-             * the launch-plumbline frame's V_0 preset. */
+            /* Platform-init presetting.  Captures MES × PAD_{Xe,Ve}: the
+             * pad position and velocity vectors in launch-plumbline before
+             * Earth rotation has had time to drift the measurement. */
             for (int i = 0; i < 3; i++) {
                 s_X_S[i] = 0.0;
                 s_V_0[i] = 0.0;
@@ -1361,18 +1370,6 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 s_V_m_offset[i] = 0.0;
             }
             s_preset_loaded = 1;
-        }
-        if (s_preset_loaded && !s_grr_latched && model->inputs.bLiftoff) {
-            /* GRR zero-reset.  The plant's ST-124M integrator has been
-             * accumulating the 1-g pad reaction since t=0; snapshot its
-             * current value so V_m_eff = V_m_bar_mps − s_V_m_offset is
-             * the post-GRR specific-force integral.  Also seed V_m_past
-             * to zero (first post-GRR BML's dX_mf uses zero history). */
-            for (int i = 0; i < 3; i++) {
-                s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
-                s_V_m_past[i] = 0.0;
-            }
-            s_grr_latched = 1;
         }
 
         const double dT = 1.6;  /* BML cadence */
