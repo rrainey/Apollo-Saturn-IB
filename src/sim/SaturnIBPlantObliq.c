@@ -113,5 +113,21 @@ int SaturnIBPlantObliq_fill_igm_trace(
     out->V_Sg_x = s_V_Sg[0]; out->V_Sg_y = s_V_Sg[1]; out->V_Sg_z = s_V_Sg[2];
     out->G_S_prev_x = s_G_S_prev[0]; out->G_S_prev_y = s_G_S_prev[1]; out->G_S_prev_z = s_G_S_prev[2];
   }
+
+  out->PAD_Ve_x = lv->inputs.PAD_Ve_mps[0];
+  out->PAD_Ve_y = lv->inputs.PAD_Ve_mps[1];
+  out->PAD_Ve_z = lv->inputs.PAD_Ve_mps[2];
+  out->PAD_Xe_x = lv->inputs.PAD_Xe_m[0];
+  out->PAD_Xe_y = lv->inputs.PAD_Xe_m[1];
+  out->PAD_Xe_z = lv->inputs.PAD_Xe_m[2];
+  for (int i = 0; i < 3; i++) {
+    double v = 0.0, x = 0.0;
+    for (int k = 0; k < 3; k++) {
+      v += lv->inputs.MES_DCM[i][k] * lv->inputs.PAD_Ve_mps[k];
+      x += lv->inputs.MES_DCM[i][k] * lv->inputs.PAD_Xe_m[k];
+    }
+    (&out->MES_PAD_Ve_x)[i] = v;
+    (&out->MES_PAD_Xe_x)[i] = x;
+  }
   return 0;
 }

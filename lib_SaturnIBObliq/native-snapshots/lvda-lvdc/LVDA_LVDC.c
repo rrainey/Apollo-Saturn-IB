@@ -173,12 +173,14 @@ static double s_hsl_last_Vref = -1.0; /* last Math_Function3 we consumed */
  * BML sweeps; the trap update of V_Sg is split around the gravity block
  * (predictor at the integration site, corrector after Eqs. 4.3.6-12 writes
  * Add1 ≡ G_S).  See the EDD §4.3.1 "Integration" blocks below. */
-double s_X_S[3]      = {0.0, 0.0, 0.0};  /* plumbline position (m) */
+double s_X_S[3]      = {0.0, 0.0, 0.0};  /* plumbline position (m), EDD state */
 double s_V_Sg[3]     = {0.0, 0.0, 0.0};  /* gravity-side velocity (m/s) */
 double s_G_S_prev[3] = {0.0, 0.0, 0.0};  /* previous-BML G_S (m/s^2) */
-double s_V_0[3]      = {0.0, 0.0, 0.0};  /* Earth-rot vel at pad in plumbline */
-double s_V_m_offset[3] = {0.0, 0.0, 0.0};/* pre-GRR integrator value to subtract */
-int    s_sframe_init = 0;                 /* one-shot init guard at GRR */
+double s_V_0[3]      = {0.0, 0.0, 0.0};  /* V_0 preset (pad vel at launch, plumbline) */
+double s_V_m_offset[3] = {0.0, 0.0, 0.0};/* GRR zero-reset of plant PIPA integrator */
+double s_V_m_past[3] = {0.0, 0.0, 0.0};  /* [V_m]_past for Eq. 4.3.2 trap */
+int    s_preset_loaded = 0;              /* V_0/X_0 presetting (at platform-init) */
+int    s_grr_latched   = 0;              /* GRR event (V_m zero-reset) */
 /* The LVDA_LVDC `compute_outputs` function is called multiple times per
  * outer step by the RK4 stages (k1..k4); without these guards the state
  * updates below would fire four times each BML.  We advance state only
@@ -1326,18 +1328,27 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
      * corrector" below).
      */
     if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        /* Flight-program initialization (EDD §4.3.1: "the trapezoidal
-         * integration scheme determines the vehicle position and velocity
-         * from initial conditions, accelerometer data, and earth
-         * gravitation").  Initialization follows §3.3 Flight Program
-         * Initialization; the LVDC loads X_0 and V_0 from the Presetting
-         * Table at T4+T4PL1.  Here we snapshot X_0 and V_0 on the first
-         * BML at or after liftoff (when the plant's PAD vectors and
-         * MES_DCM are populated with valid values) and begin integration
-         * on that same BML.  Before liftoff the plant's platform
-         * integrators are zero (V_m = 0) and the EDD integration has not
-         * yet started, so we hold X_S = X_0 and V_S = V_0 as constants. */
-        if (!s_sframe_init && model->inputs.bLiftoff) {
+        /* Flight-program initialization proceeds in two stages per EDD:
+         *   (a) Platform initialization at T4+T4PL1: the Presetting Table
+         *       loads V_0 (Earth-rotation velocity at pad in launch-
+         *       plumbline) and X_0 (pad position vector from Earth centre
+         *       in launch-plumbline) into LVDC memory.  Both are
+         *       launch-moment constants.
+         *   (b) GRR (§4.2.3): the platform ΔV accumulator is zeroed.
+         *       The LVDC's effective V_m = ∫specific force from GRR to now.
+         *
+         * Our plant doesn't expose explicit T4+T4PL1 or GRR discretes,
+         * so we approximate: load V_0/X_0 on the first BML with valid
+         * MES_DCM/PAD_* inputs (sample_tick = 320 → t = 1.6 s, essentially
+         * t=0 for the launch-moment V_0 definition), and latch GRR on the
+         * first BML with bLiftoff=true. */
+        if (!s_preset_loaded && model->sample_tick > 0ULL) {
+            /* Platform-init presetting.  Fires at first valid BML
+             * (t = 1.6 s), capturing MES × PAD_{Xe,Ve}: the pad position
+             * and velocity vectors in launch-plumbline before Earth
+             * rotation has had time to drift the measurement.  Later
+             * snapshots would be rotated by ω_E·t and would mis-define
+             * the launch-plumbline frame's V_0 preset. */
             for (int i = 0; i < 3; i++) {
                 s_X_S[i] = 0.0;
                 s_V_0[i] = 0.0;
@@ -1345,46 +1356,42 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                     s_X_S[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Xe_m[k];
                     s_V_0[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Ve_mps[k];
                 }
-                /* EDD §4.2.3: "The pulse accumulations must be initialized
-                 * to zero at GRR."  The plant's ST-124M integrator has
-                 * been accumulating specific force since t=0 (including
-                 * the 1-g pad reaction).  Snapshot its liftoff value so
-                 * the LVDC's effective V_m starts at zero here. */
-                s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
-                /* G_S_prev stays at zero on the init BML; refreshed to
-                 * the real value at the end of the gravity block below. */
                 s_V_Sg[i] = 0.0;
+                s_V_m_past[i] = 0.0;
+                s_V_m_offset[i] = 0.0;
             }
-            s_sframe_init = 1;
+            s_preset_loaded = 1;
+        }
+        if (s_preset_loaded && !s_grr_latched && model->inputs.bLiftoff) {
+            /* GRR zero-reset.  The plant's ST-124M integrator has been
+             * accumulating the 1-g pad reaction since t=0; snapshot its
+             * current value so V_m_eff = V_m_bar_mps − s_V_m_offset is
+             * the post-GRR specific-force integral.  Also seed V_m_past
+             * to zero (first post-GRR BML's dX_mf uses zero history). */
+            for (int i = 0; i < 3; i++) {
+                s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
+                s_V_m_past[i] = 0.0;
+            }
+            s_grr_latched = 1;
         }
 
         const double dT = 1.6;  /* BML cadence */
-        /* EDD §4.2.8 sensor path, with GRR zero-reset per §4.2.3. */
+        /* EDD §4.2.8 sensor path, with GRR zero-reset per §4.2.3.
+         * Pre-GRR: V_m is held at zero so Product6 = V_0 (pad-hold).
+         * Post-GRR: V_m = raw − offset (the GRR snapshot). */
         const double V_m[3] = {
-            model->inputs.V_m_bar_mps[0] - s_V_m_offset[0],
-            model->inputs.V_m_bar_mps[1] - s_V_m_offset[1],
-            model->inputs.V_m_bar_mps[2] - s_V_m_offset[2],
-        };
-        /* Memory2 is the plant-provided V_m delay; subtract the same
-         * offset so the trap (V_m + V_m_past) term stays zero-based. */
-        const double V_m_past_raw[3] = {
-            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[0],
-            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[1],
-            model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2[2],
-        };
-        const double V_m_past[3] = {
-            V_m_past_raw[0] - s_V_m_offset[0],
-            V_m_past_raw[1] - s_V_m_offset[1],
-            V_m_past_raw[2] - s_V_m_offset[2],
+            s_grr_latched ? model->inputs.V_m_bar_mps[0] - s_V_m_offset[0] : 0.0,
+            s_grr_latched ? model->inputs.V_m_bar_mps[1] - s_V_m_offset[1] : 0.0,
+            s_grr_latched ? model->inputs.V_m_bar_mps[2] - s_V_m_offset[2] : 0.0,
         };
 
-        if (s_sframe_init && model->sample_tick != s_sframe_last_tick) {
+        if (s_grr_latched && model->sample_tick != s_sframe_last_tick) {
             /* Eq. 4.3.1 - ΔX_Sg = (V_Sg + ½·G_S_prev·ΔT) · ΔT   */
             /* Eq. 4.3.2 - ΔX_mf = ½·(V_m + [V_m]_past) · ΔT      */
             /* Eq. 4.3.3 - X_S  += ΔX_Sg + ΔX_mf + V_0·ΔT         */
             for (int i = 0; i < 3; i++) {
                 const double dX_Sg = (s_V_Sg[i] + 0.5 * s_G_S_prev[i] * dT) * dT;
-                const double dX_mf = 0.5 * (V_m[i] + V_m_past[i]) * dT;
+                const double dX_mf = 0.5 * (V_m[i] + s_V_m_past[i]) * dT;
                 s_X_S[i] += dX_Sg + dX_mf + s_V_0[i] * dT;
             }
 
@@ -1392,12 +1399,17 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             for (int i = 0; i < 3; i++) {
                 s_V_Sg[i] += s_G_S_prev[i] * dT;
             }
+            /* Record V_m for next BML's trap. */
+            for (int i = 0; i < 3; i++) {
+                s_V_m_past[i] = V_m[i];
+            }
             s_sframe_last_tick = model->sample_tick;
         }
 
-        /* Eq. 4.3.5 - V_S = V_m + V_Sg + V_0.  Pre-init: V_Sg = 0, V_0 = 0,
-         * V_m = 0 (platform integrator not released until liftoff), so
-         * Product6/Product18 stay at zero until the first-liftoff BML. */
+        /* Eq. 4.3.5 - V_S = V_m + V_Sg + V_0.  Pre-preset: all zero →
+         * Product6/Product18 = 0.  Post-preset, pre-GRR: V_m = 0 (offset
+         * stays zero), V_Sg = 0 → Product6 = V_0 and Product18 = X_0
+         * (pad hold).  Post-GRR: full integration. */
         for (int i = 0; i < 3; i++) {
             model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6[i]  = V_m[i] + s_V_Sg[i] + s_V_0[i];
             model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18[i] = s_X_S[i];
@@ -2402,7 +2414,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
      * already read the Euler-predicted V_S; the bias ≈ ½·(G_S_new −
      * G_S_prev)·dT is < 0.01 m/s per BML and cancels in the polynomial's
      * second-difference coefficient A2. */
-    if (s_sframe_init &&
+    if (s_grr_latched &&
         model->sample_tick != s_corrector_last_tick &&
         (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
         const double dT = 1.6;

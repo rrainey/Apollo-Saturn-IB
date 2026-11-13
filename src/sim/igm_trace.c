@@ -39,7 +39,11 @@ const char *igm_trace_csv_header(void)
          "V_S_mag_mps,vigained_mps,T_HSL_bias_sec,"
          "V_m_raw_x,V_m_raw_y,V_m_raw_z,"
          "V_Sg_x,V_Sg_y,V_Sg_z,"
-         "G_S_prev_x,G_S_prev_y,G_S_prev_z";
+         "G_S_prev_x,G_S_prev_y,G_S_prev_z,"
+         "PAD_Ve_x,PAD_Ve_y,PAD_Ve_z,"
+         "PAD_Xe_x,PAD_Xe_y,PAD_Xe_z,"
+         "MES_PAD_Ve_x,MES_PAD_Ve_y,MES_PAD_Ve_z,"
+         "MES_PAD_Xe_x,MES_PAD_Xe_y,MES_PAD_Xe_z";
 }
 
 void igm_trace_clear(IgmTraceSample *s)
@@ -114,6 +118,10 @@ void igm_trace_clear(IgmTraceSample *s)
   z.V_m_raw_z = nan;
   z.V_Sg_x = nan; z.V_Sg_y = nan; z.V_Sg_z = nan;
   z.G_S_prev_x = nan; z.G_S_prev_y = nan; z.G_S_prev_z = nan;
+  z.PAD_Ve_x = nan; z.PAD_Ve_y = nan; z.PAD_Ve_z = nan;
+  z.PAD_Xe_x = nan; z.PAD_Xe_y = nan; z.PAD_Xe_z = nan;
+  z.MES_PAD_Ve_x = nan; z.MES_PAD_Ve_y = nan; z.MES_PAD_Ve_z = nan;
+  z.MES_PAD_Xe_x = nan; z.MES_PAD_Xe_y = nan; z.MES_PAD_Xe_z = nan;
   *s = z;
 }
 
@@ -187,7 +195,11 @@ int igm_trace_write_row(FILE *f, const IgmTraceSample *s)
   emit(f, s->V_m_raw_y, 0);
   emit(f, s->V_m_raw_z, 0);
   emit(f, s->V_Sg_x, 0); emit(f, s->V_Sg_y, 0); emit(f, s->V_Sg_z, 0);
-  emit(f, s->G_S_prev_x, 0); emit(f, s->G_S_prev_y, 0); emit(f, s->G_S_prev_z, 1);
+  emit(f, s->G_S_prev_x, 0); emit(f, s->G_S_prev_y, 0); emit(f, s->G_S_prev_z, 0);
+  emit(f, s->PAD_Ve_x, 0); emit(f, s->PAD_Ve_y, 0); emit(f, s->PAD_Ve_z, 0);
+  emit(f, s->PAD_Xe_x, 0); emit(f, s->PAD_Xe_y, 0); emit(f, s->PAD_Xe_z, 0);
+  emit(f, s->MES_PAD_Ve_x, 0); emit(f, s->MES_PAD_Ve_y, 0); emit(f, s->MES_PAD_Ve_z, 0);
+  emit(f, s->MES_PAD_Xe_x, 0); emit(f, s->MES_PAD_Xe_y, 0); emit(f, s->MES_PAD_Xe_z, 1);
   fputc('\n', f);
   return 0;
 }

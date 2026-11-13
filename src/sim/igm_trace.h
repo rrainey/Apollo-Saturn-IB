@@ -77,6 +77,20 @@ typedef struct IgmTraceSample_tag {
   double G_S_prev_y;
   double G_S_prev_z;
 
+  /* Diagnostic: snapshot inputs for V_0/X_0 timing audit. */
+  double PAD_Ve_x;
+  double PAD_Ve_y;
+  double PAD_Ve_z;
+  double PAD_Xe_x;
+  double PAD_Xe_y;
+  double PAD_Xe_z;
+  double MES_PAD_Ve_x;  /* MES × PAD_Ve_mps (= V_0 if snapshotted now) */
+  double MES_PAD_Ve_y;
+  double MES_PAD_Ve_z;
+  double MES_PAD_Xe_x;  /* MES × PAD_Xe_m (= X_0 if snapshotted now) */
+  double MES_PAD_Xe_y;
+  double MES_PAD_Xe_z;
+
   /* Plant diagnostic */
   double elev_cmd_deg;
 
