@@ -19,6 +19,13 @@
 
 static int saturn_ib_stack_ics_seeded = 0;
 
+void saturn_ib_stack_set_ics_seeded(int seeded) {
+    saturn_ib_stack_ics_seeded = seeded ? 1 : 0;
+}
+int saturn_ib_stack_get_ics_seeded(void) {
+    return saturn_ib_stack_ics_seeded;
+}
+
 enum {
   OUT11_lat_deg = 0,
   OUT11_lon_deg = 1,

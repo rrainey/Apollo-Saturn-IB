@@ -1,6 +1,7 @@
 #include "plant_serialize.h"
 
 #include "saturn_ib_stack.h"
+#include "SaturnIBStackAdapter.h"
 
 #include <cstdio>
 #include <cstring>
@@ -541,6 +542,40 @@ void plant_serialize(BinaryWriter &w, const SaturnIBPlantObliq *plant) {
     // Plant-level scalars that live on the opaque handle too.
     w.write_f64(plant->dt_sec);
     w.write_f64(plant->time_sec);
+
+    // Top-level inputs.  Small, field-by-field portable.
+    for (int i = 0; i < 6; ++i) w.write_f64(m.inputs.LaunchDate[i]);
+    w.write_f64(m.inputs.A_z_deg);
+    for (int i = 0; i < 3; ++i) w.write_f64(m.inputs.CG_LLA_deg_m[i]);
+    for (int i = 0; i < 4; ++i) w.write_f64(m.inputs.q_ECItoSM[i][0]);
+    w.write_f64(m.inputs.T_L_prime_sec);
+
+    // Signals + outputs (both top-level and LVDC).  These are the
+    // ~1600-field intermediate signal structs; a clean portable
+    // serialization would hand-code each field or require a generator.
+    // For v1 we dump them as raw bytes with an explicit u64 size prefix;
+    // the reader rejects the file if the host endianness or struct
+    // sizeof differs.  Still cross-build on the same ABI, which
+    // covers all realistic DSKY-matic targets (x86_64/ARM64 LE).
+    // Rationale documented at:
+    //   The alternative — calling saturn_ib_stack_evaluate_algebraic
+    //   post-load — overwrites several Memory*_state and other state
+    //   fields from freshly-computed signals (see the deferred updates
+    //   at the bottom of evaluate_algebraic), which corrupts the exact
+    //   state we just restored.  Preserving signals verbatim avoids
+    //   that whole class of edge cases.
+    w.write_u64((uint64_t)sizeof(m.signals));
+    w.write_bytes(&m.signals, sizeof(m.signals));
+    w.write_u64((uint64_t)sizeof(m.outputs));
+    w.write_bytes(&m.outputs, sizeof(m.outputs));
+
+    const LVDA_LVDC_t &lv2 = m.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC;
+    w.write_u64((uint64_t)sizeof(lv2.signals));
+    w.write_bytes(&lv2.signals, sizeof(lv2.signals));
+    w.write_u64((uint64_t)sizeof(lv2.outputs));
+    w.write_bytes(&lv2.outputs, sizeof(lv2.outputs));
+    w.write_u64((uint64_t)sizeof(lv2.inputs));
+    w.write_bytes(&lv2.inputs,  sizeof(lv2.inputs));
 }
 
 bool plant_deserialize(BinaryReader &r, SaturnIBPlantObliq *plant) {
@@ -564,7 +599,8 @@ bool plant_deserialize(BinaryReader &r, SaturnIBPlantObliq *plant) {
     m.sample_tick = r.read_u64();
     m.use_rk4     = r.read_i32();
 
-    // Zero signals/inputs/outputs; they are refilled on the first step.
+    // signals + outputs will be rebuilt by evaluate_algebraic at the
+    // bottom of this function, so zero them to a known starting point.
     std::memset(&m.signals, 0, sizeof m.signals);
     std::memset(&m.outputs, 0, sizeof m.outputs);
     std::memset(&m.inputs,  0, sizeof m.inputs);
@@ -589,6 +625,43 @@ bool plant_deserialize(BinaryReader &r, SaturnIBPlantObliq *plant) {
     plant->time_sec = r.read_f64();
     plant->error    = nullptr;
     plant->model_inited = 1;
+
+    // Prevent SaturnIBStackAdapter's one-shot integrator-IC reseed from
+    // clobbering the restored states on the first post-resume tick.
+    // That flag is module-static in SaturnIBStackAdapter.c; by the time
+    // we're writing a save we've already run >=1 tick, so the real value
+    // is always 1 — safe to force unconditionally here.
+    saturn_ib_stack_set_ics_seeded(1);
+
+    // Top-level inputs (see write side).
+    for (int i = 0; i < 6; ++i) m.inputs.LaunchDate[i] = r.read_f64();
+    m.inputs.A_z_deg = r.read_f64();
+    for (int i = 0; i < 3; ++i) m.inputs.CG_LLA_deg_m[i] = r.read_f64();
+    for (int i = 0; i < 4; ++i) m.inputs.q_ECItoSM[i][0] = r.read_f64();
+    m.inputs.T_L_prime_sec = r.read_f64();
+
+    // Signals + outputs (raw bytes, see write side comment).  The
+    // size prefix is a sanity check against ABI drift / wrong plant
+    // version: if sizeof(signals) differs, we've got mismatched code
+    // and the file, so refuse rather than read garbage.
+    auto check_raw = [&](void *dst, size_t want, const char *what) -> bool {
+        uint64_t sz = r.read_u64();
+        if (sz != want) {
+            std::fprintf(stderr,
+                "plant_deserialize: %s size mismatch (file=%llu code=%zu). "
+                "File was built against a different plant/ABI.\n",
+                what, (unsigned long long)sz, want);
+            return false;
+        }
+        r.read_bytes(dst, want);
+        return true;
+    };
+    LVDA_LVDC_t &lv2 = m.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC;
+    if (!check_raw(&m.signals,    sizeof(m.signals),    "signals"))       return false;
+    if (!check_raw(&m.outputs,    sizeof(m.outputs),    "outputs"))       return false;
+    if (!check_raw(&lv2.signals,  sizeof(lv2.signals),  "lvdc.signals"))  return false;
+    if (!check_raw(&lv2.outputs,  sizeof(lv2.outputs),  "lvdc.outputs"))  return false;
+    if (!check_raw(&lv2.inputs,   sizeof(lv2.inputs),   "lvdc.inputs"))   return false;
 
     return r.ok();
 }
