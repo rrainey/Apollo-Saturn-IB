@@ -2,6 +2,8 @@
 #include "SaturnIBPlantObliq.h"
 #include "IAgcBridge.h"
 #include "msvc_str.h"
+#include "save_state.h"
+#include "plant_serialize.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -798,4 +800,187 @@ SaturnIBStack::EulerToMIS( double dOGA_rad, double dIGA_rad, double dMGA_rad )
     mResult.mat (0, 3) = mResult.mat (1, 3) = mResult.mat (2, 3) = 0.0;
     mResult.mat (3, 3) = 1.0;
     return mResult;
+}
+
+// =====================================================================
+// Binary save-state (dskymatic-studio --save-state-time / --resume)
+// =====================================================================
+
+namespace {
+constexpr uint32_t kStackFormatVersion = 1;
+
+inline void write_vec3(dskymatic::BinaryWriter &w, const sim::Vector3d &v) {
+    w.write_f64(v.x); w.write_f64(v.y); w.write_f64(v.z);
+}
+inline void read_vec3(dskymatic::BinaryReader &r, sim::Vector3d &v) {
+    v.x = r.read_f64(); v.y = r.read_f64(); v.z = r.read_f64();
+}
+inline void write_quat(dskymatic::BinaryWriter &w, const sim::Quaternion &q) {
+    for (int i = 0; i < 4; ++i) w.write_f64(q.GetE(i));
+}
+inline void read_quat(dskymatic::BinaryReader &r, sim::Quaternion &q) {
+    q.SetW(r.read_f64()); q.SetX(r.read_f64());
+    q.SetY(r.read_f64()); q.SetZ(r.read_f64());
+}
+} // namespace
+
+void SaturnIBStack::SerializeState(dskymatic::BinaryWriter &w) const
+{
+    w.write_u32(kStackFormatVersion);
+
+    // FDAI telemetry (recoverable but cheap to persist for display fidelity
+    // immediately on resume, before the first plant tick fills them in).
+    w.write_f64(m_dFDAI_Roll_deg);
+    w.write_f64(m_dFDAI_Pitch_deg);
+    w.write_f64(m_dFDAI_Yaw_deg);
+    w.write_f64(m_dFDAI_RollDot_dps);
+    w.write_f64(m_dFDAI_PitchDot_dps);
+    w.write_f64(m_dFDAI_YawDot_dps);
+
+    write_vec3(w, m_vCM_IMU_PIPA_Pulses);
+
+    write_quat(w, m_qECItoSM);
+
+    w.write_f64(m_dIMU_OGAResolver_deg);
+    w.write_f64(m_dIMU_IGAResolver_deg);
+    w.write_f64(m_dIMU_MGAResolver_deg);
+
+    w.write_f64(m_dLastSentIMU_OGAResolver_deg);
+    w.write_f64(m_dLastSentIMU_IGAResolver_deg);
+    w.write_f64(m_dLastSentIMU_MGAResolver_deg);
+
+    write_vec3(w, m_dTotalCDUPulseIncrements);
+    w.write_bool(m_bFirstPass);
+    w.write_i32((int32_t)m_eIMUMode);
+
+    write_vec3(w, m_vCoarseAlignCommand_deg);
+    write_vec3(w, m_vCoarseAlignError_deg);
+    for (int i = 0; i < 3; ++i) w.write_bool(m_bCoarseAlignFastRate[i]);
+
+    w.write_i32((int32_t)m_eFineAlignAxis);
+    w.write_f64(m_dFineAlignPulseCount);
+    w.write_i32(m_nFineAlignPulseSign);
+
+    w.write_i16(m_nCDUXErrorCounter_pulses);
+    w.write_i16(m_nCDUYErrorCounter_pulses);
+    w.write_i16(m_nCDUZErrorCounter_pulses);
+
+    w.write_bool(m_bCoarseAlignEnable);
+    w.write_bool(m_bErrorCounterEnable);
+    w.write_bool(m_bLiftoff);
+
+    w.write_f64(m_dResidualDeltaT_sec);
+    w.write_f64(m_dIMUResidualDeltaT_sec);
+
+    // External plant outputs copy.  These feed the first post-resume
+    // TimeStep (which reads veh_q_ECI / OUT22 BEFORE StepPlant runs),
+    // so without this the first tick computes gimbal resolvers from a
+    // zeroed quaternion and the FDAI ball flips to identity.
+    {
+        const auto &o = m_outputs;
+        w.write_f64(o.FDAI_Roll_deg);
+        w.write_f64(o.FDAI_Pitch_deg);
+        w.write_f64(o.FDAI_Yaw_deg);
+        w.write_f64(o.FDAI_RollDot_dps);
+        w.write_f64(o.FDAI_PitchDot_dps);
+        w.write_f64(o.FDAI_YawDot_dps);
+        for (int i = 0; i < 3; ++i) w.write_f64(o.CM_IMU_PIPA_Pulses[i]);
+        w.write_f64(o.CM_IMU_IGA_rad);
+        w.write_f64(o.CM_IMU_MGA_Rad);
+        w.write_f64(o.CM_IMU_OGA_rad);
+        for (int i = 0; i < 25; ++i) w.write_f64(o.OUT11[i]);
+        for (int i = 0; i < 24; ++i) w.write_f64(o.OUT12[i]);
+        w.write_i32(o.bStageSep);
+        w.write_i32(o.bIECO);
+        w.write_i32(o.bOECO);
+        w.write_i32(o.bS_IVB_EngineStart);
+        for (int i = 0; i < 4; ++i) w.write_f64(o.veh_q_ECI[i]);
+        w.write_i32(o.bLiftoff);
+        w.write_f64(o.BodyToSM_Phi_deg);
+        w.write_f64(o.BodyToSM_Theta_deg);
+        w.write_f64(o.BodyToSM_Psi_deg);
+        for (int i = 0; i < 9; ++i) w.write_f64(o.OUT22[i]);
+    }
+
+    // Plant persistent state.
+    dskymatic::plant_serialize(w, m_pPlant);
+}
+
+bool SaturnIBStack::DeserializeState(dskymatic::BinaryReader &r)
+{
+    uint32_t v = r.read_u32();
+    if (v != kStackFormatVersion) {
+        std::fprintf(stderr,
+            "SaturnIBStack::DeserializeState: version mismatch (file=%u, "
+            "expected=%u)\n", v, kStackFormatVersion);
+        return false;
+    }
+
+    m_dFDAI_Roll_deg     = r.read_f64();
+    m_dFDAI_Pitch_deg    = r.read_f64();
+    m_dFDAI_Yaw_deg      = r.read_f64();
+    m_dFDAI_RollDot_dps  = r.read_f64();
+    m_dFDAI_PitchDot_dps = r.read_f64();
+    m_dFDAI_YawDot_dps   = r.read_f64();
+
+    read_vec3(r, m_vCM_IMU_PIPA_Pulses);
+    read_quat(r, m_qECItoSM);
+
+    m_dIMU_OGAResolver_deg = r.read_f64();
+    m_dIMU_IGAResolver_deg = r.read_f64();
+    m_dIMU_MGAResolver_deg = r.read_f64();
+    m_dLastSentIMU_OGAResolver_deg = r.read_f64();
+    m_dLastSentIMU_IGAResolver_deg = r.read_f64();
+    m_dLastSentIMU_MGAResolver_deg = r.read_f64();
+
+    read_vec3(r, m_dTotalCDUPulseIncrements);
+    m_bFirstPass = r.read_bool();
+    m_eIMUMode   = (ISS_IMU_Mode)r.read_i32();
+
+    read_vec3(r, m_vCoarseAlignCommand_deg);
+    read_vec3(r, m_vCoarseAlignError_deg);
+    for (int i = 0; i < 3; ++i) m_bCoarseAlignFastRate[i] = r.read_bool();
+
+    m_eFineAlignAxis         = (ISS_Fine_Align_Axis)r.read_i32();
+    m_dFineAlignPulseCount   = r.read_f64();
+    m_nFineAlignPulseSign    = r.read_i32();
+
+    m_nCDUXErrorCounter_pulses = r.read_i16();
+    m_nCDUYErrorCounter_pulses = r.read_i16();
+    m_nCDUZErrorCounter_pulses = r.read_i16();
+
+    m_bCoarseAlignEnable   = r.read_bool();
+    m_bErrorCounterEnable  = r.read_bool();
+    m_bLiftoff             = r.read_bool();
+    m_dResidualDeltaT_sec     = r.read_f64();
+    m_dIMUResidualDeltaT_sec  = r.read_f64();
+
+    {
+        auto &o = m_outputs;
+        o.FDAI_Roll_deg     = r.read_f64();
+        o.FDAI_Pitch_deg    = r.read_f64();
+        o.FDAI_Yaw_deg      = r.read_f64();
+        o.FDAI_RollDot_dps  = r.read_f64();
+        o.FDAI_PitchDot_dps = r.read_f64();
+        o.FDAI_YawDot_dps   = r.read_f64();
+        for (int i = 0; i < 3; ++i) o.CM_IMU_PIPA_Pulses[i] = r.read_f64();
+        o.CM_IMU_IGA_rad = r.read_f64();
+        o.CM_IMU_MGA_Rad = r.read_f64();
+        o.CM_IMU_OGA_rad = r.read_f64();
+        for (int i = 0; i < 25; ++i) o.OUT11[i] = r.read_f64();
+        for (int i = 0; i < 24; ++i) o.OUT12[i] = r.read_f64();
+        o.bStageSep          = r.read_i32();
+        o.bIECO              = r.read_i32();
+        o.bOECO              = r.read_i32();
+        o.bS_IVB_EngineStart = r.read_i32();
+        for (int i = 0; i < 4; ++i) o.veh_q_ECI[i] = r.read_f64();
+        o.bLiftoff             = r.read_i32();
+        o.BodyToSM_Phi_deg     = r.read_f64();
+        o.BodyToSM_Theta_deg   = r.read_f64();
+        o.BodyToSM_Psi_deg     = r.read_f64();
+        for (int i = 0; i < 9; ++i) o.OUT22[i] = r.read_f64();
+    }
+
+    if (!dskymatic::plant_deserialize(r, m_pPlant)) return false;
+    return r.ok();
 }

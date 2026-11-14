@@ -63,6 +63,12 @@ public:
     /** Append the AGC core dump to the stack's state snapshot. */
     void SaveState( const std::string & strName ) override;
 
+    /** Full save-state including the bridge fields, UplinkMessage queue and
+     *  the agc_t core (RAM + ROM + channels + flags + counters).  Also calls
+     *  up to SaturnIBStack::SerializeState for the plant + IMU state. */
+    void SerializeState  (dskymatic::BinaryWriter &w) const override;
+    bool DeserializeState(dskymatic::BinaryReader &r) override;
+
 protected:
     // ---- AGC-owned state ---------------------------------------------------
     agc_t * m_pAGC;

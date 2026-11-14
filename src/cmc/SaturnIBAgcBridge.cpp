@@ -11,6 +11,7 @@
 #include "ChannelQueue.h"
 #include "UplinkMessage.h"
 #include "msvc_str.h"
+#include "save_state.h"
 
 #include <cmath>
 #include <cstdlib>
@@ -61,6 +62,18 @@ SaturnIBAgcBridge * g_pSaturnIBAgcBridge = nullptr;
 
 static bool bSentFirstUplink = false;
 static bool bSentStateVector = false;
+
+// Exposed to the save-state code at the bottom of this TU so these
+// module-static latches survive --save-state-time / --resume (otherwise
+// the auto-uplink logic would re-fire PAD-load + SV uplink after resume).
+void cmc_uplink_latches_get(bool &first, bool &sv) {
+    first = bSentFirstUplink;
+    sv    = bSentStateVector;
+}
+void cmc_uplink_latches_set(bool first, bool sv) {
+    bSentFirstUplink = first;
+    bSentStateVector = sv;
+}
 
 static void SwriteDownlinkWriter();
 
@@ -1048,4 +1061,262 @@ SwriteDownlinkWriter()
         std::fprintf(stderr, "AGC downlink: first decoded list \"%s\"\n",
                      Sbuffer[0]);
     }
+}
+
+// =====================================================================
+// Binary save-state: bridge fields + agc_t core (dskymatic-studio)
+// =====================================================================
+
+namespace {
+
+constexpr uint32_t kBridgeFormatVersion = 1;
+constexpr uint32_t kAgcFormatVersion    = 1;
+
+// Pack agc_t's 1-bit fields into one u64 with positions defined here
+// (not by the compiler).  Any reader can reproduce the layout from this
+// table alone.
+static uint64_t pack_agc_flags(const agc_t &s) {
+    uint64_t f = 0;
+    #define PACK(bit, field) if (s.field) f |= (uint64_t(1) << (bit))
+    PACK( 0, ExtraCode);
+    PACK( 1, AllowInterrupt);
+    PACK( 2, InIsr);
+    PACK( 3, SubstituteInstruction);
+    PACK( 4, PendFlag);
+    PACK( 5, DownruptTimeValid);
+    PACK( 6, NightWatchman);
+    PACK( 7, NightWatchmanTripped);
+    PACK( 8, RuptLock);
+    PACK( 9, NoRupt);
+    PACK(10, TCTrap);
+    PACK(11, NoTC);
+    PACK(12, Standby);
+    PACK(13, SbyPressed);
+    PACK(14, SbyStillPressed);
+    PACK(15, ParityFail);
+    PACK(16, CheckParity);
+    PACK(17, RestartLight);
+    PACK(18, TookBZF);
+    PACK(19, TookBZMF);
+    PACK(20, GeneratedWarning);
+    PACK(21, Trap31A);
+    PACK(22, Trap31B);
+    PACK(23, Trap32);
+    #undef PACK
+    // Small multi-bit sub-fields packed above the single-bit range.
+    f |= (uint64_t(s.PendDelay   & 0x7) << 24);
+    f |= (uint64_t(s.ExtraDelay  & 0x7) << 27);
+    f |= (uint64_t(s.RadarGateCounter & 0xF) << 30);
+    return f;
+}
+
+static void unpack_agc_flags(agc_t &s, uint64_t f) {
+    #define UNPACK(bit, field) s.field = ((f >> (bit)) & 1u) ? 1u : 0u
+    UNPACK( 0, ExtraCode);
+    UNPACK( 1, AllowInterrupt);
+    UNPACK( 2, InIsr);
+    UNPACK( 3, SubstituteInstruction);
+    UNPACK( 4, PendFlag);
+    UNPACK( 5, DownruptTimeValid);
+    UNPACK( 6, NightWatchman);
+    UNPACK( 7, NightWatchmanTripped);
+    UNPACK( 8, RuptLock);
+    UNPACK( 9, NoRupt);
+    UNPACK(10, TCTrap);
+    UNPACK(11, NoTC);
+    UNPACK(12, Standby);
+    UNPACK(13, SbyPressed);
+    UNPACK(14, SbyStillPressed);
+    UNPACK(15, ParityFail);
+    UNPACK(16, CheckParity);
+    UNPACK(17, RestartLight);
+    UNPACK(18, TookBZF);
+    UNPACK(19, TookBZMF);
+    UNPACK(20, GeneratedWarning);
+    UNPACK(21, Trap31A);
+    UNPACK(22, Trap31B);
+    UNPACK(23, Trap32);
+    #undef UNPACK
+    s.PendDelay        = (unsigned)((f >> 24) & 0x7);
+    s.ExtraDelay       = (unsigned)((f >> 27) & 0x7);
+    s.RadarGateCounter = (unsigned)((f >> 30) & 0xF);
+}
+
+static void write_agc(dskymatic::BinaryWriter &w, const agc_t &s) {
+    w.write_u32(kAgcFormatVersion);
+    w.write_u64(s.CycleCounter);
+
+    // Erasable RAM: 8 banks x 0400 words = 2048 int16.
+    for (int b = 0; b < 8; ++b)
+        for (int i = 0; i < 0400; ++i) w.write_i16(s.Erasable[b][i]);
+
+    // Fixed ROM: 40 banks x 02000 words = 40960 int16.
+    for (int b = 0; b < 40; ++b)
+        for (int i = 0; i < 02000; ++i) w.write_i16(s.Fixed[b][i]);
+
+    // Parity words paired with each fixed word (1 bit per word, packed 32/word).
+    for (int i = 0; i < 40 * (02000 / 32); ++i) w.write_u32(s.Parities[i]);
+
+    // I/O channels.
+    for (int i = 0; i < NUM_CHANNELS; ++i) w.write_i16(s.InputChannel[i]);
+    w.write_i16(s.OutputChannel7);
+    for (int i = 0; i < 16; ++i) w.write_i16(s.OutputChannel10[i]);
+
+    w.write_i16(s.IndexValue);
+    for (int i = 0; i < 1 + NUM_INTERRUPT_TYPES; ++i)
+        w.write_i8(s.InterruptRequests[i]);
+
+    w.write_u64(pack_agc_flags(s));
+    w.write_u32(s.WarningFilter);
+    w.write_u64(s.DownruptTime);
+    w.write_i32(s.Downlink);
+    w.write_i32(s.NextZ);
+    w.write_i32(s.ScalerCounter);
+    w.write_i32(s.ChannelRoutineCount);
+    w.write_u32(s.DskyTimer);
+    w.write_u32(s.DskyFlash);
+    w.write_u32(s.DskyChannel163);
+
+    // agc_clientdata is an Orbiter integration hook; not used here.  We
+    // skip it on save and leave the live pointer untouched on load.
+}
+
+static bool read_agc(dskymatic::BinaryReader &r, agc_t &s) {
+    uint32_t v = r.read_u32();
+    if (v != kAgcFormatVersion) {
+        std::fprintf(stderr, "read_agc: version mismatch\n");
+        return false;
+    }
+    s.CycleCounter = r.read_u64();
+    for (int b = 0; b < 8; ++b)
+        for (int i = 0; i < 0400; ++i) s.Erasable[b][i] = r.read_i16();
+    for (int b = 0; b < 40; ++b)
+        for (int i = 0; i < 02000; ++i) s.Fixed[b][i] = r.read_i16();
+    for (int i = 0; i < 40 * (02000 / 32); ++i) s.Parities[i] = r.read_u32();
+    for (int i = 0; i < NUM_CHANNELS; ++i) s.InputChannel[i] = r.read_i16();
+    s.OutputChannel7 = r.read_i16();
+    for (int i = 0; i < 16; ++i) s.OutputChannel10[i] = r.read_i16();
+    s.IndexValue = r.read_i16();
+    for (int i = 0; i < 1 + NUM_INTERRUPT_TYPES; ++i)
+        s.InterruptRequests[i] = r.read_i8();
+    unpack_agc_flags(s, r.read_u64());
+    s.WarningFilter        = r.read_u32();
+    s.DownruptTime         = r.read_u64();
+    s.Downlink             = r.read_i32();
+    s.NextZ                = r.read_i32();
+    s.ScalerCounter        = r.read_i32();
+    s.ChannelRoutineCount  = r.read_i32();
+    s.DskyTimer            = r.read_u32();
+    s.DskyFlash            = r.read_u32();
+    s.DskyChannel163       = r.read_u32();
+    return r.ok();
+}
+
+static inline void write_vec3(dskymatic::BinaryWriter &w, const sim::Vector3d &v) {
+    w.write_f64(v.x); w.write_f64(v.y); w.write_f64(v.z);
+}
+static inline void read_vec3(dskymatic::BinaryReader &r, sim::Vector3d &v) {
+    v.x = r.read_f64(); v.y = r.read_f64(); v.z = r.read_f64();
+}
+
+} // namespace
+
+void SaturnIBAgcBridge::SerializeState(dskymatic::BinaryWriter &w) const
+{
+    // Base class first (stack + plant).
+    SaturnIBStack::SerializeState(w);
+
+    w.write_u32(kBridgeFormatVersion);
+
+    // BatchConfig-derived strings / scalars.
+    w.write_string(m_pad_load_file);
+    w.write_f64(m_pad_load_start_sec);
+
+    // Uplink queue -- optional.
+    bool have_uplink = (m_pCurrentUplinkMessage != nullptr);
+    w.write_bool(have_uplink);
+    if (have_uplink) m_pCurrentUplinkMessage->SerializeState(w);
+    w.write_f64(m_dNextUplinkTime_sec);
+
+    write_vec3(w, m_vLastCM_IMU_PIPA_Pulses);
+    write_vec3(w, m_vPipaPulsesInjectedCum);
+
+    w.write_bool(m_bLastSeenLiftoff);
+    w.write_bool(m_bNoAttLampOn);
+    w.write_bool(m_bIssTurnOnDelayComplete);
+    w.write_f64(m_dNoAttOffElapsed_sec);
+    w.write_bool(m_bFirstResetReceived);
+    w.write_f64(m_dAGCResidualDeltaT_sec);
+
+    // File-static uplink latches (see declaration at top of this TU).
+    extern void cmc_uplink_latches_get(bool&, bool&);
+    bool ul_first = false, ul_sv = false;
+    cmc_uplink_latches_get(ul_first, ul_sv);
+    w.write_bool(ul_first);
+    w.write_bool(ul_sv);
+
+    // m_bImuDebug / m_pImuDebugFile / m_nImuDebugLastSec are debug-logger
+    // plumbing; on resume we reopen fresh from the current config (no need
+    // to persist the file handle or the last-logged second).
+
+    // agc_t
+    if (m_pAGC) {
+        w.write_bool(true);
+        write_agc(w, *m_pAGC);
+    } else {
+        w.write_bool(false);
+    }
+}
+
+bool SaturnIBAgcBridge::DeserializeState(dskymatic::BinaryReader &r)
+{
+    if (!SaturnIBStack::DeserializeState(r)) return false;
+
+    uint32_t v = r.read_u32();
+    if (v != kBridgeFormatVersion) {
+        std::fprintf(stderr,
+            "SaturnIBAgcBridge::DeserializeState: version mismatch "
+            "(file=%u, expected=%u)\n", v, kBridgeFormatVersion);
+        return false;
+    }
+
+    m_pad_load_file     = r.read_string();
+    m_pad_load_start_sec = r.read_f64();
+
+    bool have_uplink = r.read_bool();
+    if (have_uplink) {
+        if (!m_pCurrentUplinkMessage) m_pCurrentUplinkMessage = new UplinkMessage();
+        if (!m_pCurrentUplinkMessage->DeserializeState(r)) return false;
+    } else {
+        delete m_pCurrentUplinkMessage;
+        m_pCurrentUplinkMessage = nullptr;
+    }
+    m_dNextUplinkTime_sec = r.read_f64();
+
+    read_vec3(r, m_vLastCM_IMU_PIPA_Pulses);
+    read_vec3(r, m_vPipaPulsesInjectedCum);
+
+    m_bLastSeenLiftoff        = r.read_bool();
+    m_bNoAttLampOn            = r.read_bool();
+    m_bIssTurnOnDelayComplete = r.read_bool();
+    m_dNoAttOffElapsed_sec    = r.read_f64();
+    m_bFirstResetReceived     = r.read_bool();
+    m_dAGCResidualDeltaT_sec  = r.read_f64();
+
+    extern void cmc_uplink_latches_set(bool, bool);
+    bool ul_first = r.read_bool();
+    bool ul_sv    = r.read_bool();
+    cmc_uplink_latches_set(ul_first, ul_sv);
+
+    bool have_agc = r.read_bool();
+    if (have_agc) {
+        if (!m_pAGC) {
+            std::fprintf(stderr,
+                "SaturnIBAgcBridge::DeserializeState: no live agc_t to "
+                "restore into\n");
+            return false;
+        }
+        if (!read_agc(r, *m_pAGC)) return false;
+    }
+    return r.ok();
 }

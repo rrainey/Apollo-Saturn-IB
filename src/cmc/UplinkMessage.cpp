@@ -215,3 +215,22 @@ void UplinkMessage::EncodeWord( int nWord )
         //LogInfo1 ("Coded key: %d\n", ((nWord & nMask[i]) >> nShift[i]) );
     }
 }
+#include "save_state.h"
+
+void UplinkMessage::SerializeState(dskymatic::BinaryWriter &w) const {
+    w.write_u32(1);  // format version
+    w.write_u32((uint32_t)m_keycodeList.size());
+    for (int k : m_keycodeList) w.write_i32(k);
+    w.write_u32(m_nCursor);
+}
+
+bool UplinkMessage::DeserializeState(dskymatic::BinaryReader &r) {
+    uint32_t v = r.read_u32();
+    if (v != 1) return false;
+    uint32_t n = r.read_u32();
+    m_keycodeList.clear();
+    m_keycodeList.reserve(n);
+    for (uint32_t i = 0; i < n; ++i) m_keycodeList.push_back(r.read_i32());
+    m_nCursor = r.read_u32();
+    return r.ok();
+}

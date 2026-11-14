@@ -3,6 +3,8 @@
 #include "SimSupport.h"
 #include "SaturnIBExternalIO.h"
 
+namespace dskymatic { class BinaryWriter; class BinaryReader; }
+
 struct SaturnIBPlantObliq_tag;
 typedef struct SaturnIBPlantObliq_tag SaturnIBPlantObliq;
 
@@ -152,6 +154,15 @@ public:
      *  the plant-side dump; SaturnIBAgcBridge overrides to also write the
      *  AGC core dump. */
     virtual void SaveState( const std::string & strName );
+
+    /** Binary save-state hooks (used by dskymatic-studio's --save-state-time
+     *  / --resume).  SaturnIBStack writes its own fields and the plant's
+     *  persistent partitions (states, data_stores, enable_states, time
+     *  scalars); SaturnIBAgcBridge overrides to also write the bridge
+     *  state + agc_t core.  Caller must have the matching sim objects
+     *  already constructed before DeserializeState is invoked. */
+    virtual void SerializeState  (dskymatic::BinaryWriter &w) const;
+    virtual bool DeserializeState(dskymatic::BinaryReader &r);
 
     // ------------------------------------------------------------------
     // Accessors for the bridge (read current stack state inside AGC hooks).

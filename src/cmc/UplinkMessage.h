@@ -3,6 +3,7 @@
 #include <vector>
 #include "Vector.h"
 
+namespace dskymatic { class BinaryWriter; class BinaryReader; }
 
 class UplinkMessage
 {
@@ -36,6 +37,9 @@ public:
      * Encode the low-order 15-bits of the given word for transmission
      */
     void EncodeWord( int nWord );
+
+    void SerializeState  (dskymatic::BinaryWriter &w) const;
+    bool DeserializeState(dskymatic::BinaryReader &r);
 
 protected:
     std::vector<int> m_keycodeList;

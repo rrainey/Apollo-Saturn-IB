@@ -6,6 +6,8 @@
 
 #include "Date.h"
 
+namespace dskymatic { class BinaryWriter; class BinaryReader; }
+
 namespace sim {
 
 class SimModel {
@@ -30,6 +32,10 @@ public:
 
     void FixedTimeUpdate(double dDeltaT_sec);
     void ClockTimeUpdate();
+
+    /** Binary save-state hooks (dskymatic-studio). */
+    void SerializeState  (dskymatic::BinaryWriter &w) const;
+    bool DeserializeState(dskymatic::BinaryReader &r);
 
 private:
     void TimeStep(double dDeltaT_sec);

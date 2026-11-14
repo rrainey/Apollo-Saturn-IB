@@ -25,6 +25,7 @@ add_library(saturnib STATIC
     src/sim/SaturnIBPlantObliq.c
     src/sim/SaturnIBStack.cpp
     src/sim/SaturnIBStackAdapter.c
+    src/sim/plant_serialize.cpp
     src/sim/igm_trace.c
     src/sim/igm_trace_stash.c
     src/sim/ic_trace.c
@@ -34,6 +35,7 @@ add_library(saturnib STATIC
     src/support/Log.cpp
     src/support/SimClock.cpp
     src/support/Vector.cpp
+    src/support/save_state.cpp
     ${PLANT_GEN_DIR}/saturn_ib_stack.c
     ${LVDC_DIR}/LVDA_LVDC.c
 )
