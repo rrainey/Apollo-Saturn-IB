@@ -25,7 +25,7 @@ Simulink treats timing as **block/system properties**, edited in the UI / MDL:
 | **Fixed-step size** | Model config | Fundamental solver step (ApolloA/Saturn: **0.005 s**) |
 | Rate IDs / TID table | Compiled model | After **sample-time propagation**, every block gets a concrete rate |
 
-Important behaviors ([MathWorks: sample time in systems](https://www.mathworks.com/help/simulink/ug/managing-sample-times-in-systems.html)):
+Important behaviors:
 
 1. **`-1` / inherited** is resolved at **compile** from context (drivers, atomic
    parent, multirate peers)—not left as “every fundamental step.”
