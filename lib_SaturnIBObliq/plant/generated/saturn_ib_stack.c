@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-13T16:21:37.969Z
+ * Generated on: 2026-11-16T22:08:32.279Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -2200,162 +2200,12 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             model->signals.S_IB_Stage_Vehicle_Mass_Properties_Propellant_Sensor_Dry = (model->signals.S_IB_Stage_Vehicle_Mass_Properties_vehicle_mass_kg <= 198488.9);
     }
 
-    /* Initial_Conditions_LLA_to_ECF_WGS_84_major (from Initial_Conditions > LLA_to_ECF) */
-    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_major (constant)
-    // (constant value initialized in _init)
-
-    /* Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 (from Initial_Conditions > LLA_to_ECF) */
-    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 (constant)
-    // (constant value initialized in _init)
-
-    /* Initial_Conditions_Angle_Conversion (from Initial_Conditions) */
-    // Units Conversion: Initial_Conditions_Angle_Conversion (deg -> rad)
-    model->signals.Initial_Conditions_Angle_Conversion = model->signals.Initial_Conditions_Demux_0 * (M_PI / 180.0);
-
-    /* Initial_Conditions_LLA_to_ECF_SinCos (from Initial_Conditions > LLA_to_ECF) */
-    // Trig block: Initial_Conditions_LLA_to_ECF_SinCos (sincos)
-    model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin = sin(model->signals.Initial_Conditions_Angle_Conversion);
-    model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos = cos(model->signals.Initial_Conditions_Angle_Conversion);
-
-    /* Initial_Conditions_LLA_to_ECF_Math_Function (from Initial_Conditions > LLA_to_ECF) */
-    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function
-    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function = (model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin) * (model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin);
-
-    /* Initial_Conditions_LLA_to_ECF_Product (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Product = model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 * model->signals.Initial_Conditions_LLA_to_ECF_Math_Function;
-
-    /* Initial_Conditions_LLA_to_ECF_Unary_Minus (from Initial_Conditions > LLA_to_ECF) */
-    // Unary minus block: Initial_Conditions_LLA_to_ECF_Unary_Minus
-    model->signals.Initial_Conditions_LLA_to_ECF_Unary_Minus = -model->signals.Initial_Conditions_LLA_to_ECF_Product;
-
-    /* Initial_Conditions_LLA_to_ECF_Bias (from Initial_Conditions > LLA_to_ECF) */
-    // Evaluate block: Initial_Conditions_LLA_to_ECF_Bias
-    // Expression: in(0)+(1)
-    // Input variables
-    double _eval_Initial_Conditions_LLA_to_ECF_Bias_in0 = model->signals.Initial_Conditions_LLA_to_ECF_Unary_Minus;
-    model->signals.Initial_Conditions_LLA_to_ECF_Bias = (_eval_Initial_Conditions_LLA_to_ECF_Bias_in0 + 1);
-
-    /* Initial_Conditions_LLA_to_ECF_Math_Function3 (from Initial_Conditions > LLA_to_ECF) */
-    // Evaluate block: Initial_Conditions_LLA_to_ECF_Math_Function3
-    // Expression: (in(0)<0?-sqrt(-in(0)):sqrt(in(0)))
-    // Input variables
-    double _eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0 = model->signals.Initial_Conditions_LLA_to_ECF_Bias;
-    // Note: This expression requires #include <math.h>
-    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function3 = (((_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0 < 0)) ? ((-sqrt((-_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0)))) : (sqrt(_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0)));
-
-    /* Initial_Conditions_LLA_to_ECF_Divide (from Initial_Conditions > LLA_to_ECF) */
-    // Divide block: Initial_Conditions_LLA_to_ECF_Divide
-    model->signals.Initial_Conditions_LLA_to_ECF_Divide = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major) / (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function3);
-
-    /* Initial_Conditions_LLA_to_ECF_Add (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Add = model->signals.Initial_Conditions_LLA_to_ECF_Divide + model->signals.Initial_Conditions_Demux_2;
-
-    /* Initial_Conditions_Angle_Conversion1 (from Initial_Conditions) */
-    // Units Conversion: Initial_Conditions_Angle_Conversion1 (deg -> rad)
-    model->signals.Initial_Conditions_Angle_Conversion1 = model->signals.Initial_Conditions_Demux_1 * (M_PI / 180.0);
-
-    /* Initial_Conditions_LLA_to_ECF_SinCos1 (from Initial_Conditions > LLA_to_ECF) */
-    // Trig block: Initial_Conditions_LLA_to_ECF_SinCos1 (sincos)
-    model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_sin = sin(model->signals.Initial_Conditions_Angle_Conversion1);
-    model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_cos = cos(model->signals.Initial_Conditions_Angle_Conversion1);
-
-    /* Initial_Conditions_LLA_to_ECF_Product1 (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Product1 = model->signals.Initial_Conditions_LLA_to_ECF_Add * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos * model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_cos;
-
-    /* Initial_Conditions_LLA_to_ECF_Product2 (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Product2 = model->signals.Initial_Conditions_LLA_to_ECF_Add * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos * model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_sin;
-
-    /* Initial_Conditions_LLA_to_ECF_WGS_84_minor (from Initial_Conditions > LLA_to_ECF) */
-    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_minor (constant)
-    // (constant value initialized in _init)
-
-    /* Initial_Conditions_LLA_to_ECF_Math_Function1 (from Initial_Conditions > LLA_to_ECF) */
-    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function1
-    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function1 = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_minor) * (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_minor);
-
-    /* Initial_Conditions_LLA_to_ECF_Math_Function2 (from Initial_Conditions > LLA_to_ECF) */
-    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function2
-    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function2 = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major) * (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major);
-
-    /* Initial_Conditions_LLA_to_ECF_Divide1 (from Initial_Conditions > LLA_to_ECF) */
-    // Divide block: Initial_Conditions_LLA_to_ECF_Divide1
-    model->signals.Initial_Conditions_LLA_to_ECF_Divide1 = (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function1) / (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function2);
-
-    /* Initial_Conditions_LLA_to_ECF_Product3 (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Product3 = model->signals.Initial_Conditions_LLA_to_ECF_Divide1 * model->signals.Initial_Conditions_LLA_to_ECF_Divide;
-
-    /* Initial_Conditions_LLA_to_ECF_Add1 (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Add1 = model->signals.Initial_Conditions_LLA_to_ECF_Product3 + model->signals.Initial_Conditions_Demux_2;
-
-    /* Initial_Conditions_LLA_to_ECF_Product4 (from Initial_Conditions > LLA_to_ECF) */
-    model->signals.Initial_Conditions_LLA_to_ECF_Product4 = model->signals.Initial_Conditions_LLA_to_ECF_Add1 * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin;
-
-    /* Initial_Conditions_LLA_to_ECF_Mux (from Initial_Conditions > LLA_to_ECF) */
-    // Mux block: Initial_Conditions_LLA_to_ECF_Mux (1×3)
-    // Vector output
-    model->signals.Initial_Conditions_LLA_to_ECF_Mux[0] = model->signals.Initial_Conditions_LLA_to_ECF_Product1;
-    model->signals.Initial_Conditions_LLA_to_ECF_Mux[1] = model->signals.Initial_Conditions_LLA_to_ECF_Product2;
-    model->signals.Initial_Conditions_LLA_to_ECF_Mux[2] = model->signals.Initial_Conditions_LLA_to_ECF_Product4;
-
-    /* Initial_Conditions_zero (from Initial_Conditions) */
-    // Source block: Initial_Conditions_zero (constant)
-    // (constant value initialized in _init)
-
-    /* Initial_Conditions_Unary_Minus (from Initial_Conditions) */
-    // Unary minus block: Initial_Conditions_Unary_Minus
-    model->signals.Initial_Conditions_Unary_Minus = -model->signals.Initial_Conditions_T_to_GMST_seconds_to_degrees;
-
-    /* Initial_Conditions_Angle_Conversion2 (from Initial_Conditions) */
-    // Units Conversion: Initial_Conditions_Angle_Conversion2 (deg -> rad)
-    model->signals.Initial_Conditions_Angle_Conversion2 = model->signals.Initial_Conditions_Unary_Minus * (M_PI / 180.0);
-
-    /* Initial_Conditions_Mux (from Initial_Conditions) */
-    // Mux block: Initial_Conditions_Mux (1×3)
-    // Vector output
-    model->signals.Initial_Conditions_Mux[0] = model->signals.Initial_Conditions_zero;
-    model->signals.Initial_Conditions_Mux[1] = model->signals.Initial_Conditions_zero;
-    model->signals.Initial_Conditions_Mux[2] = model->signals.Initial_Conditions_Angle_Conversion2;
-
-    /* Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix (from Initial_Conditions) */
-    // Orientation Conversion block: Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix (euler_to_dcm)
-    {
-        double c_phi = cos(model->signals.Initial_Conditions_Mux[0]);
-        double s_phi = sin(model->signals.Initial_Conditions_Mux[0]);
-        double c_theta = cos(model->signals.Initial_Conditions_Mux[1]);
-        double s_theta = sin(model->signals.Initial_Conditions_Mux[1]);
-        double c_psi = cos(model->signals.Initial_Conditions_Mux[2]);
-        double s_psi = sin(model->signals.Initial_Conditions_Mux[2]);
-
-        // DCM = R_z(Psi) * R_y(Theta) * R_x(Phi)
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][0] = c_theta * c_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][1] = c_theta * s_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][2] = -s_theta;
-
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][0] = s_phi * s_theta * c_psi - c_phi * s_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][1] = s_phi * s_theta * s_psi + c_phi * c_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][2] = s_phi * c_theta;
-
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][0] = c_phi * s_theta * c_psi + s_phi * s_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][1] = c_phi * s_theta * s_psi - s_phi * c_psi;
-        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][2] = c_phi * c_theta;
-    }
-
-    /* Initial_Conditions_Product (from Initial_Conditions) */
-    // Matrix multiply block: Initial_Conditions_Product
-    // Matrix-vector multiplication: [3x3] × [3] = [3]
-    for (int i = 0; i < 3; i++) {
-        model->signals.Initial_Conditions_Product[i] = 0.0;
-        for (int k = 0; k < 3; k++) {
-            model->signals.Initial_Conditions_Product[i] += model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[i][k] * model->signals.Initial_Conditions_LLA_to_ECF_Mux[k];
-        }
-    }
-
     /* S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze (from S_IB_Stage > Custom_Variable_Mass_6DoF_Quaternion) */
     // Integrator block: S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze
     /* IcNeedsLoading: defer x(0) until first enabled evaluation */
     if (model->enable_states.S_IB_Stage_enabled && model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_ic_needs_loading) {
         for (int i = 0; i < 3; i++) {
-            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->signals.Initial_Conditions_Product[i];
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i] = model->signals.On_Pad_Initial_Conditions_Product[i];
         }
         model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_ic_needs_loading = 0;
     }
@@ -2363,24 +2213,157 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         model->signals.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze[i] = model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_xe_ye_ze_states[i];
     }
 
-    /* Initial_Conditions_omega_E_rad_per_sec (from Initial_Conditions) */
-    // Source block: Initial_Conditions_omega_E_rad_per_sec (constant)
-    // (constant value initialized in _init)
+    /* On_Pad_Initial_Conditions_Sum (from On_Pad > Initial_Conditions) */
+    model->signals.On_Pad_Initial_Conditions_Sum = model->signals.On_Pad_Initial_Conditions_Angle_Conversion3 + model->signals.On_Pad_Initial_Conditions_Demux_1;
 
-    /* Initial_Conditions__3x3_Cross_Product (from Initial_Conditions) */
-    // Cross product block: Initial_Conditions__3x3_Cross_Product
-    // Cross product: a × b
-    model->signals.Initial_Conditions__3x3_Cross_Product[0] = model->signals.Initial_Conditions_omega_E_rad_per_sec[1] * model->signals.Initial_Conditions_Product[2] - model->signals.Initial_Conditions_omega_E_rad_per_sec[2] * model->signals.Initial_Conditions_Product[1];
-    model->signals.Initial_Conditions__3x3_Cross_Product[1] = model->signals.Initial_Conditions_omega_E_rad_per_sec[2] * model->signals.Initial_Conditions_Product[0] - model->signals.Initial_Conditions_omega_E_rad_per_sec[0] * model->signals.Initial_Conditions_Product[2];
-    model->signals.Initial_Conditions__3x3_Cross_Product[2] = model->signals.Initial_Conditions_omega_E_rad_per_sec[0] * model->signals.Initial_Conditions_Product[1] - model->signals.Initial_Conditions_omega_E_rad_per_sec[1] * model->signals.Initial_Conditions_Product[0];
+    /* On_Pad_Initial_Conditions_Position_1_Azimuth_deg (from On_Pad > Initial_Conditions) */
+    // Source block: On_Pad_Initial_Conditions_Position_1_Azimuth_deg (constant)
+    // Using parameter: pad_roll_L_deg → PARAM_pad_roll_L_deg
+    model->signals.On_Pad_Initial_Conditions_Position_1_Azimuth_deg = PARAM_pad_roll_L_deg;
 
-    /* Initial_Conditions_Product1 (from Initial_Conditions) */
-    // Matrix multiply block: Initial_Conditions_Product1
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux (1×3)
+            // Vector output
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[0] = model->signals.On_Pad_Initial_Conditions_Position_1_Azimuth_deg;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[1] = model->signals.On_Pad_Initial_Conditions_Demux_0;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[2] = model->signals.On_Pad_Initial_Conditions_Sum;
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Units Conversion: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2 (deg -> rad)
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[0] * (M_PI / 180.0);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[1] * (M_PI / 180.0);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[2] * (M_PI / 180.0);
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Trig block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3 (sincos)
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0]);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0]);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1]);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1]);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2]);
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2]);
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077
+            // Demux vector input
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082
+            // Demux vector input
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux (1×6)
+            // Vector output
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_0;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_1;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_2;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_0;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_1;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_2;
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33
+            // Expression: in(0)[4]*in(0)[3]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22
+            // Expression: in(0)[1]*in(0)[0]*in(0)[2]+in(0)[3]*in(0)[5]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2]+model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11
+            // Expression: in(0)[4]*in(0)[5]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23
+            // Expression: -in(0)[4]*in(0)[0]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13
+            // Expression: in(0)[1]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32
+            // Expression: -in(0)[1]*in(0)[3]*in(0)[2]+in(0)[0]*in(0)[5]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2]+model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12
+            // Expression: in(0)[4]*in(0)[2]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31
+            // Expression: -in(0)[1]*in(0)[3]*in(0)[5]-in(0)[0]*in(0)[2]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5]-model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21
+            // Expression: in(0)[1]*in(0)[0]*in(0)[5]-in(0)[3]*in(0)[2]
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5]-model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
+    }
+
+    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
+    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
+            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2 (3×3)
+            // Matrix output (column-major input order)
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32;
+            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33;
+    }
+
+    /* On_Pad_Initial_Conditions_Product1 (from On_Pad > Initial_Conditions) */
+    // Matrix multiply block: On_Pad_Initial_Conditions_Product1
     // Matrix-vector multiplication: [3x3] × [3] = [3]
     for (int i = 0; i < 3; i++) {
-        model->signals.Initial_Conditions_Product1[i] = 0.0;
+        model->signals.On_Pad_Initial_Conditions_Product1[i] = 0.0;
         for (int k = 0; k < 3; k++) {
-            model->signals.Initial_Conditions_Product1[i] += model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[i][k] * model->signals.Initial_Conditions__3x3_Cross_Product[k];
+            model->signals.On_Pad_Initial_Conditions_Product1[i] += model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[i][k] * model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product[k];
         }
     }
 
@@ -2389,7 +2372,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* IcNeedsLoading: defer x(0) until first enabled evaluation */
     if (model->enable_states.S_IB_Stage_enabled && model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_ic_needs_loading) {
         for (int i = 0; i < 3; i++) {
-            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->signals.Initial_Conditions_Product1[i];
+            model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_states[i] = model->signals.On_Pad_Initial_Conditions_Product1[i];
         }
         model->states.S_IB_Stage_Custom_Variable_Mass_6DoF_Quaternion_ub_vb_wb_ic_needs_loading = 0;
     }
@@ -2738,150 +2721,6 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* On_Pad_omega_E_rad_per_sec (from On_Pad) */
     // Source block: On_Pad_omega_E_rad_per_sec (constant)
     // (constant value initialized in _init)
-
-    /* On_Pad_Initial_Conditions_Sum (from On_Pad > Initial_Conditions) */
-    model->signals.On_Pad_Initial_Conditions_Sum = model->signals.On_Pad_Initial_Conditions_Angle_Conversion3 + model->signals.On_Pad_Initial_Conditions_Demux_1;
-
-    /* On_Pad_Initial_Conditions_Position_1_Azimuth_deg (from On_Pad > Initial_Conditions) */
-    // Source block: On_Pad_Initial_Conditions_Position_1_Azimuth_deg (constant)
-    // Using parameter: pad_roll_L_deg → PARAM_pad_roll_L_deg
-    model->signals.On_Pad_Initial_Conditions_Position_1_Azimuth_deg = PARAM_pad_roll_L_deg;
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux (1×3)
-            // Vector output
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[0] = model->signals.On_Pad_Initial_Conditions_Position_1_Azimuth_deg;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[1] = model->signals.On_Pad_Initial_Conditions_Demux_0;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[2] = model->signals.On_Pad_Initial_Conditions_Sum;
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Units Conversion: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2 (deg -> rad)
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[0] * (M_PI / 180.0);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[1] * (M_PI / 180.0);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Mux[2] * (M_PI / 180.0);
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Trig block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3 (sincos)
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0]);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[0]);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1]);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[1]);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2] = sin(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2]);
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2] = cos(model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_Angle_Conversion2[2]);
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077
-            // Demux vector input
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[0];
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[1];
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_sin[2];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Demux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082
-            // Demux vector input
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_0 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[0];
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_1 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[1];
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_2 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_SinCos3_cos[2];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux (1×6)
-            // Vector output
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_0;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_1;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_0_demux_900077_2;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_0;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_1;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux_expand_1_demux_900082_2;
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33
-            // Expression: in(0)[4]*in(0)[3]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22
-            // Expression: in(0)[1]*in(0)[0]*in(0)[2]+in(0)[3]*in(0)[5]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2]+model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11
-            // Expression: in(0)[4]*in(0)[5]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23
-            // Expression: -in(0)[4]*in(0)[0]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13
-            // Expression: in(0)[1]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32
-            // Expression: -in(0)[1]*in(0)[3]*in(0)[2]+in(0)[0]*in(0)[5]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2]+model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12
-            // Expression: in(0)[4]*in(0)[2]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[4]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31
-            // Expression: -in(0)[1]*in(0)[3]*in(0)[5]-in(0)[0]*in(0)[2]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31 = -model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5]-model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Evaluate block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21
-            // Expression: in(0)[1]*in(0)[0]*in(0)[5]-in(0)[3]*in(0)[2]
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21 = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[1]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[0]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[5]-model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[3]*model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux[2];
-    }
-
-    /* On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2 (from On_Pad > Initial_Conditions > L_V_Inertial_Orientation > E_Frame_to_s_Frame_MES_matrix) */
-    if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
-            // Mux block: On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2 (3×3)
-            // Matrix output (column-major input order)
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__11;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__12;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[0][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__13;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__21;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__22;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[1][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__23;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][0] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__31;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][1] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__32;
-            model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[2][2] = model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix__33;
-    }
 
     /* On_Pad_Initial_Conditions_Direction_Cosine_Matrix_to_Quaternion (from On_Pad > Initial_Conditions) */
     // Orientation Conversion block: On_Pad_Initial_Conditions_Direction_Cosine_Matrix_to_Quaternion (dcm_to_quat)
@@ -8362,6 +8201,167 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->signals.Demux3_1 = model->signals.Switch7[1];
     model->signals.Demux3_2 = model->signals.Switch7[2];
 
+    /* Initial_Conditions_LLA_to_ECF_WGS_84_major (from Initial_Conditions > LLA_to_ECF) */
+    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_major (constant)
+    // (constant value initialized in _init)
+
+    /* Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 (from Initial_Conditions > LLA_to_ECF) */
+    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 (constant)
+    // (constant value initialized in _init)
+
+    /* Initial_Conditions_Angle_Conversion (from Initial_Conditions) */
+    // Units Conversion: Initial_Conditions_Angle_Conversion (deg -> rad)
+    model->signals.Initial_Conditions_Angle_Conversion = model->signals.Initial_Conditions_Demux_0 * (M_PI / 180.0);
+
+    /* Initial_Conditions_LLA_to_ECF_SinCos (from Initial_Conditions > LLA_to_ECF) */
+    // Trig block: Initial_Conditions_LLA_to_ECF_SinCos (sincos)
+    model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin = sin(model->signals.Initial_Conditions_Angle_Conversion);
+    model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos = cos(model->signals.Initial_Conditions_Angle_Conversion);
+
+    /* Initial_Conditions_LLA_to_ECF_Math_Function (from Initial_Conditions > LLA_to_ECF) */
+    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function
+    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function = (model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin) * (model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin);
+
+    /* Initial_Conditions_LLA_to_ECF_Product (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Product = model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_ECC_2 * model->signals.Initial_Conditions_LLA_to_ECF_Math_Function;
+
+    /* Initial_Conditions_LLA_to_ECF_Unary_Minus (from Initial_Conditions > LLA_to_ECF) */
+    // Unary minus block: Initial_Conditions_LLA_to_ECF_Unary_Minus
+    model->signals.Initial_Conditions_LLA_to_ECF_Unary_Minus = -model->signals.Initial_Conditions_LLA_to_ECF_Product;
+
+    /* Initial_Conditions_LLA_to_ECF_Bias (from Initial_Conditions > LLA_to_ECF) */
+    // Evaluate block: Initial_Conditions_LLA_to_ECF_Bias
+    // Expression: in(0)+(1)
+    // Input variables
+    double _eval_Initial_Conditions_LLA_to_ECF_Bias_in0 = model->signals.Initial_Conditions_LLA_to_ECF_Unary_Minus;
+    model->signals.Initial_Conditions_LLA_to_ECF_Bias = (_eval_Initial_Conditions_LLA_to_ECF_Bias_in0 + 1);
+
+    /* Initial_Conditions_LLA_to_ECF_Math_Function3 (from Initial_Conditions > LLA_to_ECF) */
+    // Evaluate block: Initial_Conditions_LLA_to_ECF_Math_Function3
+    // Expression: (in(0)<0?-sqrt(-in(0)):sqrt(in(0)))
+    // Input variables
+    double _eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0 = model->signals.Initial_Conditions_LLA_to_ECF_Bias;
+    // Note: This expression requires #include <math.h>
+    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function3 = (((_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0 < 0)) ? ((-sqrt((-_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0)))) : (sqrt(_eval_Initial_Conditions_LLA_to_ECF_Math_Function3_in0)));
+
+    /* Initial_Conditions_LLA_to_ECF_Divide (from Initial_Conditions > LLA_to_ECF) */
+    // Divide block: Initial_Conditions_LLA_to_ECF_Divide
+    model->signals.Initial_Conditions_LLA_to_ECF_Divide = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major) / (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function3);
+
+    /* Initial_Conditions_LLA_to_ECF_Add (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Add = model->signals.Initial_Conditions_LLA_to_ECF_Divide + model->signals.Initial_Conditions_Demux_2;
+
+    /* Initial_Conditions_Angle_Conversion1 (from Initial_Conditions) */
+    // Units Conversion: Initial_Conditions_Angle_Conversion1 (deg -> rad)
+    model->signals.Initial_Conditions_Angle_Conversion1 = model->signals.Initial_Conditions_Demux_1 * (M_PI / 180.0);
+
+    /* Initial_Conditions_LLA_to_ECF_SinCos1 (from Initial_Conditions > LLA_to_ECF) */
+    // Trig block: Initial_Conditions_LLA_to_ECF_SinCos1 (sincos)
+    model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_sin = sin(model->signals.Initial_Conditions_Angle_Conversion1);
+    model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_cos = cos(model->signals.Initial_Conditions_Angle_Conversion1);
+
+    /* Initial_Conditions_LLA_to_ECF_Product1 (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Product1 = model->signals.Initial_Conditions_LLA_to_ECF_Add * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos * model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_cos;
+
+    /* Initial_Conditions_LLA_to_ECF_Product2 (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Product2 = model->signals.Initial_Conditions_LLA_to_ECF_Add * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_cos * model->signals.Initial_Conditions_LLA_to_ECF_SinCos1_sin;
+
+    /* Initial_Conditions_LLA_to_ECF_WGS_84_minor (from Initial_Conditions > LLA_to_ECF) */
+    // Source block: Initial_Conditions_LLA_to_ECF_WGS_84_minor (constant)
+    // (constant value initialized in _init)
+
+    /* Initial_Conditions_LLA_to_ECF_Math_Function1 (from Initial_Conditions > LLA_to_ECF) */
+    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function1
+    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function1 = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_minor) * (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_minor);
+
+    /* Initial_Conditions_LLA_to_ECF_Math_Function2 (from Initial_Conditions > LLA_to_ECF) */
+    // Square (x^2) block: Initial_Conditions_LLA_to_ECF_Math_Function2
+    model->signals.Initial_Conditions_LLA_to_ECF_Math_Function2 = (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major) * (model->signals.Initial_Conditions_LLA_to_ECF_WGS_84_major);
+
+    /* Initial_Conditions_LLA_to_ECF_Divide1 (from Initial_Conditions > LLA_to_ECF) */
+    // Divide block: Initial_Conditions_LLA_to_ECF_Divide1
+    model->signals.Initial_Conditions_LLA_to_ECF_Divide1 = (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function1) / (model->signals.Initial_Conditions_LLA_to_ECF_Math_Function2);
+
+    /* Initial_Conditions_LLA_to_ECF_Product3 (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Product3 = model->signals.Initial_Conditions_LLA_to_ECF_Divide1 * model->signals.Initial_Conditions_LLA_to_ECF_Divide;
+
+    /* Initial_Conditions_LLA_to_ECF_Add1 (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Add1 = model->signals.Initial_Conditions_LLA_to_ECF_Product3 + model->signals.Initial_Conditions_Demux_2;
+
+    /* Initial_Conditions_LLA_to_ECF_Product4 (from Initial_Conditions > LLA_to_ECF) */
+    model->signals.Initial_Conditions_LLA_to_ECF_Product4 = model->signals.Initial_Conditions_LLA_to_ECF_Add1 * model->signals.Initial_Conditions_LLA_to_ECF_SinCos_sin;
+
+    /* Initial_Conditions_LLA_to_ECF_Mux (from Initial_Conditions > LLA_to_ECF) */
+    // Mux block: Initial_Conditions_LLA_to_ECF_Mux (1×3)
+    // Vector output
+    model->signals.Initial_Conditions_LLA_to_ECF_Mux[0] = model->signals.Initial_Conditions_LLA_to_ECF_Product1;
+    model->signals.Initial_Conditions_LLA_to_ECF_Mux[1] = model->signals.Initial_Conditions_LLA_to_ECF_Product2;
+    model->signals.Initial_Conditions_LLA_to_ECF_Mux[2] = model->signals.Initial_Conditions_LLA_to_ECF_Product4;
+
+    /* Initial_Conditions_zero (from Initial_Conditions) */
+    // Source block: Initial_Conditions_zero (constant)
+    // (constant value initialized in _init)
+
+    /* Initial_Conditions_Unary_Minus (from Initial_Conditions) */
+    // Unary minus block: Initial_Conditions_Unary_Minus
+    model->signals.Initial_Conditions_Unary_Minus = -model->signals.Initial_Conditions_T_to_GMST_seconds_to_degrees;
+
+    /* Initial_Conditions_Angle_Conversion2 (from Initial_Conditions) */
+    // Units Conversion: Initial_Conditions_Angle_Conversion2 (deg -> rad)
+    model->signals.Initial_Conditions_Angle_Conversion2 = model->signals.Initial_Conditions_Unary_Minus * (M_PI / 180.0);
+
+    /* Initial_Conditions_Mux (from Initial_Conditions) */
+    // Mux block: Initial_Conditions_Mux (1×3)
+    // Vector output
+    model->signals.Initial_Conditions_Mux[0] = model->signals.Initial_Conditions_zero;
+    model->signals.Initial_Conditions_Mux[1] = model->signals.Initial_Conditions_zero;
+    model->signals.Initial_Conditions_Mux[2] = model->signals.Initial_Conditions_Angle_Conversion2;
+
+    /* Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix (from Initial_Conditions) */
+    // Orientation Conversion block: Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix (euler_to_dcm)
+    {
+        double c_phi = cos(model->signals.Initial_Conditions_Mux[0]);
+        double s_phi = sin(model->signals.Initial_Conditions_Mux[0]);
+        double c_theta = cos(model->signals.Initial_Conditions_Mux[1]);
+        double s_theta = sin(model->signals.Initial_Conditions_Mux[1]);
+        double c_psi = cos(model->signals.Initial_Conditions_Mux[2]);
+        double s_psi = sin(model->signals.Initial_Conditions_Mux[2]);
+
+        // DCM = R_z(Psi) * R_y(Theta) * R_x(Phi)
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][0] = c_theta * c_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][1] = c_theta * s_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[0][2] = -s_theta;
+
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][0] = s_phi * s_theta * c_psi - c_phi * s_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][1] = s_phi * s_theta * s_psi + c_phi * c_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[1][2] = s_phi * c_theta;
+
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][0] = c_phi * s_theta * c_psi + s_phi * s_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][1] = c_phi * s_theta * s_psi - s_phi * c_psi;
+        model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[2][2] = c_phi * c_theta;
+    }
+
+    /* Initial_Conditions_Product (from Initial_Conditions) */
+    // Matrix multiply block: Initial_Conditions_Product
+    // Matrix-vector multiplication: [3x3] × [3] = [3]
+    for (int i = 0; i < 3; i++) {
+        model->signals.Initial_Conditions_Product[i] = 0.0;
+        for (int k = 0; k < 3; k++) {
+            model->signals.Initial_Conditions_Product[i] += model->signals.Initial_Conditions_Euler_Angles_to_Direction_Cosine_Matrix[i][k] * model->signals.Initial_Conditions_LLA_to_ECF_Mux[k];
+        }
+    }
+
+    /* Initial_Conditions_omega_E_rad_per_sec (from Initial_Conditions) */
+    // Source block: Initial_Conditions_omega_E_rad_per_sec (constant)
+    // (constant value initialized in _init)
+
+    /* Initial_Conditions__3x3_Cross_Product (from Initial_Conditions) */
+    // Cross product block: Initial_Conditions__3x3_Cross_Product
+    // Cross product: a × b
+    model->signals.Initial_Conditions__3x3_Cross_Product[0] = model->signals.Initial_Conditions_omega_E_rad_per_sec[1] * model->signals.Initial_Conditions_Product[2] - model->signals.Initial_Conditions_omega_E_rad_per_sec[2] * model->signals.Initial_Conditions_Product[1];
+    model->signals.Initial_Conditions__3x3_Cross_Product[1] = model->signals.Initial_Conditions_omega_E_rad_per_sec[2] * model->signals.Initial_Conditions_Product[0] - model->signals.Initial_Conditions_omega_E_rad_per_sec[0] * model->signals.Initial_Conditions_Product[2];
+    model->signals.Initial_Conditions__3x3_Cross_Product[2] = model->signals.Initial_Conditions_omega_E_rad_per_sec[0] * model->signals.Initial_Conditions_Product[1] - model->signals.Initial_Conditions_omega_E_rad_per_sec[1] * model->signals.Initial_Conditions_Product[0];
+
     /* Initial_Conditions_Initial_Position_and_Velocity_Eqns_3_4_3_4_Angle_Conversion1 (from Initial_Conditions > Initial_Position_and_Velocity_Eqns_3_4_3_4) */
     // Units Conversion: Initial_Conditions_Initial_Position_and_Velocity_Eqns_3_4_3_4_Angle_Conversion1 (deg -> rad)
     model->signals.Initial_Conditions_Initial_Position_and_Velocity_Eqns_3_4_3_4_Angle_Conversion1 = model->signals.Initial_Conditions_Demux_0 * (M_PI / 180.0);
@@ -8629,6 +8629,16 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         }
     }
 
+    /* Initial_Conditions_Product1 (from Initial_Conditions) */
+    // Matrix multiply block: Initial_Conditions_Product1
+    // Matrix-vector multiplication: [3x3] × [3] = [3]
+    for (int i = 0; i < 3; i++) {
+        model->signals.Initial_Conditions_Product1[i] = 0.0;
+        for (int k = 0; k < 3; k++) {
+            model->signals.Initial_Conditions_Product1[i] += model->signals.Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[i][k] * model->signals.Initial_Conditions__3x3_Cross_Product[k];
+        }
+    }
+
     /* Initial_Conditions_Product2 (from Initial_Conditions) */
     // Matrix multiply block: Initial_Conditions_Product2
     // Matrix-vector multiplication: [3x3] × [3] = [3]
@@ -8688,10 +8698,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* S_IB_Stage_ECI_to_LLA_Bias2 (from S_IB_Stage > ECI_to_LLA) */
     if (model->enable_states.S_IB_Stage_enabled) {
             // Evaluate block: S_IB_Stage_ECI_to_LLA_Bias2
-            // Expression: in(0)+(0)
+            // Expression: in(0)+(6.283185307179586)
             // Input variables
             double _eval_S_IB_Stage_ECI_to_LLA_Bias2_in0 = model->signals.S_IB_Stage_ECI_to_LLA_Add1;
-            model->signals.S_IB_Stage_ECI_to_LLA_Bias2 = (_eval_S_IB_Stage_ECI_to_LLA_Bias2_in0 + 0);
+            model->signals.S_IB_Stage_ECI_to_LLA_Bias2 = (_eval_S_IB_Stage_ECI_to_LLA_Bias2_in0 + 6.283185307179586);
     }
 
     /* S_IB_Stage_ECI_to_LLA_Switch1 (from S_IB_Stage > ECI_to_LLA) */
@@ -9262,10 +9272,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     /* S_IVB_Stage_ECI_to_LLA_Bias2 (from S_IVB_Stage > ECI_to_LLA) */
     if (model->enable_states.S_IVB_Stage_enabled) {
             // Evaluate block: S_IVB_Stage_ECI_to_LLA_Bias2
-            // Expression: in(0)+(0)
+            // Expression: in(0)+(6.283185307179586)
             // Input variables
             double _eval_S_IVB_Stage_ECI_to_LLA_Bias2_in0 = model->signals.S_IVB_Stage_ECI_to_LLA_Add1;
-            model->signals.S_IVB_Stage_ECI_to_LLA_Bias2 = (_eval_S_IVB_Stage_ECI_to_LLA_Bias2_in0 + 0);
+            model->signals.S_IVB_Stage_ECI_to_LLA_Bias2 = (_eval_S_IVB_Stage_ECI_to_LLA_Bias2_in0 + 6.283185307179586);
     }
 
     /* S_IVB_Stage_ECI_to_LLA_Switch1 (from S_IVB_Stage > ECI_to_LLA) */
@@ -9431,10 +9441,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* On_Pad_ECI_to_LLA_Bias2 (from On_Pad > ECI_to_LLA) */
     // Evaluate block: On_Pad_ECI_to_LLA_Bias2
-    // Expression: in(0)+(0)
+    // Expression: in(0)+(6.283185307179586)
     // Input variables
     double _eval_On_Pad_ECI_to_LLA_Bias2_in0 = model->signals.On_Pad_ECI_to_LLA_Add1;
-    model->signals.On_Pad_ECI_to_LLA_Bias2 = (_eval_On_Pad_ECI_to_LLA_Bias2_in0 + 0);
+    model->signals.On_Pad_ECI_to_LLA_Bias2 = (_eval_On_Pad_ECI_to_LLA_Bias2_in0 + 6.283185307179586);
 
     /* On_Pad_ECI_to_LLA_Switch1 (from On_Pad > ECI_to_LLA) */
     // If block: On_Pad_ECI_to_LLA_Switch1
@@ -9929,16 +9939,6 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux2[2][0] = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix__31;
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux2[2][1] = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix__32;
             model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix_Mux2[2][2] = model->signals.On_Pad_Initial_Conditions_MES_Transform_MES_Transform_E_Frame_to_s_Frame_MES_matrix__33;
-    }
-
-    /* On_Pad_Initial_Conditions_Product1 (from On_Pad > Initial_Conditions) */
-    // Matrix multiply block: On_Pad_Initial_Conditions_Product1
-    // Matrix-vector multiplication: [3x3] × [3] = [3]
-    for (int i = 0; i < 3; i++) {
-        model->signals.On_Pad_Initial_Conditions_Product1[i] = 0.0;
-        for (int k = 0; k < 3; k++) {
-            model->signals.On_Pad_Initial_Conditions_Product1[i] += model->signals.On_Pad_Initial_Conditions_L_V_Inertial_Orientation_E_Frame_to_s_Frame_MES_matrix_Mux2[i][k] * model->signals.On_Pad_Initial_Conditions__3x3_Cross_Product[k];
-        }
     }
 
     /* S_IB_Stage_Retrorocket_Motors_Mux1 (from S_IB_Stage > Retrorocket_Motors) */
