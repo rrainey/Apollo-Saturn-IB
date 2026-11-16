@@ -37,6 +37,14 @@ typedef struct _ExternalOutputs_saturn_ib_stack_tag {
   real_T CM_IMU_IGA_rad;
   real_T CM_IMU_MGA_Rad;
   real_T CM_IMU_OGA_rad;
+  /* OUT11 — S-IB stage state (per MDL design intent): pre-sep tracks the
+   * mated stack's position/velocity/attitude; post-sep tracks the spent
+   * S-IB on its ballistic arc.  OUT12 — S-IVB stage state: zero while the
+   * S-IVB integrator is disabled pre-sep; post-sep carries the active
+   * S-IVB trajectory.  Pre-liftoff both channels report 0 or NaN in the
+   * lat/lon/h fields because the stage integrators are disabled —
+   * consumers should use OUT22 for the vehicle's geographic location
+   * until bLiftoff goes true. */
   real_T OUT11[25];
   real_T OUT12[24];
   boolean_T bStageSep;

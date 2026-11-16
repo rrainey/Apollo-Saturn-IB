@@ -37,9 +37,9 @@ Measured residuals at S-IVB guidance cutoff on the `AS-205-tm-x-62831` scenario 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity | 7780.7 m/s | 7779.2 m/s | −1.5 m/s |
-| Altitude | 227.94 km | 227.60 km | −340 meters |
-| Flight time (post-liftoff) | 614.63 s | 613.00 s | −1.6 s |
+| Space-fixed velocity | 7780.7 m/s | 7773.9 m/s | −6.8 m/s |
+| Altitude | 227.94 km | 233.50 km | +5.56 km |
+| Flight time (post-liftoff) | 614.63 s | 615.00 s | +0.37 s |
 
 For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The residuals above are well inside that envelope.
 
