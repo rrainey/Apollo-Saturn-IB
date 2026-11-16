@@ -9,7 +9,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-option(BUILD_GUI "Build the apolloa interactive panel (needs OpenGL and GLUT)" ON)
+# The interactive DSKY/FDAI panel moved to the DSKY-matic project as
+# dskymatic-studio.  The legacy apolloa target in this repo remains
+# buildable for back-compat but the data files it reads (AGC ROM, PAD
+# loads, downlink TSVs, panel scene, textures) now live in DSKY-matic;
+# turning BUILD_GUI=ON here requires pointing at that data at runtime.
+option(BUILD_GUI "Build the legacy apolloa interactive panel (deprecated; use dskymatic-studio)" OFF)
 
 include(cmake/FetchVirtualAGC.cmake)
 
