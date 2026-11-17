@@ -3838,52 +3838,30 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_enabled && (model->sample_tick % (unsigned long long)llround((0.04) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant */
-            // Condition block: LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant
-            // EDD §4.4.2.4 Eqs. 4.4.91-4.4.94: fit a 2nd-degree polynomial
-            // V(t) = V + A'·t + A''·t² over the most recent 3 |V|_S samples,
-            // solve for the time at which V reaches V_T − ΔV_b, and cut when
-            // the predicted time-to-go hits the minor-loop quantum (60 ms
-            // scheduled, 20 ms immediate per text at EDD §4.4.2.4).
-            //
-            // The linear countdown `Sum` (Eq. 4.4.90) is still computed above
-            // and used as the T_3i estimate on the RHS of Eq. 4.4.93 (fixed-
-            // point form).  Polynomial refinement only runs on the subsequent
-            // HSL passes (nHSLActive == 2); the first HSL pass applies
-            // Eq. 4.4.89 (ΔT_b correction) alone, per EDD.
+            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant
+             *
+             * EDD §4.4.2.4 (satinstunitibm_2 lines 516-520):
+             *
+             *   "Beginning with the initial calculation of the predicted
+             *   cutoff time in the HSL, the most recent T_3i value will be
+             *   decremented and tested every 40 ms (a function of minor
+             *   loop execution).  When T_3i is determined to be less than
+             *   60 ms, the program must ... issue the S-IVB cutoff switch
+             *   selector command sequence when the real time clock reading
+             *   becomes greater than or equal to T_CO."
+             *
+             * So the minor loop just decrements and tests the LINEAR Sum
+             * (Eq. 4.4.90).  The polynomial of Eqs. 4.4.91-4.4.94 is a
+             * BML-cadence refinement that *sets* T_3i at BML boundaries
+             * (handled by the IGM_Phase2_HSL_first_pass Data_Store_Write2
+             * block elsewhere in this file).  A per-tick polynomial
+             * override at the 40 ms minor loop is NOT what EDD prescribes
+             * — it stalls cutoff waiting for a fresh BML-rate V sample
+             * when V is already past V_T − ΔV_b.  Fire is thus driven by
+             * the linear Sum alone.  The 20 ms immediate-fire branch is
+             * kept for parity with the EDD text. */
             {
-                double tgo = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
-                const int subsequent_pass =
-                    (model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive != 1);
-                if (subsequent_pass && s_hsl_V_samples >= 3) {
-                    const double V   = s_hsl_V_curr;
-                    const double Vp  = s_hsl_V_prev;
-                    const double Vpp = s_hsl_V_prev2;
-                    const double dT  = s_hsl_dT_curr;
-                    const double dTp = s_hsl_dT_prev;
-                    /* Eq. 4.4.91: A'' = [(V-V')·(ΔT'/ΔT) − (V'-V'')·(ΔT/ΔT')] / (ΔT' + ΔT) */
-                    const double A2 = ((V - Vp) * (dTp / dT) - (Vp - Vpp) * (dT / dTp))
-                                      / (dTp + dT);
-                    /* Eq. 4.4.92: A' = A''·ΔT + (V-V')/ΔT */
-                    const double A1 = A2 * dT + (V - Vp) / dT;
-                    /* Eq. 4.4.93: T_3i = (V_T − ΔV_b − V) / (A' + A''·T_3i)
-                     * (fixed-point; use current linear T_3i as the RHS seed). */
-                    const double num = PARAM_V_T_mps - PARAM_DeltaV_b_mps - V;
-                    const double denom = A1 + A2 * tgo;
-                    if (fabs(denom) > 1e-9 && num > 0.0) {
-                        const double tgo_poly = num / denom;
-                        /* Only trust the polynomial if it's sane (positive and
-                         * within a few seconds).  If V has already overshot
-                         * V_T − ΔV_b (num ≤ 0), fall through to cutoff via
-                         * the linear tgo check below. */
-                        if (tgo_poly > 0.0 && tgo_poly < 60.0) {
-                            tgo = tgo_poly;
-                        }
-                    }
-                }
-                /* Cutoff: EDD text "T_3i < 60 ms → scheduled read / < 20 ms → immediate".
-                 * At 40 ms gate resolution the two collapse to a single <= 40 ms test;
-                 * keep the 20 ms branch explicit for parity with the EDD text. */
+                const double tgo = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
                 model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant =
                     (tgo <= 0.04) || (tgo < 0.02);
             }
@@ -3896,22 +3874,37 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_enabled && (model->sample_tick % (unsigned long long)llround((0.04) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write */
-            // Data Store Write: LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write → data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec
-            model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write
+             *
+             * T_3i countdown is a self-referential state transition: read
+             * T_3i, compute Sum = T_3i - 0.04 - Switch, write Sum back.
+             * Firing at every RK4 stage of a given outer step applies the
+             * decrement 4 times and compounds the ΔT_b subtraction (via the
+             * nHSLActive 1→2 write below) once more at k1 than it should be.
+             * The obliq-2 3.8.5 convention (NATIVE_SUBSYSTEM_DESIGN.md §4.3
+             * rule 4) says long-lived state transitions belong in
+             * update_memory_states; without that, a per-tick guard on the
+             * compute_outputs write enforces once-per-major-step semantics. */
+            static unsigned long long s_hsl_timing_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_hsl_timing_last_tick) {
+                model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+                s_hsl_timing_last_tick = model->sample_tick;
+            }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_enabled && (model->sample_tick % (unsigned long long)llround((0.04) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write1 */
-            // Data Store Write: LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write1 → data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive
-            /* EDD: first HSL pass uses ΔT_b (nHSLActive==1); subsequent passes
-             * use the 40 ms decrement only (nHSLActive==2). Advance to 2 only
-             * after the first-pass ΔT_b subtraction has been applied — not
-             * before Compare, and not every tick unconditionally in a way that
-             * races mode-4 arming. */
-            if (model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Read1 == 1) {
+            /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write1
+             *
+             * EDD Eq. 4.4.89: first HSL pass uses ΔT_b (nHSLActive==1);
+             * subsequent passes use the 40 ms decrement only (nHSLActive==2).
+             * Per-tick-gate the 1→2 transition so k2..k4 of the same major
+             * step don't repeat the write — matches the T_3i gate above. */
+            static unsigned long long s_nhsl_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_nhsl_last_tick
+                && model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Read1 == 1) {
                 model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive =
                     model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Constant1;
+                s_nhsl_last_tick = model->sample_tick;
             }
     }
 
@@ -3982,30 +3975,46 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Data_Store_Write2 */
-            // Data Store Write: … → T_3_i_sec  (Eq. 4.4.91–94 polynomial tgo)
-            /* Refresh predicted T_CO / tgo from the velocity polynomial, but do
-             * not inflate an in-progress 40 ms HSL countdown: only adopt the
-             * polynomial when it is shorter (more urgent) than the live T_3i,
-             * or on the first HSL pass (nHSLActive==1). EDD: tgo<20 ms ⇒ cut now.
+            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Data_Store_Write2
              *
-             * Under obliq-2 3.8.5 the plant-side Memory1/Memory2 unit-delay
-             * state updates now run post-RK4 (LVDA_LVDC_update_memory_states),
-             * so signals.Memory1/Memory2 are stable across the 4 RK4 stages of
-             * this outer step.  The polynomial inputs (V, V', V'') are
-             * therefore consistent each stage and the Divide2 → T_3_i_sec write
-             * no longer needs a per-tick guard: writing the same value four
-             * times in a row has the same effect as writing it once. */
-            {
+             * Per EDD §4.4.2.4 (satinstunitibm_2 lines 516-520), T_3i is
+             * (re)predicted at each BML pass using Eqs. 4.4.91-4.4.94 (the
+             * 2nd-degree velocity polynomial).  Between BMLs the minor loop
+             * decrements T_3i by 40 ms and tests for cutoff.
+             *
+             * Previously this write guarded `if (hsl==1 || t_poly < t_live)`
+             * — refusing to let the polynomial push the countdown later than
+             * the stale linear value.  That is NOT what the EDD prescribes:
+             * the polynomial is the predicted T_3i, and it REPLACES the
+             * running linear estimate at each BML pass.  The guard also
+             * caused the +14 m/s overshoot: at the final BML before cutoff
+             * the polynomial correctly said ~0.75 s to go but the stale
+             * linear said 0.42 s, so we kept the shorter estimate and the
+             * 40 ms tick fired fire the moment V was still ~22 m/s short of
+             * V_T − ΔV_b.  Without the polynomial refresh at that BML, the
+             * minor-loop tgo went slightly past zero before V reached target,
+             * and the HSL fired early.
+             *
+             * Correct behaviour: at every BML pass with nHSLActive ≥ 1,
+             * overwrite T_3i with the polynomial prediction.  First HSL pass
+             * (nHSLActive==1): Eq. 4.4.89 then subtracts ΔT_b in the
+             * HSL_Cutoff_Timing block when Switch = ΔT_b.
+             *
+             * Per-tick guard: the block self-references T_3i via `t_live`.
+             * Without a guard, k2..k4 would read the just-written polynomial
+             * value and no-op (harmless), but keeping the guard is defensive
+             * and matches the HSL_Cutoff_Timing guard above. */
+            static unsigned long long s_firstpass_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_firstpass_last_tick) {
                 const double t_poly = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Divide2;
-                const double t_live = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
                 const double hsl = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
-                if (hsl == 1 || t_poly < t_live) {
+                if (hsl >= 1 && t_poly > 0.0 && t_poly < 60.0) {
                     model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = t_poly;
                 }
                 if (t_poly < 0.02) {
                     model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant = 1;
                 }
+                s_firstpass_last_tick = model->sample_tick;
             }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
@@ -4036,9 +4045,30 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_Data_Store_Write */
-            // Data Store Write: LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_Data_Store_Write → data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive
-            model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_HSL_mode_ON;
+            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_Data_Store_Write
+             *
+             * EDD Eq. 4.4.89 (satinstunitibm_2 line 516):
+             *   "On the first pass through the HSL, the predicted T_3i is
+             *   decreased by the last computed value of the time bias
+             *   (ΔT_b) ... On all subsequent passes, the predicted T_3i
+             *   is decremented by the length of the BML, ΔT."
+             *
+             * i.e. the ΔT_b correction fires ONCE at HSL entry.  Under
+             * the codegen's level-triggered Set_HSL_Mode this block
+             * fired at every BML while If1 (= polynomial tgo ≤ T_HSL +
+             * ΔT_b) held, so nHSLActive cycled 1→2→1→2 every BML and
+             * the HSL_Cutoff_Timing block applied ΔT_b to T_3i at every
+             * BML entry — dragging T_3i down ~0.29 s too fast per BML
+             * and tripping cutoff ~0.9 s early (undershoot ≈ 22 m/s).
+             *
+             * Gate to rising-edge: only write nHSLActive = 1 when the
+             * data store is still 0 (= first entry into HSL mode).  After
+             * HSL_Cutoff_Timing flips it to 2 on the next 40 ms tick,
+             * this guard prevents the write from re-firing at
+             * subsequent BMLs. */
+            if (model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive == 0) {
+                model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Set_HSL_Mode_HSL_mode_ON;
+            }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
@@ -4134,9 +4164,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
-            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_Data_Store_Write_nHSLActive */
-            // Data Store Write: LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_Data_Store_Write_nHSLActive → data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive
-            model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_nHSLActive_ON;
+            /* LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_Data_Store_Write_nHSLActive
+             *
+             * Same EDD-first-pass rule as the sibling Set_HSL_Mode above:
+             * ΔT_b correction fires ONCE at HSL entry, not at every BML.
+             * Gate to rising edge (nHSLActive == 0) so we don't re-enter
+             * HSL mode on subsequent BMLs where the If2 condition still
+             * holds. */
+            if (model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive == 0) {
+                model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_HSL_Mode_nHSLActive_ON;
+            }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Set_Terminal_Steering_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 

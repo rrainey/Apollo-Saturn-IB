@@ -39,12 +39,13 @@ The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,256,771 m | −1,507 m |
-| Y_S | 144,698 m | 144,978 m | +280 m |
-| Z_S | 2,092,098 m | 2,097,023 m | +4,925 m |
-| DX | −2,472.80 m/s | −2,481.11 m/s | −8.3 m/s |
-| DY | 412.48 m/s | 413.42 m/s | +0.9 m/s |
-| DZ | 7,365.73 m/s | 7,384.96 m/s | +19.2 m/s |
+| X_S | 6,258,278 m | 6,256,312 m | −1,966 m |
+| Y_S | 144,698 m | 145,054 m | +356 m |
+| Z_S | 2,092,098 m | 2,098,375 m | +6,277 m |
+| DX | −2,472.80 m/s | −2,477.74 m/s | −4.9 m/s |
+| DY | 412.48 m/s | 412.23 m/s | −0.3 m/s |
+| DZ | 7,365.73 m/s | 7,362.51 m/s | −3.2 m/s |
+| \|V\| | 7,780.67 m/s | 7,779.19 m/s | −1.48 m/s |
 
 ### Scalar cutoff summary
 
@@ -52,11 +53,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity | 7780.67 m/s | 7794.6 m/s | +13.9 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 234.43 km | +6.49 km |
-| Flight time (post-liftoff) | 614.63 s | 615.00 s | +0.37 s |
+| Space-fixed velocity (plant \|V_e\|) | 7780.67 m/s | 7772.2 m/s | −8.5 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 234.42 km | +6.48 km |
+| Flight time (post-liftoff) | 614.63 s | 612.68 s | −1.95 s |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The +14 m/s cutoff magnitude residual is above that envelope but is now against a properly-anchored trajectory (see the PASCs 13 row above for the dominant comparison); chasing it against the correct frame is tracked as follow-up to Issue #4.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −8.5 m/s plant |V_e| residual is just outside that envelope, but note from the PASCs 13 row above that the LVDC's own |V_S| at Table 4's reference instant is within −1.48 m/s of V_T — the HSL cutoff decision is now firing at close to the right moment internally. The remaining gap between the LVDC's |V_S| view (7779) and the plant's |V_e| (7772) at the same instant is tracked as a separate investigation.
 
 ### Mid-flight fit
 
