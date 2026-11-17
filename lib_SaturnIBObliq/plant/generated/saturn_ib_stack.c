@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-17T00:21:34.150Z
+ * Generated on: 2026-11-17T00:39:50.430Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -322,6 +322,21 @@ static const double S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_outputs[]
     783273.9995663756, 783273.9995663756
 };
 static const int S_IVB_Stage_J_2_Engine_Thrust_Model_Thrust_vs_Time_size = 32;
+
+/* Lookup table for S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot */
+static const double S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[] = {
+    147.26, 148.58, 151.5, 151.98, 155, 159.18, 160, 180, 186.88, 190,
+    200, 220, 240, 260, 280, 300, 320, 340, 360, 380,
+    400, 420, 440, 460, 477, 480, 500, 520, 540, 560,
+    580, 592.91
+};
+static const double S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[] = {
+    238.758, 238.758, 238.758, 240.5, 240.811, 243.49, 243.49, 243.49, 243.49, 243.49,
+    243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49,
+    243.49, 243.49, 243.49, 242.499, 239.312, 238.758, 238.758, 238.758, 238.758, 238.758,
+    238.758, 238.758
+};
+static const int S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size = 32;
 
 /* Lookup table for S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust */
 static const double S_IVB_Stage_Ullage_Rocket_Motors_S_IVB_Ullage_Motor_Thrust_inputs[] = {
@@ -867,7 +882,6 @@ void saturn_ib_stack_init(saturn_ib_stack_t* model, double dt) {
     model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Installation_location_in[2] = 0;
     model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Constant = 0; /* S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Engine_Start_Constant */
     model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Constant = 0; /* S_IVB_Stage_J_2_Engine_Thrust_Model_Time_Since_Shutdown_Constant */
-    model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot = 243.687; /* S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot */
     model->signals.S_IVB_Stage_Relative_Wind_Incidence_Sideslip_Airspeed_Constant = 0; /* S_IVB_Stage_Relative_Wind_Incidence_Sideslip_Airspeed_Constant */
     /* Initialize S_IVB_Stage_Relative_Wind_omega_E_rad_per_sec (double[3]) */
     model->signals.S_IVB_Stage_Relative_Wind_omega_E_rad_per_sec[0] = 0;
@@ -11702,8 +11716,35 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot (from S_IVB_Stage > J_2_Engine > Thrust_Model) */
     if (model->enable_states.S_IVB_Stage_enabled) {
-            // Source block: S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot (constant)
-            // (constant value initialized in _init)
+            // 1D Lookup block: S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot
+            {
+                double input = model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_Bias;
+                double output = 0.0;
+        
+                // Lookup table data
+                const double S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[32] = {147.26, 148.58, 151.5, 151.98, 155, 159.18, 160, 180, 186.88, 190, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460, 477, 480, 500, 520, 540, 560, 580, 592.91};
+                const double S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[32] = {238.758, 238.758, 238.758, 240.5, 240.811, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 243.49, 242.499, 239.312, 238.758, 238.758, 238.758, 238.758, 238.758, 238.758, 238.758};
+                const int S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size = 32;
+        
+                if (S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size <= 0) {
+                    output = 0.0;
+                } else if (input <= S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[0]) {
+                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[0];
+                } else if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size - 1]) {
+                    output = S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size - 1];
+                } else {
+                    // Linear interpolation
+                    for (int i = 0; i < S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_size - 1; i++) {
+                        if (input >= S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[i] && input <= S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[i + 1]) {
+                            double t = (input - S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[i]) / (S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_inputs[i]);
+                            output = S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[i] + t * (S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[i + 1] - S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot_outputs[i]);
+                            break;
+                        }
+                    }
+                }
+        
+                model->signals.S_IVB_Stage_J_2_Engine_Thrust_Model_m_dot = output;
+            }
     }
 
     /* S_IVB_Stage_J_2_Engine_Thrust_Model_Divide (from S_IVB_Stage > J_2_Engine > Thrust_Model) */
