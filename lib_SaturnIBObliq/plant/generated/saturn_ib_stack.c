@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-16T22:08:32.279Z
+ * Generated on: 2026-11-17T00:21:34.150Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -38,7 +38,7 @@
  */
 /* Lookup table for S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T */
 static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
-static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
 static const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
 
 /* 2D Lookup table for S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha */
@@ -259,7 +259,7 @@ static const int S_IB_Stage_Vehicle_Mass_Properties_Izz_size = 33;
 
 /* Lookup table for S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T */
 static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
-static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
 static const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
 
 /* 2D Lookup table for S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha */
@@ -3952,7 +3952,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         
                 // Lookup table data
                 const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
-                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
                 const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
                 if (S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {
@@ -7185,7 +7185,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
         
                 // Lookup table data
                 const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
-                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {1.2, 0.84, 0.74, 0.96, 1.02, 0.95, 0.48};
+                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
                 const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
                 if (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {

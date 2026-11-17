@@ -37,11 +37,13 @@ Measured residuals at S-IVB guidance cutoff on the `AS-205-tm-x-62831` scenario 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity | 7780.7 m/s | 7773.9 m/s | −6.8 m/s |
-| Altitude | 227.94 km | 233.50 km | +5.56 km |
+| Space-fixed velocity | 7780.7 m/s | 7773.6 m/s | −7.0 m/s |
+| Altitude | 227.94 km | 233.48 km | +5.54 km |
 | Flight time (post-liftoff) | 614.63 s | 615.00 s | +0.37 s |
 
 For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The residuals above are well inside that envelope.
+
+The cutoff residuals above are closed-loop (driven to V_T by the Iterative Guidance Mode) and insensitive to mid-flight trajectory errors. The mid-flight fit is substantially tighter than the cutoff numbers suggest: at Max Q (flight-time 75 s) the velocity residual is −5.0 m/s and at IGM initiation (168 s) it is −5.9 m/s, after rebasing the axial-force coefficient table to the Langley 1965 wind-tunnel data in NASA TN D-2829.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 
