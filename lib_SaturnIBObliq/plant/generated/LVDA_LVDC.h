@@ -861,6 +861,8 @@ typedef struct {
 void LVDA_LVDC_init(LVDA_LVDC_t* model);
 /* Compute outputs from inputs and states (algebraic evaluation) */
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model);
+/* UH60 P3: Memory major-step hold — latch after parent RK4 */
+void LVDA_LVDC_update_memory_states(LVDA_LVDC_t* model);
 /* Update nested Action/Enable scopes inside this module */
 void LVDA_LVDC_evaluate_enable_states(LVDA_LVDC_t* model);
 

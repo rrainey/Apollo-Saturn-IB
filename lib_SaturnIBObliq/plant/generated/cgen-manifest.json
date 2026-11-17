@@ -3,11 +3,11 @@
   "displayName": "saturn_ib_stack",
   "profile": "saturn-ib-stack",
   "sourceJson": "/home/riley/src/Apollo-Saturn-IB/model/saturn_ib_stack.json",
-  "generatedAt": "2026-11-17T04:36:38.417Z",
+  "generatedAt": "2026-11-17T15:01:10.147Z",
   "generator": {
     "name": "obliq-2",
-    "version": "3.8.4",
-    "commit": "b4ba737cd724390c2b7c381f8fd089f0d70589af",
+    "version": "3.8.5",
+    "commit": "67866ac2a23c3cf5fb9c1472e21de355881b3814",
     "dirty": false
   },
   "warnings": [

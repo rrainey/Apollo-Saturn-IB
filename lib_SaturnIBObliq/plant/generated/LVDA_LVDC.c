@@ -1,7 +1,7 @@
 /*
  * LVDA_LVDC - Segregated Subsystem
  * Generated C code for subsystem module
- * Generated on: 2026-11-17T04:36:38.287Z
+ * Generated on: 2026-11-17T15:01:10.007Z
  */
 
 #include "LVDA_LVDC.h"
@@ -4390,124 +4390,6 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     // Evaluate condition: input >= 1.1
     model->signals.Ullage_Ignition_3 = (model->signals.T3_Timer_Switch >= 1.1);
 
-    /* Deferred discrete state updates (unit_delay) */
-
-    /* LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 state update */
-    // Unit Delay state update: LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2
-    for (int i = 0; i < 3; i++) {
-        model->states.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2_state[i] = model->signals.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Difference_Inputs2[i];
-    }
-
-    /* Memory state update */
-    // Unit Delay state update: Memory
-    model->states.Memory_state = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant;
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_Sum_of_Elements;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_Math_Function5;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4
-    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3;
-    }
-
-    /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2 state update */
-    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2
-    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        for (int i = 0; i < 3; i++) {
-            model->states.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2_state[i] = model->inputs.V_m_bar_mps[i];
-        }
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_Memory1 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory1
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_Memory1_state = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_Memory2 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory2
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_Memory2_state = model->signals.LVDC_Iterative_Guidance_Mode_Memory1;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_loop state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_loop
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        for (int i = 0; i < 3; i++) {
-            model->states.LVDC_Iterative_Guidance_Mode_loop_state[i] = model->signals.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Difference_Inputs2[i];
-        }
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCY_SMCY state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_SMCY
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCY_SMCY_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Sum2;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last_state = model->signals.LVDC_Iterative_Guidance_Mode_Demux5_0;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Sum3;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last;
-    }
-
-    /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last_state = model->signals.LVDC_Iterative_Guidance_Mode_Demux5_1;
-    }
-
     /* Copy signals to outputs */
     memcpy(&model->outputs.R_S_bar_m, &model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18, sizeof(model->outputs.R_S_bar_m));
     memcpy(&model->outputs.Psi_deg, &model->signals.D_A_Converter_Quantization, sizeof(model->outputs.Psi_deg));
@@ -4709,6 +4591,131 @@ void LVDA_LVDC_evaluate_enable_states(LVDA_LVDC_t* model) {
     } else {
         /* Level enable */
         model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_Set_nIGMMode_to_3_enabled = ((model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_mode_If2) ? 1 : 0);
+    }
+}
+
+/*
+ * Deferred discrete state updates (unit_delay and Memory): state = u
+ * Called by the parent after RK4 / Euler, once per major step.
+ */
+void LVDA_LVDC_update_memory_states(LVDA_LVDC_t* model) {
+
+    /* Deferred unit_delay / Memory state updates (post-integration) */
+
+    /* LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2 state update */
+    // Unit Delay state update: LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2
+    for (int i = 0; i < 3; i++) {
+        model->states.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Delay_Input2_state[i] = model->signals.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Difference_Inputs2[i];
+    }
+
+    /* Memory state update */
+    // Unit Delay state update: Memory
+    model->states.Memory_state = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant;
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_Sum_of_Elements;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_Math_Function5;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4
+    if (model->enable_states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4_state = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3;
+    }
+
+    /* LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2 state update */
+    // Unit Delay state update: LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2
+    if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        for (int i = 0; i < 3; i++) {
+            model->states.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Memory2_state[i] = model->inputs.V_m_bar_mps[i];
+        }
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_Memory1 state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory1
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_Memory1_state = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_Memory2 state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory2
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_Memory2_state = model->signals.LVDC_Iterative_Guidance_Mode_Memory1;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_loop state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_loop
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        for (int i = 0; i < 3; i++) {
+            model->states.LVDC_Iterative_Guidance_Mode_loop_state[i] = model->signals.LVDC_Chi_command_angles_Time_Tilt_Rate_Limiter_Dynamic_Difference_Inputs2[i];
+        }
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCY_SMCY state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_SMCY
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCY_SMCY_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Sum2;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last_state = model->signals.LVDC_Iterative_Guidance_Mode_Demux5_0;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2 state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCY_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last2_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCY_Chi_y_last;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_SMCZ_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Sum3;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2 state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last2_state = model->signals.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last;
+    }
+
+    /* LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last state update */
+    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last
+    if (model->enable_states.LVDC_Iterative_Guidance_Mode_SMCZ_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+        model->states.LVDC_Iterative_Guidance_Mode_SMCZ_Chi_z_last_state = model->signals.LVDC_Iterative_Guidance_Mode_Demux5_1;
     }
 }
 

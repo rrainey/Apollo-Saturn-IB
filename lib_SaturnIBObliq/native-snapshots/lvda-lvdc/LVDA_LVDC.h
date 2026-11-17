@@ -862,8 +862,12 @@ typedef struct {
  */
 /* Initialize subsystem to default state */
 void LVDA_LVDC_init(LVDA_LVDC_t* model);
-/* Compute outputs from inputs and states (algebraic evaluation) */
+/* Compute outputs from inputs and states (algebraic evaluation).
+ * Called once per RK4 stage (k1..k4) by the parent; safe to re-run. */
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model);
+/* Deferred unit-delay / Memory state updates (post-integration).
+ * Called by the parent once per major step after the RK4 loop. */
+void LVDA_LVDC_update_memory_states(LVDA_LVDC_t* model);
 /* Update nested Action/Enable scopes inside this module */
 void LVDA_LVDC_evaluate_enable_states(LVDA_LVDC_t* model);
 

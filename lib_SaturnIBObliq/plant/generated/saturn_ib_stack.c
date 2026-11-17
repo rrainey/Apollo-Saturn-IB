@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-17T04:36:38.317Z
+ * Generated on: 2026-11-17T15:01:10.041Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -12946,7 +12946,40 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->signals.Out22_pack[7] = model->signals.Out22_Ve_demux_1;
     model->signals.Out22_pack[8] = model->signals.Out22_Ve_demux_2;
 
-    /* Deferred discrete state updates (unit_delay) */
+    /* Copy signals to outputs */
+    model->outputs.FDAI_Roll_deg = model->signals.CM_ISS_Angle_Conversion2;
+    model->outputs.FDAI_Pitch_deg = model->signals.CM_ISS_Angle_Conversion3;
+    model->outputs.FDAI_Yaw_deg = model->signals.CM_ISS_Angle_Conversion1;
+    model->outputs.FDAI_RollDot_dps = model->signals.CM_ISS_Demux_0;
+    model->outputs.FDAI_PitchDot_dps = model->signals.CM_ISS_Demux_1;
+    model->outputs.FDAI_YawDot_dps = model->signals.CM_ISS_Demux_2;
+    memcpy(&model->outputs.CM_IMU_PIPA_Pulses, &model->signals.CM_ISS_Mux, sizeof(model->outputs.CM_IMU_PIPA_Pulses));
+    model->outputs.CM_IMU_IGA_rad = model->signals.CM_ISS_Demux1_0;
+    model->outputs.CM_IMU_MGA_Rad = model->signals.CM_ISS_Demux1_1;
+    model->outputs.CM_IMU_OGA_rad = model->signals.CM_ISS_Demux1_2;
+    memcpy(&model->outputs.Out11, &model->signals.Mux, sizeof(model->outputs.Out11));
+    memcpy(&model->outputs.Out12, &model->signals.Mux1, sizeof(model->outputs.Out12));
+    model->outputs.bStageSep = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
+    model->outputs.bIECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
+    model->outputs.bOECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
+    model->outputs.bS_IVB_EngineStart = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVEngineStart;
+    memcpy(&model->outputs.veh_q_ECI, &model->signals.Switch2, sizeof(model->outputs.veh_q_ECI));
+    model->outputs.bLiftoff = model->signals.T_L_prime;
+    model->outputs.BodyToSM_Phi_deg = model->signals.CM_ISS_Angle_Conversion6;
+    model->outputs.BodyToSM_Theta_deg = model->signals.CM_ISS_Angle_Conversion4;
+    model->outputs.BodyToSM_Psi_deg = model->signals.CM_ISS_Angle_Conversion5;
+    memcpy(&model->outputs.Out22, &model->signals.Out22_pack, sizeof(model->outputs.Out22));
+
+}
+
+/*
+ * Deferred discrete state updates (unit_delay and Memory): state = u
+ * Runs once per major step, after RK4 / Euler integration completes.
+ * Output phase already published the previous state during evaluate_algebraic.
+ */
+void saturn_ib_stack_update_memory_states(saturn_ib_stack_t* model) {
+
+    /* Deferred unit_delay / Memory state updates (post-integration) */
 
     /* Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory state update */
     // Unit Delay state update: Saturn_Instrument_Unit_IU_ST_124M_Stabilized_Platform_Memory
@@ -12985,38 +13018,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     for (int i = 0; i < 3; i++) {
         model->states.Memory6_state[i] = model->signals.Saturn_Instrument_Unit_IU_Flight_Control_Computer_Product[i];
     }
-
-    /* Copy signals to outputs */
-    model->outputs.FDAI_Roll_deg = model->signals.CM_ISS_Angle_Conversion2;
-    model->outputs.FDAI_Pitch_deg = model->signals.CM_ISS_Angle_Conversion3;
-    model->outputs.FDAI_Yaw_deg = model->signals.CM_ISS_Angle_Conversion1;
-    model->outputs.FDAI_RollDot_dps = model->signals.CM_ISS_Demux_0;
-    model->outputs.FDAI_PitchDot_dps = model->signals.CM_ISS_Demux_1;
-    model->outputs.FDAI_YawDot_dps = model->signals.CM_ISS_Demux_2;
-    memcpy(&model->outputs.CM_IMU_PIPA_Pulses, &model->signals.CM_ISS_Mux, sizeof(model->outputs.CM_IMU_PIPA_Pulses));
-    model->outputs.CM_IMU_IGA_rad = model->signals.CM_ISS_Demux1_0;
-    model->outputs.CM_IMU_MGA_Rad = model->signals.CM_ISS_Demux1_1;
-    model->outputs.CM_IMU_OGA_rad = model->signals.CM_ISS_Demux1_2;
-    memcpy(&model->outputs.Out11, &model->signals.Mux, sizeof(model->outputs.Out11));
-    memcpy(&model->outputs.Out12, &model->signals.Mux1, sizeof(model->outputs.Out12));
-    model->outputs.bStageSep = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIBStageSep;
-    model->outputs.bIECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bIECO;
-    model->outputs.bOECO = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bOECO;
-    model->outputs.bS_IVB_EngineStart = model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.bSIVEngineStart;
-    memcpy(&model->outputs.veh_q_ECI, &model->signals.Switch2, sizeof(model->outputs.veh_q_ECI));
-    model->outputs.bLiftoff = model->signals.T_L_prime;
-    model->outputs.BodyToSM_Phi_deg = model->signals.CM_ISS_Angle_Conversion6;
-    model->outputs.BodyToSM_Theta_deg = model->signals.CM_ISS_Angle_Conversion4;
-    model->outputs.BodyToSM_Psi_deg = model->signals.CM_ISS_Angle_Conversion5;
-    memcpy(&model->outputs.Out22, &model->signals.Out22_pack, sizeof(model->outputs.Out22));
-
-}
-
-/*
- * UH60 P3: no Memory (delayMode:memory) blocks — major-step hold no-op
- */
-void saturn_ib_stack_update_memory_states(saturn_ib_stack_t* model) {
-    (void)model;
+    LVDA_LVDC_update_memory_states(&model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC);
 }
 
 /*
