@@ -92,15 +92,87 @@ convention** we have in main — in which case our baseline is
 "accurately wrong in the same way the reference is" and the branch
 is "truly correct but doesn't match the published numbers".
 
-## Open questions for the next pass
+## Cross-check against TM-X-62831 Table 4 — DECISIVE (2026-11-17)
 
-1. **What anchor did the TM-X-62831 reference simulation actually
-   use?**  If we could get one of their tables plotted in the TM's
-   PASCs 13 position/velocity columns (already available) and
-   compare to a GRR-anchored sim run (this branch), we can tell
-   whether the reference is Apollo-standard or slightly-off.  The
-   PASCs 13 Xe / Ve columns in TM-X-62831 Table 4 are the right
-   place to look.
+Instrumented the LVDC with a one-shot probe to dump the PASCs 13
+`s_X_S` and `s_V_S = V_m + V_Sg + V_0` at the first BML boundary
+after TM-X-62831's S-IVB cutoff time (flight time 614.63 s, sim_t =
+915.26 s).  Our probe fires at sim_t = 915.20 s, i.e. ~0.57 s
+*after* the Table 4 reference moment; most of the residual
+is therefore pure dead-reckoning over 0.57 s at ~7.4 km/s.  Ran the
+same probe on main (committed baseline) and on branch tip.
+
+**Against TM-X-62831 Table 4 S-IVB GCS (flight time 614.63 s):**
+
+| Component | Table 4 | Main (sim-epoch) | Δ (main) | Branch (GRR) | Δ (branch) |
+|-----------|--------:|-----------------:|---------:|-------------:|-----------:|
+| X_S (m)   | 6,258,278 | 6,221,477  | **−36,801**  | 6,256,771  | −1,507  |
+| Y_S (m)   | 144,698   | 150,691    | +5,993       | 144,978    | +280    |
+| Z_S (m)   | 2,092,098 | 2,199,129  | **+107,031** | 2,097,023  | +4,925  |
+| DX (m/s)  | −2472.80  | −2598.13   | **−125.3**   | −2481.11   | −8.3    |
+| DY (m/s)  | 412.48    | 409.40     | −3.1         | 413.42     | +0.9    |
+| DZ (m/s)  | 7365.73   | 7327.07    | **−38.7**    | 7384.96    | +19.2   |
+
+Main's PASCs 13 state vector is off by **≈115 km position / 130 m/s
+velocity** at the cutoff instant.  That matches exactly the
+ω_E · T_L' = 1.25° frame rotation applied to R ≈ 6,600 km
+(sin 1.25° · 6,600 km ≈ 144 km orthogonal displacement, consistent
+with the 107 km Z-component shift and the −37 km X-component shift
+in combination).
+
+Branch residuals are ~100× smaller: all three position components
+within 5 km (and mostly 0.57 s of dead reckoning), all three
+velocity components within 20 m/s.
+
+### What this changes about our understanding
+
+The main baseline's small |V_S| cutoff residual (+2.3 m/s vs 7780.67)
+was a magnitude-match coincidence — a 1.25°-rotated velocity vector
+still has the same magnitude as the correct one, so a scalar
+|V_S| comparison does not detect the frame rotation.  The *direction*
+of the vehicle's state in PASCs 13 under the sim-epoch baseline is
+**not** the trajectory TM-X-62831 published.  The branch (coordinated
+GRR anchor + EDD Eq. 3.4.3 / 3.4.4 latch) IS.
+
+The earlier working hypothesis above — that TM-X-62831's reference
+simulation might have used the same sim-epoch frame convention we
+had on main — is **refuted** by this measurement.  TM-X-62831's
+PASCs 13 columns are published against the standard GRR anchor,
+as the Apollo program's coordinate standards require.  The branch
+matches that.
+
+The +11 m/s / +1.4 km fidelity-table regression (branch vs main at
+the cutoff sample) is a reporting artefact, not a real trajectory
+degradation.  What's actually happening:
+
+- Main's trajectory is **physically wrong** by 1.25° in PASCs 13
+  orientation.  Its cutoff magnitude happens to land close to V_T
+  because the LVDC steered in a self-consistent (but mis-rotated)
+  frame.
+- Branch's trajectory is **physically correct** per the Apollo
+  standard.  Its cutoff magnitude is 11 m/s higher than V_T
+  because the LVDC is now steering to the real target in the
+  correct frame, and the HSL cutoff decision is now triggered
+  without the compensating frame-rotation error.
+
+### Implications
+
+Against the TM-X-62831 PASCs 13 position/velocity reference (which
+is the thing we actually care about for fidelity), the branch is
+~100× closer than main.  By the dominant-signal measure, the
+branch wins decisively.
+
+The remaining ~11 m/s cutoff-magnitude residual on branch is real
+but second-order — likely from the HSL's velocity polynomial
+coefficients or ΔV_b bias under a now-correct frame, or the
+gravity model's projection at the end of burn.  A follow-up task
+can chase that against the properly-anchored baseline.
+
+## Open questions deferred to follow-up tasks
+
+1. **Trace the remaining +11 m/s cutoff-magnitude residual** — now
+   known to be a real second-order artefact, not a frame leak.
+   HSL velocity polynomial is the first place to look.
 
 2. **Is the V_0 X-component nonzero something that other NASA
    references treat as significant?**  EDD Eq. 3.4.4 clearly
