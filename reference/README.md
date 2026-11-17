@@ -13,6 +13,19 @@ Source documents used to build and check the model, with OCR text of each. The O
 | `NASA-TM-X-62831/marker/` | Marker OCR |
 | `NASA-TM-X-62831/ocr-comparison/` | Five sample pages (`sample.pdf`) run through Chandra, DeepSeek-OCR-2 and olmOCR, to compare the tools |
 
+## Project Apollo Coordinate System Standards
+
+*Project Apollo Coordinate System Standards* (NASA MSC MA-1461, Apollo
+Program Director, 1 Jun 1965). The authoritative statement of the
+Apollo-program reference ellipsoid (1960 Fischer) and the nineteen
+Project Apollo Standard Coordinate Systems (PASCs). Cited from
+`docs/ALTITUDE_CONVENTIONS.md` and the frame-anchoring section of
+`README.md`.
+
+| Path | Contents |
+|------|----------|
+| `project-apollo-coordinate-system-standards.pdf` | The document |
+
 ## LVDC Equation Defining Document
 
 *Saturn Instrument Unit: LVDC Equation Defining Document (EDD) for the Saturn IB Flight Program, Parts I and II, Revision A* (IBM No. 70-207-0001, MSFC-DRL-008A, 11 April 1972). The scan is split across seven PDFs.

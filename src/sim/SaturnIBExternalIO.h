@@ -44,9 +44,16 @@ typedef struct _ExternalOutputs_saturn_ib_stack_tag {
    * S-IVB trajectory.  Pre-liftoff both channels report 0 or NaN in the
    * lat/lon/h fields because the stage integrators are disabled —
    * consumers should use OUT22 for the vehicle's geographic location
-   * until bLiftoff goes true. */
-  real_T OUT11[25];
-  real_T OUT12[24];
+   * until bLiftoff goes true.
+   *
+   * Native plant fields occupy OUT11[0..24] and OUT12[0..23] (OUT12[21..23]
+   * are patched in by the adapter from the S-IVB body-velocity signal).
+   * Trailing slot OUT11[25] / OUT12[24] carries a Fischer-1960
+   * geocentric-radial altitude computed in the adapter from the stage's
+   * Xe vector; see docs/ALTITUDE_CONVENTIONS.md.  The native OUTxx[2]
+   * altitude remains WGS-84 geodetic. */
+  real_T OUT11[26];
+  real_T OUT12[25];
   boolean_T bStageSep;
   boolean_T bIECO;
   boolean_T bOECO;
@@ -56,7 +63,10 @@ typedef struct _ExternalOutputs_saturn_ib_stack_tag {
   real_T BodyToSM_Phi_deg;
   real_T BodyToSM_Theta_deg;
   real_T BodyToSM_Psi_deg;
-  real_T OUT22[9];
+  /* OUT22 — S-IB pad reference state.  OUT22[0..8] are the plant's native
+   * pad lat/lon/h + Xe + Ve pack; OUT22[9] is a Fischer-1960
+   * geocentric-radial altitude computed by the adapter (see note above). */
+  real_T OUT22[10];
 } ExternalOutputs_saturn_ib_stack;
 
 #ifdef __cplusplus

@@ -18,7 +18,29 @@
  */
 #include "SaturnIBStackAdapter.h"
 
+#include <math.h>
 #include <string.h>
+
+/* Fischer 1960 ellipsoid (Apollo-program standard per NASA MSC MA-1461).
+ * See docs/ALTITUDE_CONVENTIONS.md. */
+#define SATIB_FISCHER_A_M 6378165.0
+#define SATIB_FISCHER_B_M 6356783.0
+
+/* Altitude "along the geocentric position vector", per TM-X-62831 symbol
+ * glossary: subtract the Fischer ellipsoid's radius at the position's
+ * geocentric latitude from |Xe|.  Pure postprocessing; no state. */
+static double saturn_ib_stack_fischer_alt_m(double x, double y, double z) {
+    const double a = SATIB_FISCHER_A_M, b = SATIB_FISCHER_B_M;
+    const double r2 = x*x + y*y + z*z;
+    if (!(r2 > 0.0)) return 0.0;
+    const double r  = sqrt(r2);
+    const double sin_phi_c = z / r;
+    const double cos_phi_c = sqrt(x*x + y*y) / r;
+    const double denom = sqrt((a*sin_phi_c)*(a*sin_phi_c) +
+                              (b*cos_phi_c)*(b*cos_phi_c));
+    if (!(denom > 0.0)) return 0.0;
+    return r - (a * b) / denom;
+}
 
 static int saturn_ib_stack_ics_seeded = 0;
 
@@ -94,6 +116,22 @@ void saturn_ib_stack_collect_external_outputs(
     out->OUT12[22] = vb_ivb[1];
     out->OUT12[23] = vb_ivb[2];
   }
+
+  /* Fischer-1960 geocentric-radial altitude, trailing slot of each pack.
+   * For OUT22 (pad), use the pad Xe at indices [3..5].  For OUT11/OUT12
+   * (stages) use the integrator Xe at the same indices; pre-liftoff these
+   * are zero/NaN and the Fischer altitude is correspondingly meaningless
+   * — consumers should respect the same bLiftoff gate they already use
+   * for the stage lat/lon/h. */
+  out->OUT22[9]  = saturn_ib_stack_fischer_alt_m(out->OUT22[3],
+                                                 out->OUT22[4],
+                                                 out->OUT22[5]);
+  out->OUT11[25] = saturn_ib_stack_fischer_alt_m(out->OUT11[3],
+                                                 out->OUT11[4],
+                                                 out->OUT11[5]);
+  out->OUT12[24] = saturn_ib_stack_fischer_alt_m(out->OUT12[3],
+                                                 out->OUT12[4],
+                                                 out->OUT12[5]);
 }
 
 void saturn_ib_stack_io_step(

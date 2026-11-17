@@ -51,9 +51,11 @@ struct NamedField {
     const char *suffix;   // appended after prefix (e.g. "lat_deg")
 };
 
-// OUT11: 25 elements.  0..23 have documented names in SaturnIBStack.cpp;
+// OUT11: 26 elements.  0..23 have documented names in SaturnIBStack.cpp;
 // [24] is the model block "Compare_c3" -- a discrete flag we surface
 // under an intentionally generic name pending a semantic identification.
+// [25] is the adapter-computed Fischer-1960 geocentric-radial altitude
+// (see docs/ALTITUDE_CONVENTIONS.md); the native [2] altitude is WGS-84.
 static const NamedField OUT11_FIELDS[] = {
     { 0, "lat_deg"},         { 1, "lon_deg"},         { 2, "h_m"},
     { 3, "Xe_x_m"},          { 4, "Xe_y_m"},          { 5, "Xe_z_m"},
@@ -64,9 +66,10 @@ static const NamedField OUT11_FIELDS[] = {
     {18, "omega_b_x_rps"},   {19, "omega_b_y_rps"},   {20, "omega_b_z_rps"},
     {21, "Vb_x_mps"},        {22, "Vb_y_mps"},        {23, "Vb_z_mps"},
     {24, "compare_c3"},
+    {25, "h_fischer_m"},
 };
 
-// OUT12: 24 elements, index/name layout identical to OUT11[0..23].
+// OUT12: 25 elements, [0..23] layout matches OUT11, [24] = Fischer altitude.
 static const NamedField OUT12_FIELDS[] = {
     { 0, "lat_deg"},         { 1, "lon_deg"},         { 2, "h_m"},
     { 3, "Xe_x_m"},          { 4, "Xe_y_m"},          { 5, "Xe_z_m"},
@@ -76,13 +79,15 @@ static const NamedField OUT12_FIELDS[] = {
     {14, "q_ECI_q0"},        {15, "q_ECI_q1"},        {16, "q_ECI_q2"}, {17, "q_ECI_q3"},
     {18, "omega_b_x_rps"},   {19, "omega_b_y_rps"},   {20, "omega_b_z_rps"},
     {21, "Vb_x_mps"},        {22, "Vb_y_mps"},        {23, "Vb_z_mps"},
+    {24, "h_fischer_m"},
 };
 
-// OUT22: 9 elements, S-IB pad reference frame.
+// OUT22: 10 elements, S-IB pad reference frame; [9] = Fischer altitude.
 static const NamedField OUT22_FIELDS[] = {
     { 0, "lat_deg"},   { 1, "lon_deg"},   { 2, "h_m"},
     { 3, "Xe_x_m"},    { 4, "Xe_y_m"},    { 5, "Xe_z_m"},
     { 6, "Ve_x_mps"},  { 7, "Ve_y_mps"},  { 8, "Ve_z_mps"},
+    { 9, "h_fischer_m"},
 };
 constexpr size_t OUT11_N = sizeof(OUT11_FIELDS)/sizeof(*OUT11_FIELDS);
 constexpr size_t OUT12_N = sizeof(OUT12_FIELDS)/sizeof(*OUT12_FIELDS);
