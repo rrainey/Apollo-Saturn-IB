@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-17T00:39:50.430Z
+ * Generated on: 2026-11-17T04:36:38.317Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -1878,8 +1878,16 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Using parameter: lambda_L_deg → PARAM_lambda_L_deg
     model->signals.MES_Transform_Constant9 = PARAM_lambda_L_deg;
 
+    /* MES_GMST_GRR_shift */
+    // Evaluate block: MES_GMST_GRR_shift
+    // Expression: in(0) + (in(1) - 17.0) * 0.00417807463889
+    // Input variables
+    double _eval_MES_GMST_GRR_shift_in0 = model->signals.Initial_Conditions_T_to_GMST_seconds_to_degrees;
+    double _eval_MES_GMST_GRR_shift_in1 = model->signals.T_L_prime_sec;
+    model->signals.MES_GMST_GRR_shift = (_eval_MES_GMST_GRR_shift_in0 + ((_eval_MES_GMST_GRR_shift_in1 - 17.0) * 0.00417807463889));
+
     /* MES_Transform_Sum2 (from MES_Transform) */
-    model->signals.MES_Transform_Sum2 = model->signals.MES_Transform_Constant9 + model->signals.Initial_Conditions_T_to_GMST_seconds_to_degrees;
+    model->signals.MES_Transform_Sum2 = model->signals.MES_Transform_Constant9 + model->signals.MES_GMST_GRR_shift;
 
     /* MES_Transform_MES_Transform_Mux (from MES_Transform > MES_Transform) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {
@@ -8496,7 +8504,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->signals.Initial_Conditions_MES_Transform_Constant9 = PARAM_lambda_L_deg;
 
     /* Initial_Conditions_MES_Transform_Sum2 (from Initial_Conditions > MES_Transform) */
-    model->signals.Initial_Conditions_MES_Transform_Sum2 = model->signals.Initial_Conditions_MES_Transform_Constant9 + model->signals.Initial_Conditions_T_to_GMST_seconds_to_degrees;
+    model->signals.Initial_Conditions_MES_Transform_Sum2 = model->signals.Initial_Conditions_MES_Transform_Constant9 + model->signals.MES_GMST_GRR_shift;
 
     /* Initial_Conditions_MES_Transform_MES_Transform_Mux (from Initial_Conditions > MES_Transform > MES_Transform) */
     if ((model->sample_tick % (unsigned long long)llround((0.8) / model->dt) == 0ULL)) {

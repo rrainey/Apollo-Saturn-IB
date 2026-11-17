@@ -1326,32 +1326,40 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
      * to the trap value after the gravity block runs (see "EDD §4.3.1
      * corrector" below).
      */
-    /* Flight-program initialization at GRR (= liftoff) per EDD §4.2.3 /
-     * §3.3.  At the tick-precise rising edge of bLiftoff, snapshot:
-     *   X_0 = MES × PAD_Xe_m  (launch-moment pad position, launch-plumbline)
-     *   V_0 = MES × PAD_Ve_mps (launch-moment pad velocity, launch-plumbline)
-     *   V_m_offset = V_m_bar_mps  (zero-reset the platform integrator so
-     *                              the LVDC's V_m_eff = ∫specific force from GRR)
+    /* Flight-program initialization at GRR (= liftoff tick) per EDD §3.4
+     * and §4.2.3.  Latch from the plant's already-computed Eq. 3.4.3 /
+     * 3.4.4 block (anchor-independent, driven purely from presets
+     * R_L, A_z, phi_L, phi_L_prime):
+     *   X_0 = (R_L·cos δ,  R_L·sin δ·sin A_z,  -R_L·sin δ·cos A_z)
+     *          (EDD Eq. 3.4.3; δ = φ_L − φ'_L)
+     *   V_0 = (0,  ω_E·R_L·cos φ'_L·cos A_z,  ω_E·R_L·cos φ'_L·sin A_z)
+     *          (EDD Eq. 3.4.4)
+     *   V_m_offset = V_m_bar_mps  (§4.2.3 zero-reset)
+     *
+     * The companion model edit (evaluate_7400 + Initial_Conditions port
+     * theta_GMST_shifted_deg) moves BOTH the top-level MES_Transform and
+     * the Initial_Conditions > MES_Transform to a nominal-GRR anchor via
+     * (T_L' − 17) · ω_E degrees.  Together with this latch they pin the
+     * LVDC navigation frame to PASCs 13 at GRR per the Apollo standard.
+     * See Issue rrainey/Apollo-Saturn-IB#4 and docs/FRAME_ANCHOR_AUDIT.md.
      *
      * Snapshotting at the BML boundary AFTER liftoff would sweep up to
-     * 1.6 s of post-liftoff specific force into V_m_offset (~17 m/s V
-     * under-count).  Snapshotting at sim-epoch (t = 1.6 s) would give
-     * V_0/X_0 that are 1.25° rotated from the vehicle's actual IC when
-     * the plant's S-IB integrator loads from the LIVE On_Pad outputs (as
-     * it does after rrainey/Apollo-Saturn-IB#1).  So the snapshot must
-     * fire at exactly the GRR tick — all three presets together.  The
-     * tick guard keeps the latch idempotent across RK4-stage calls. */
+     * 1.6 s of post-liftoff specific force into V_m_offset (~17 m/s
+     * under-count), so the snapshot must fire at exactly the GRR tick;
+     * the tick guard keeps the latch idempotent across RK4-stage calls. */
     if (!s_grr_latched && model->inputs.bLiftoff) {
+        const double *X_0_eq343 =
+            model->signals
+                .LVDC_S_Frame_Position_Velocity_Calculations_Initial_Position_and_Velocity_Eqns_3_4_3_4_Mux1;
+        const double *V_0_eq344 =
+            model->signals
+                .LVDC_S_Frame_Position_Velocity_Calculations_Initial_Position_and_Velocity_Eqns_3_4_3_4_Mux2;
         for (int i = 0; i < 3; i++) {
-            s_X_S[i] = 0.0;
-            s_V_0[i] = 0.0;
-            for (int k = 0; k < 3; k++) {
-                s_X_S[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Xe_m[k];
-                s_V_0[i] += model->inputs.MES_DCM[i][k] * model->inputs.PAD_Ve_mps[k];
-            }
-            s_V_Sg[i] = 0.0;
+            s_X_S[i]        = X_0_eq343[i];
+            s_V_0[i]        = V_0_eq344[i];
+            s_V_Sg[i]       = 0.0;
             s_V_m_offset[i] = model->inputs.V_m_bar_mps[i];
-            s_V_m_past[i] = 0.0;
+            s_V_m_past[i]   = 0.0;
         }
         s_grr_latched = 1;
     }

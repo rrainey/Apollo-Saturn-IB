@@ -1681,6 +1681,7 @@ typedef struct {
     double Out22_Ve_demux_1;
     double Out22_Ve_demux_2;
     double Out22_pack[9];
+    double MES_GMST_GRR_shift;
 } saturn_ib_stack_signals_t;
 
 /* Model-scoped named data stores (shared across hierarchy) */
