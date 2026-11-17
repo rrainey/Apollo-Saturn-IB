@@ -3898,7 +3898,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write */
             // Data Store Write: LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Write → data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec
-            model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+            /* Per-tick guard: compute_outputs fires at each of the 4 RK4 stages
+             * within one outer step.  If this write runs every stage, it
+             * compounds the Memory1/Memory2 state-update bug (see the
+             * Data_Store_Write2 site above) by writing a different value each
+             * stage.  Fire once per outer step, at the first stage. */
+            static unsigned long long s_hsl_timing_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_hsl_timing_last_tick) {
+                model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec = model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Sum;
+                s_hsl_timing_last_tick = model->sample_tick;
+            }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_enabled && (model->sample_tick % (unsigned long long)llround((0.04) / model->dt) == 0ULL)) {
 
@@ -3908,10 +3917,14 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
              * use the 40 ms decrement only (nHSLActive==2). Advance to 2 only
              * after the first-pass ΔT_b subtraction has been applied — not
              * before Compare, and not every tick unconditionally in a way that
-             * races mode-4 arming. */
-            if (model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Read1 == 1) {
+             * races mode-4 arming.  Also per-tick-gate to avoid RK4 multiple
+             * fires. */
+            static unsigned long long s_nhsl_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_nhsl_last_tick
+                && model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Data_Store_Read1 == 1) {
                 model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive =
                     model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Constant1;
+                s_nhsl_last_tick = model->sample_tick;
             }
     }
 
@@ -3987,8 +4000,20 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             /* Refresh predicted T_CO / tgo from the velocity polynomial, but do
              * not inflate an in-progress 40 ms HSL countdown: only adopt the
              * polynomial when it is shorter (more urgent) than the live T_3i,
-             * or on the first HSL pass (nHSLActive==1). EDD: tgo<20 ms ⇒ cut now. */
-            {
+             * or on the first HSL pass (nHSLActive==1). EDD: tgo<20 ms ⇒ cut now.
+             *
+             * Per-tick guard: compute_outputs runs once per RK4 stage (k1..k4)
+             * of the outer step.  The plant-side Memory1/Memory2 unit-delay
+             * state updates also fire at every stage (codegen bug), so
+             * signals.Memory1/Memory2 shift between k1 and k2+.  By k2 the
+             * 3-sample velocity-polynomial inputs (V, V', V'' for Eqs. 4.4.91-
+             * 4.4.94) are corrupted, Subtract7 passes through near zero, and
+             * Divide2 (t_poly) blows up to a large negative number that got
+             * written into T_3_i_sec and tripped cutoff several seconds early.
+             * Pin this write to the first stage only, when Memory1/Memory2
+             * still carry the true previous-BML values. */
+            static unsigned long long s_firstpass_last_tick = (unsigned long long)-1;
+            if (model->sample_tick != s_firstpass_last_tick) {
                 const double t_poly = model->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_Divide2;
                 const double t_live = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
                 const double hsl = model->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nHSLActive;
@@ -3998,6 +4023,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 if (t_poly < 0.02) {
                     model->signals.LVDC_Iterative_Guidance_Mode_HSL_Cutoff_Timing_Compare_To_Constant = 1;
                 }
+                s_firstpass_last_tick = model->sample_tick;
             }
     }
     if (model->enable_states.LVDC_Iterative_Guidance_Mode_IGM_Phase2_HSL_first_pass_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
@@ -4677,16 +4703,51 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
         }
     }
 
-    /* LVDC_Iterative_Guidance_Mode_Memory1 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory1
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_Memory1_state = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
-    }
+    /* LVDC_Iterative_Guidance_Mode_Memory1 / Memory2 unit-delay state updates
+     *
+     * The original codegen writes state inside compute_outputs at the BML gate,
+     * but compute_outputs fires 4× per outer step (RK4 k1..k4).  Writing at
+     * every stage advances state mid-step, so k2..k4 read the just-updated
+     * state and see Memory1 ≈ Math_Function3 (near-zero ΔV instead of 39 m/s
+     * between BMLs).  That corrupts DeltaT_b_Sum (denominator of Eq. 4.4.89),
+     * blows up DeltaT_b to 100s, and through the HSL_Cutoff_Timing Switch
+     * drives Sum = T_3i - 0.04 - DeltaT_b to a huge negative number — tripping
+     * cutoff ~3.6 s early at V_T + 14 m/s instead of V_T.
+     *
+     * Deferred-commit pattern: at each BML tick's compute_outputs calls,
+     * snapshot the pending Memory1 / Memory2 values (last stage wins).  Commit
+     * them to state on the FIRST compute_outputs call after sample_tick has
+     * advanced — i.e. between BMLs.  Result: state is stable across the 4 RK4
+     * stages of any single outer step, which is what a Simulink unit delay
+     * actually prescribes.  The original codegen state updates below are
+     * replaced by the capture-into-pending at the end of this block. */
+    {
+        static unsigned long long s_mem_pending_tick = (unsigned long long)-1;
+        static int    s_mem_has_pending = 0;
+        static double s_mem_M1_pending = 0.0;
+        static double s_mem_M2_pending = 0.0;
 
-    /* LVDC_Iterative_Guidance_Mode_Memory2 state update */
-    // Unit Delay state update: LVDC_Iterative_Guidance_Mode_Memory2
-    if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
-        model->states.LVDC_Iterative_Guidance_Mode_Memory2_state = model->signals.LVDC_Iterative_Guidance_Mode_Memory1;
+        /* Commit any pending from the previous BML now that sample_tick has
+         * advanced past it.  Ordering: M2 picks up Memory1's PRE-commit value,
+         * which was captured from state_M1 at the BML tick (= value from the
+         * BML before that).  So commit M1 last. */
+        if (s_mem_has_pending && model->sample_tick != s_mem_pending_tick) {
+            model->states.LVDC_Iterative_Guidance_Mode_Memory2_state = s_mem_M2_pending;
+            model->states.LVDC_Iterative_Guidance_Mode_Memory1_state = s_mem_M1_pending;
+            s_mem_has_pending = 0;
+        }
+
+        /* Capture pending every BML tick (last RK4 stage of that outer step
+         * leaves the final value).  M1_pending = current Math_Function3.
+         * M2_pending = state_M1 as of this BML tick (before commit) = the
+         * previous BML's Math_Function3. */
+        if (model->enable_states.LVDC_Iterative_Guidance_Mode_enabled
+            && (model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
+            s_mem_M1_pending = model->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
+            s_mem_M2_pending = model->states.LVDC_Iterative_Guidance_Mode_Memory1_state;
+            s_mem_pending_tick = model->sample_tick;
+            s_mem_has_pending = 1;
+        }
     }
 
     /* LVDC_Iterative_Guidance_Mode_loop state update */
