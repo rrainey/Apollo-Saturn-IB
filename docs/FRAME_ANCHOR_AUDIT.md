@@ -149,3 +149,99 @@ error budget.
   and stay put.
 - Do not re-anchor MES_Transform in isolation; it must land with a
   consistent latch (step 1) first.
+
+## 2026-11-17 experiment — latch rewrite + Fix B (reverted)
+
+Implemented the proposed latch rewrite: `s_X_S` and `s_V_0` now
+source directly from `LVDC_S_Frame_Position_Velocity_Calculations_
+Initial_Position_and_Velocity_Eqns_3_4_3_4_Mux1/Mux2`, which the
+plant already evaluates from the (R_L, φ_L, φ'_L, A_z) presets per
+EDD Eq. 3.4.3 / 3.4.4.  A debug probe confirmed the two forms:
+
+- `X_0` (Eq 3.4.3):   (6,373,359.8,     17,050.3,     −5,539.9) m
+- `X_0` (MES × PAD):  (6,372,123.1,     54,351.7,    111,337.3) m
+
+The angle between the two vectors is **1.247°**, exactly ω_E · T_L'
+(300 s · 7.292115e-5 rad/s / cos-projection).  That confirms the
+old MES × PAD latch really was 1.25° mis-rotated in S-frame vs the
+EDD-prescribed value — and that the sim-epoch MES anchor was exactly
+compensating in the integrated IGM error budget.
+
+### Measured residuals
+
+- Baseline (both committed): V_space-fixed = 7782.9, residual +2.3 m/s
+- Latch rewrite only:        V_space-fixed = 7677.1, residual −103.6 m/s
+- Latch rewrite + Fix B:     V_space-fixed = 7677.1, residual −103.6 m/s
+  (identical — Fix B had zero effect once the latch no longer reads
+  MES_DCM; the only remaining consumers of the top-level MES_DCM are
+  a diagnostic trace in `SaturnIBPlantObliq.c` and the LVDC's `MES_DCM`
+  input port which is now unused.)
+
+### Why Fix B is a no-op after the latch rewrite
+
+`grep -rn MES_DCM src/ lib_SaturnIBObliq/native-snapshots/` shows:
+- `src/sim/SaturnIBPlantObliq.c:135-136` — diagnostic
+  `MES_PAD_Xe` / `MES_PAD_Ve` only
+- `lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.h:79` — the
+  input port (unused after the rewrite)
+
+The plant's state integrator does not consume `MES_DCM`.  What does
+consume it on the plant side is **a different MES_Transform instance
+inside the `Initial_Conditions` subsystem** (line ~8486 of the
+generated plant), which builds the vehicle's attitude IC `q_ECI_0` by
+converting the matrix to a quaternion.  Fix B as written only
+touched the top-level `MES_Transform`, not the `Initial_Conditions`
+copy.  So the plant's initial attitude is still sim-epoch anchored.
+
+### The deeper problem
+
+The −103 m/s regression comes from a frame mismatch between the LVDC's
+latched initial state (EDD-prescribed, anchor-independent) and the
+ST-124M PIPA integrator in the plant (which measures specific force
+projected through the plant's current attitude, with attitude IC in
+sim-epoch frame).  The LVDC's X_S integration is
+
+```
+X_S(t) = X_0 + V_0·t + ∫∫V_m dt + ∫∫G_S dt
+```
+
+For the arithmetic to be consistent, X_0 must be in the same frame
+V_m is accumulated in.  V_m is in the ST-124M platform frame.  The
+ST-124M platform frame in our sim is "whatever frame the plant's
+`q_ECI_0` attitude IC represents" — which, through the inner
+`Initial_Conditions > MES_Transform`, is **S-frame-at-sim-epoch**.
+
+So putting EDD-correct X_0 (canonical S-frame) alongside a
+sim-epoch V_m is mixing frames.  The old latch was "wrong" per EDD
+but internally consistent with the sim-epoch V_m, which is why the
+cutoff residual was +2.3 m/s despite the 1.25° rotation we now
+know exists.
+
+### What a real Fix B+ would require (deferred)
+
+Making the plumbline frame anchored at GRR consistently requires
+simultaneously:
+
+1. Shifting the **top-level** `MES_Transform` GMST input by
+   (T_L' − 17) · ω_E  (what the original Fix B did).
+2. Shifting the `Initial_Conditions > MES_Transform` GMST input the
+   same way so that `q_ECI_0` (plant attitude IC) is also GRR
+   anchored.
+3. Shifting the `On_Pad > Initial_Conditions > MES_Transform` GMST
+   input likewise so the pad-state outputs remain consistent.
+4. Keeping the LVDC V_0 / X_0 latch sourced from EDD Eq. 3.4.3 /
+   3.4.4 (the rewrite in this session).
+5. Verifying the ST-124M PIPA integrator sees specific force
+   projected through the GRR-anchored attitude.
+
+That is a model-wide frame reanchor, not a single-block change.  It
+also crosses the regen boundary (three model subsystems need
+coordinated edits), and the three `Initial_Conditions_T_to_GMST_...`
+signals that are consumed in other places (Earth rotation sum, etc.)
+need to be checked for unwanted knock-on effects.
+
+Deferred as a separate work item; this audit report captures why.
+Current committed state (sim-epoch anchor everywhere + MES×PAD
+latch + Table-3B presettings) remains the least-wrong configuration
+until that larger rework is designed.
+
