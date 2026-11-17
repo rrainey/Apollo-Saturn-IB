@@ -37,8 +37,8 @@ Measured residuals at S-IVB guidance cutoff on the `AS-205-tm-x-62831` scenario 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity | 7780.7 m/s | 7782.4 m/s | +1.8 m/s |
-| Altitude | 227.94 km | 233.55 km | +5.61 km |
+| Space-fixed velocity | 7780.67 m/s | 7782.9 m/s | +2.3 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 233.00 km | +5.06 km |
 | Flight time (post-liftoff) | 614.63 s | 615.00 s | +0.37 s |
 
 For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The residuals above are well inside that envelope.
@@ -49,7 +49,7 @@ The guidance loop runs on the Equation Defining Document cadences: the Boost Maj
 
 **Known limitation — plumbline reference frame anchor.** The authoritative Apollo standard (NASA MSC MA-1461, *Project Apollo Coordinate System Standards*, 1 Jun 1965) defines PASCs 13 Launch Vehicle Navigation — the frame TM-X-62831's plumbline position/velocity columns operate in — as anchored at Guidance Reference Release (GRR, ≈ liftoff − 17 s). The plant's `MES_Transform` subsystem currently anchors the frame at the scenario sim-epoch (`LaunchDate` = liftoff − `T_L_prime_sec`, typically liftoff − 300 s), which is wrong by construction. However, shifting the anchor to GRR regresses the cutoff residual sharply (to roughly −75 m/s), which indicates that some other constant loaded into the LVDC (one of: Table 3B pre-IGM polynomials consumed by `ts_presets`, `MES_Transform_Constant9` launch-longitude value, the `A_z_deg` azimuth epoch, or the V_0/X_0 projection path) is authored against a non-PASCs-13 frame and the sim-epoch anchor is quietly compensating for it. Tracked for audit; do not rely on the current cutoff residual as representative of true guidance-loop fidelity.
 
-**Altitude convention.** Current `OUT11[2]`, `OUT12[2]`, `OUT22[2]` carry WGS-84 geodetic altitude. TM-X-62831's altitude columns are Fischer-1960 geocentric-radial (the Apollo-program standard ellipsoid; see [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md) for conversion). The two differ by ~30 m on orbit and ~100–300 m for latitude-dependent mismatch; the +5.56 km altitude residual in the table above is overwhelmingly real trajectory error, not ellipsoid-model choice.
+**Altitude convention.** The altitude row in the table above uses Fischer-1960 geocentric-radial altitude (from the `s2_h_fischer_m` CSV column), matching TM-X-62831's own altitude definition. Native `OUT11[2]`, `OUT12[2]`, `OUT22[2]` continue to carry WGS-84 geodetic altitude for the GUI and other consumers. Fischer and WGS-84 differ by ~30 m on orbit; the +5 km residual above is overwhelmingly real trajectory error, not ellipsoid-model choice. See [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md).
 
 For history: before the Issue #1 and #2 fixes (commits [`8954673`](../../commit/8954673) and [`c046dd2`](../../commit/c046dd2)), the residual table read −1.5 m/s / −340 m / −1.6 s. Those smaller numbers were a numerical coincidence — the S-IB position IC was pulling from `Initial_Conditions.Xe_0_m` (static, sim-epoch pad location, 1.25° west of actual liftoff) while the adapter's hand-written `eci_to_lla` papered over a longitude-wrap bug in the plant's `Bias2` blocks. The two frame-inconsistencies cancelled near the cutoff metrics. Fix #1 wired the position IC to `On_Pad.Xe_m` (physically correct: pad at actual liftoff) and fixed `Bias2`; Fix #2 took the hand-written `eci_to_lla` out and passed the plant's native lat/lon through. With the geometry now self-consistent, the ω_E · T_L' = 1.25° offset between the vehicle's launch position and the LVDC presettings' implicit frame became visible in all three residuals simultaneously — which is the same frame-epoch issue described above, surfaced on the physics side.
 
