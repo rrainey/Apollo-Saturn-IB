@@ -39,13 +39,13 @@ The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,256,312 m | −1,966 m |
-| Y_S | 144,698 m | 145,054 m | +356 m |
-| Z_S | 2,092,098 m | 2,098,375 m | +6,277 m |
-| DX | −2,472.80 m/s | −2,477.74 m/s | −4.9 m/s |
-| DY | 412.48 m/s | 412.23 m/s | −0.3 m/s |
-| DZ | 7,365.73 m/s | 7,362.51 m/s | −3.2 m/s |
-| \|V\| | 7,780.67 m/s | 7,779.19 m/s | −1.48 m/s |
+| X_S | 6,258,278 m | 6,257,175 m | −1,103 m |
+| Y_S | 144,698 m | 144,910 m | +212 m |
+| Z_S | 2,092,098 m | 2,095,810 m | +3,712 m |
+| DX | −2,472.80 m/s | −2,474.88 m/s | −2.08 m/s |
+| DY | 412.48 m/s | 412.31 m/s | −0.17 m/s |
+| DZ | 7,365.73 m/s | 7,364.41 m/s | −1.32 m/s |
+| \|V\| | 7,780.67 m/s | 7,780.08 m/s | −0.59 m/s |
 
 ### Scalar cutoff summary
 
@@ -53,15 +53,29 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\|) | 7780.67 m/s | 7772.2 m/s | −8.5 m/s |
+| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7773.07 m/s | −7.60 m/s |
 | Altitude (Fischer geocentric-radial) | 227.94 km | 234.42 km | +6.48 km |
-| Flight time (post-liftoff) | 614.63 s | 612.68 s | −1.95 s |
+| HSL cutoff decision engages (post-liftoff) | n/a | 608.80 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −8.5 m/s plant |V_e| residual is just outside that envelope, but note from the PASCs 13 row above that the LVDC's own |V_S| at Table 4's reference instant is within −1.48 m/s of V_T — the HSL cutoff decision is now firing at close to the right moment internally. The remaining gap between the LVDC's |V_S| view (7779) and the plant's |V_e| (7772) at the same instant is tracked as a separate investigation.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.60 m/s plant \|V_e\| peak residual is just outside that envelope, but note from the PASCs 13 row above that the LVDC's own \|V_S\| at Table 4's reference instant is within −0.59 m/s of V_T — the HSL cutoff decision fires at essentially the right moment internally. The remaining gap between the LVDC's \|V_S\| view (7780.08) and the plant's \|V_e\| peak (7773.07) is tracked as a separate investigation.
 
 ### Mid-flight fit
 
-The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mode) and insensitive to mid-flight trajectory errors. The mid-flight fit is substantially tighter than the cutoff numbers suggest: at Max Q (flight-time 75 s) the velocity residual is −5.0 m/s and at IGM initiation (168 s) it is −5.9 m/s, after rebasing the axial-force coefficient table to the Langley 1965 wind-tunnel data in NASA TN D-2829 and modeling the J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
+The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mode) and insensitive to mid-flight trajectory errors. Measured velocity residuals vs TM-X-62831 Table 5 at key events (plant \|V_e\|):
+
+| Event | Flight time | TM \|V\| | Sim \|V\| | Residual |
+|---|---|---|---|---|
+| Max Q | 75.0 s | 742.13 m/s | 750.20 m/s | +8.1 m/s |
+| IECO | 140.11 s | 2267.77 m/s | 2274.6 m/s | +6.9 m/s |
+| OECO | 143.11 s | 2325.01 m/s | 2342.2 m/s | +17.2 m/s |
+| IGM initiation | 168.25 s | 2377.35 m/s | 2388.2 m/s | +10.8 m/s |
+
+The current mid-flight shape reflects:
+
+- Axial-force coefficient `CA_T` rebased to Langley 1965 wind-tunnel data (NASA TN D-2829) for Mach 0–1.25; see `memory/project_cat_from_tnd2829.md`.
+- Supersonic CA_T tail (Mach 1.5 – 6) currently carries an empirical bump at Mach 3.5 (×1.15) and Mach 6 (×1.30) as a working approximation — the authoritative references (NASA TM-X-53423, TMX-53657, R-AERO-AD-68-25) are not in the repo. See the open residuals section of the CA_T memory note for revisit conditions.
+- J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
+- `(M/F)_S` FIR filter history and `Rate_Limiter_0_005` state are seeded to the current raw 1/|a| sample on IGM enable rising edge. EDD §4.2.11 is a pure FIR with no slew cap; the modeled rate limiter is a Simulink artifact whose cold-start lag (~5 BMLs to catch up from the S-IB→S-IVB staging coast step) was producing an 8° Chi-Y pitch-up transient on the first IGM BMLs. Seeding on IGM enable removes that transient.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 

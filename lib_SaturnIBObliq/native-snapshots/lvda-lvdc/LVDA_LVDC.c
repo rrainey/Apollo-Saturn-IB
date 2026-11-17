@@ -881,6 +881,34 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     }
     if ((model->sample_tick % (unsigned long long)llround((1.6) / model->dt) == 0ULL)) {
 
+            /* Pre-seed the (M/F)_S FIR filter history AND Rate_Limiter_0_005
+             * to the current raw 1/|a| sample on IGM enable rising edge.
+             * Both carry transients from the S-IB→S-IVB staging coast: the
+             * filter history mixes in high-(M/F) coast samples that take
+             * ~5 BMLs to decay out; the rate limiter (not EDD-prescribed;
+             * EDD §4.2.11 is pure FIR, no slew cap) is lagging ~0.045 at
+             * IGM start. Both transients feed τ_1 and K_1/K_2 and drive an
+             * 8° Chi-Y pitch-up overshoot over BML1-5. Seeding both to the
+             * current raw sample gives IGM a clean (M/F)_S baseline. */
+            {
+                static int s_mfrl_prev_igm_enabled = 0;
+                int igm_now_enabled = model->enable_states.LVDC_Iterative_Guidance_Mode_enabled;
+                if (igm_now_enabled && !s_mfrl_prev_igm_enabled) {
+                    double raw = model->signals.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_Math_Function5;
+                    /* FIR input history (delayed Math_Function5) */
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF2_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF3_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MF4_state = raw;
+                    /* FIR output history (delayed (M/F)_S) */
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS1_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS2_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS3_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Reciprocal_Acceleration_Filter_EDD_eqn_4_2_11_MFS4_state = raw;
+                    model->states.LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005_last_output = raw;
+                }
+                s_mfrl_prev_igm_enabled = igm_now_enabled;
+            }
+
             /* LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005 */
             // Rate Limiter block: LVDC_S_Frame_Position_Velocity_Calculations_Rate_Limiter_0_005
             // rising=0.005/s, falling=-0.005/s, Ts=1.6
