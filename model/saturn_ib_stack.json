@@ -2977,7 +2977,8 @@
               "inputPorts": [
                 "Launch_Date",
                 "A_z_deg",
-                "CG_LLA_deg_m"
+                "CG_LLA_deg_m",
+                "theta_GMST_shifted_deg"
               ],
               "outputPorts": [
                 "theta_GMST_0_deg",
@@ -3038,6 +3039,21 @@
                           0,
                           0
                         ],
+                        "showName": false
+                      }
+                    },
+                    {
+                      "id": "input_port_7600",
+                      "type": "input_port",
+                      "name": "theta_GMST_shifted_deg",
+                      "position": {
+                        "x": 240,
+                        "y": 350
+                      },
+                      "parameters": {
+                        "portName": "theta_GMST_shifted_deg",
+                        "dataType": "double",
+                        "defaultValue": 0,
                         "showName": false
                       }
                     },
@@ -7281,7 +7297,7 @@
                     },
                     {
                       "id": "wire_593",
-                      "sourceBlockId": "sheet_label_source_290",
+                      "sourceBlockId": "input_port_7600",
                       "sourcePortIndex": 0,
                       "targetBlockId": "subsystem_462",
                       "targetPortIndex": 0,
@@ -87172,6 +87188,21 @@
               ],
               "showName": false
             }
+          },
+          {
+            "id": "evaluate_7400",
+            "type": "evaluate",
+            "name": "MES_GMST_GRR_shift",
+            "position": {
+              "x": 2360,
+              "y": 900
+            },
+            "parameters": {
+              "numInputs": 2,
+              "expression": "in(0) + (in(1) - 17.0) * 0.00417807463889",
+              "outputType": "double",
+              "showName": false
+            }
           }
         ],
         "connections": [
@@ -87193,7 +87224,7 @@
             "id": "wire_7070",
             "sourceBlockId": "subsystem_238",
             "sourcePortIndex": 0,
-            "targetBlockId": "subsystem_615",
+            "targetBlockId": "evaluate_7400",
             "targetPortIndex": 0,
             "routing": {
               "midpointOffset": 150
@@ -89651,6 +89682,27 @@
             "sourcePortIndex": 0,
             "targetBlockId": "output_port_900142",
             "targetPortIndex": 0
+          },
+          {
+            "id": "wire_7700",
+            "sourceBlockId": "input_port_5",
+            "sourcePortIndex": 0,
+            "targetBlockId": "evaluate_7400",
+            "targetPortIndex": 1
+          },
+          {
+            "id": "wire_7701",
+            "sourceBlockId": "evaluate_7400",
+            "sourcePortIndex": 0,
+            "targetBlockId": "subsystem_615",
+            "targetPortIndex": 0
+          },
+          {
+            "id": "wire_7702",
+            "sourceBlockId": "evaluate_7400",
+            "sourcePortIndex": 0,
+            "targetBlockId": "subsystem_238",
+            "targetPortIndex": 3
           }
         ],
         "extents": {
