@@ -31,27 +31,42 @@ The project is a curiosity mostly.  But it does demonstrate the excellent level 
 
 ## Simulation Fidelity
 
-The simulation is validated against the pre-flight operational trajectory in NASA TM-X-62831, *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision 1*. The LVDC guidance implementation integrates sensor data (ST-124M stabilized platform PIPAs) per EDD §4.3.1 Eqs. 4.3.1-5; no plant state vectors are read directly by the LVDC side.
+The simulation is validated against the pre-flight operational trajectory in NASA TM-X-62831, *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision 1*. The LVDC guidance implementation integrates sensor data (ST-124M stabilized platform PIPAs) per EDD §4.3.1 Eqs. 4.3.1-5; no plant state vectors are read directly by the LVDC side. The plumbline navigation frame (PASCs 13 per NASA MSC MA-1461) is anchored at nominal Guidance Reference Release (T_L' − 17 s) and the LVDC X_0 / V_0 initial state is constructed from EDD Eqs. 3.4.3 / 3.4.4 directly, so the frame is consistent through the plant's state integrator, the ST-124M platform, and the LVDC's S-frame integration.
 
-Measured residuals at S-IVB guidance cutoff on the `AS-205-tm-x-62831` scenario (`data/examples/AS-205-tm-x-62831.json`, `--run-time 960`):
+### Dominant-signal fidelity: PASCs 13 state vector at S-IVB cutoff
+
+The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/velocity columns, which pin direction as well as magnitude. Sample taken at the first BML boundary after Table 4's flight time (614.63 s): the probe fires at sim time 915.20 s (flight time 615.20 s), i.e. 0.57 s past the reference instant — most of the residual below is pure dead-reckoning at ~7.4 km/s over that interval.
+
+| Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
+|---|---:|---:|---:|
+| X_S | 6,258,278 m | 6,256,771 m | −1,507 m |
+| Y_S | 144,698 m | 144,978 m | +280 m |
+| Z_S | 2,092,098 m | 2,097,023 m | +4,925 m |
+| DX | −2,472.80 m/s | −2,481.11 m/s | −8.3 m/s |
+| DY | 412.48 m/s | 413.42 m/s | +0.9 m/s |
+| DZ | 7,365.73 m/s | 7,384.96 m/s | +19.2 m/s |
+
+### Scalar cutoff summary
+
+The scalar cutoff magnitude row is useful at a glance but does not detect frame rotation. It is retained for continuity:
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity | 7780.67 m/s | 7782.9 m/s | +2.3 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 233.00 km | +5.06 km |
+| Space-fixed velocity | 7780.67 m/s | 7794.6 m/s | +13.9 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 234.43 km | +6.49 km |
 | Flight time (post-liftoff) | 614.63 s | 615.00 s | +0.37 s |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The residuals above are well inside that envelope.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The +14 m/s cutoff magnitude residual is above that envelope but is now against a properly-anchored trajectory (see the PASCs 13 row above for the dominant comparison); chasing it against the correct frame is tracked as follow-up to Issue #4.
 
-The cutoff residuals above are closed-loop (driven to V_T by the Iterative Guidance Mode) and insensitive to mid-flight trajectory errors. The mid-flight fit is substantially tighter than the cutoff numbers suggest: at Max Q (flight-time 75 s) the velocity residual is −5.0 m/s and at IGM initiation (168 s) it is −5.9 m/s, after rebasing the axial-force coefficient table to the Langley 1965 wind-tunnel data in NASA TN D-2829 and modeling the J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
+### Mid-flight fit
+
+The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mode) and insensitive to mid-flight trajectory errors. The mid-flight fit is substantially tighter than the cutoff numbers suggest: at Max Q (flight-time 75 s) the velocity residual is −5.0 m/s and at IGM initiation (168 s) it is −5.9 m/s, after rebasing the axial-force coefficient table to the Langley 1965 wind-tunnel data in NASA TN D-2829 and modeling the J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 
-**Known limitation — plumbline reference frame anchor.** The authoritative Apollo standard (NASA MSC MA-1461, *Project Apollo Coordinate System Standards*, 1 Jun 1965) defines PASCs 13 Launch Vehicle Navigation — the frame TM-X-62831's plumbline position/velocity columns operate in — as anchored at Guidance Reference Release (GRR, ≈ liftoff − 17 s). The plant's `MES_Transform` subsystem currently anchors the frame at the scenario sim-epoch (`LaunchDate` = liftoff − `T_L_prime_sec`, typically liftoff − 300 s), which is wrong by construction. However, shifting the anchor to GRR regresses the cutoff residual sharply (to roughly −75 m/s), which indicates that some other constant loaded into the LVDC (one of: Table 3B pre-IGM polynomials consumed by `ts_presets`, `MES_Transform_Constant9` launch-longitude value, the `A_z_deg` azimuth epoch, or the V_0/X_0 projection path) is authored against a non-PASCs-13 frame and the sim-epoch anchor is quietly compensating for it. Tracked for audit; do not rely on the current cutoff residual as representative of true guidance-loop fidelity.
+**Altitude convention.** The altitude rows above use Fischer-1960 geocentric-radial altitude (from the `s2_h_fischer_m` CSV column), matching TM-X-62831's own altitude definition. Native `OUT11[2]`, `OUT12[2]`, `OUT22[2]` continue to carry WGS-84 geodetic altitude for the GUI and other consumers. Fischer and WGS-84 differ by ~30 m on orbit; the +6 km altitude residual above is overwhelmingly real trajectory error, not ellipsoid-model choice. See [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md).
 
-**Altitude convention.** The altitude row in the table above uses Fischer-1960 geocentric-radial altitude (from the `s2_h_fischer_m` CSV column), matching TM-X-62831's own altitude definition. Native `OUT11[2]`, `OUT12[2]`, `OUT22[2]` continue to carry WGS-84 geodetic altitude for the GUI and other consumers. Fischer and WGS-84 differ by ~30 m on orbit; the +5 km residual above is overwhelmingly real trajectory error, not ellipsoid-model choice. See [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md).
-
-For history: before the Issue #1 and #2 fixes (commits [`8954673`](../../commit/8954673) and [`c046dd2`](../../commit/c046dd2)), the residual table read −1.5 m/s / −340 m / −1.6 s. Those smaller numbers were a numerical coincidence — the S-IB position IC was pulling from `Initial_Conditions.Xe_0_m` (static, sim-epoch pad location, 1.25° west of actual liftoff) while the adapter's hand-written `eci_to_lla` papered over a longitude-wrap bug in the plant's `Bias2` blocks. The two frame-inconsistencies cancelled near the cutoff metrics. Fix #1 wired the position IC to `On_Pad.Xe_m` (physically correct: pad at actual liftoff) and fixed `Bias2`; Fix #2 took the hand-written `eci_to_lla` out and passed the plant's native lat/lon through. With the geometry now self-consistent, the ω_E · T_L' = 1.25° offset between the vehicle's launch position and the LVDC presettings' implicit frame became visible in all three residuals simultaneously — which is the same frame-epoch issue described above, surfaced on the physics side.
+**Frame-anchor history.** Prior to the Issue #4 resolution the plant's `MES_Transform` was anchored at the scenario sim-epoch (= liftoff − `T_L_prime_sec`) rather than at nominal GRR. That produced a 1.25° orthogonal rotation (ω_E · T_L' at R≈6,600 km → ≈115 km) in the PASCs 13 state vector, which went undetected by the scalar `|V|` cutoff summary because rotating a velocity vector preserves its magnitude. See [`docs/FRAME_ANCHOR_AUDIT.md`](docs/FRAME_ANCHOR_AUDIT.md) and [`docs/FRAME_ANCHOR_BRANCH_NOTES.md`](docs/FRAME_ANCHOR_BRANCH_NOTES.md) for the investigation trace.
 
 ## Build
 
