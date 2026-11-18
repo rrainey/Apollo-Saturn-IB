@@ -17,6 +17,41 @@
 #include <stddef.h>
 #include <string.h>
 
+void lvdc_igm_presets_from_params(const lvdc_params_t *params,
+                                  lvdc_igm_presets_t *out) {
+    if (params == NULL || out == NULL) return;
+
+    const double d2r = M_PI / 180.0;
+
+    out->V_ex1_mps       = params->V_ex1_mps;
+    out->V_ex3_mps       = params->V_ex3_mps;
+
+    out->T_1i_initial_sec = params->igm_T_1i_initial_sec;
+    out->T_3i_initial_sec = params->igm_T_3i_initial_sec;
+
+    out->tau_10_sec = params->igm_tau_10_sec;
+    out->T_10_sec   = params->igm_T_10_sec;
+
+    out->M_GR_kg     = params->igm_M_GR_kg;
+    out->Mdot_2_kgps = params->igm_Mdot_2_kgps;
+    out->Mdot_3_kgps = params->Mdot_3_kgps;
+
+    out->P_CMR_sec = params->igm_P_CMR_sec;
+
+    out->R_T_m       = params->target_R_T_m;
+    out->V_T_mps     = params->target_V_T_mps;
+    out->Theta_T_rad = params->target_Theta_T_deg * d2r;
+    out->G_T_mps2    = params->target_Xdotdot_VGT_mps2;
+
+    out->ROV  = params->igm_ROV;
+    out->SMCG = params->igm_SMCG;
+
+    out->lambda_rad = params->igm_lambda_N_deg * d2r;
+    out->phi_L_rad  = params->phi_L_deg        * d2r;
+    out->A_z_rad    = params->A_z_deg          * d2r;
+    out->i_orb_rad  = params->igm_i_orb_deg    * d2r;
+}
+
 void lvdc_igm_init(lvdc_igm_state_t *s,
                    const lvdc_igm_presets_t *p) {
     if (s == NULL || p == NULL) return;

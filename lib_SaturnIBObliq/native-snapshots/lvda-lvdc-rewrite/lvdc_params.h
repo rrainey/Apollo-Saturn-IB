@@ -116,7 +116,12 @@ typedef struct {
     double MoverF_s_rate_limit_per_BML;
 
     /* -----------------------------------------------------------------
-     * Guidance (EDD §4.4; Phase C — declared, not populated here)
+     * Guidance (EDD §4.4; TM-X-62831 Table 3B)
+     *
+     * AS-205 numeric values live in lvdc_params.c as `AS205_*`
+     * #defines co-located with the function body, so swapping
+     * missions is a matter of editing one file while keeping the
+     * same struct shape.
      * -------------------------------------------------------------- */
 
     /* Target orbit (EDD §4.4.2; TM-X-62831 Table 3B). */
@@ -127,15 +132,40 @@ typedef struct {
     double target_Theta_T_deg;    /* downrange angle */
     double target_Xdotdot_VGT_mps2; /* target vertical accel */
 
-    /* Stage performance (TM-X-62831 Table 3B; Phase C). */
-    double V_ex1_mps;             /* S-IB exhaust velocity */
-    double V_ex3_mps;             /* S-IVB exhaust velocity */
+    /* Stage performance (TM-X-62831 Table 3B). */
+    double V_ex1_mps;             /* S-IVB first-phase exhaust velocity */
+    double V_ex3_mps;             /* S-IVB second-phase exhaust velocity */
     double Mdot_1_kgps;           /* S-IB mass flow */
-    double Mdot_3_kgps;           /* S-IVB mass flow */
+    double Mdot_3_kgps;           /* S-IVB second-phase mass flow */
     double F1_N;                  /* S-IB thrust */
     double F3_N;                  /* S-IVB thrust */
     double M1_kg;                 /* S-IB initial mass */
     double M03_kg;                /* S-IVB initial mass */
+
+    /* IGM phasing presets (TM-X-62831 Table 3B; EDD §4.4.2.3). */
+    double igm_T_1i_initial_sec;  /* T_1i initial value */
+    double igm_T_3i_initial_sec;  /* T_3i initial value */
+    double igm_tau_3_initial_sec; /* tau_3 at Phase 2 initiation */
+    double igm_tau_10_sec;        /* tau_1 at EMRC (Eq. 4.4.10) */
+    double igm_T_10_sec;          /* T_1 at EMRC (Eqs. 4.4.10-11) */
+    double igm_P_CMR_sec;         /* artificial-tau cutover (Eq. 4.4.14) */
+    double igm_M_GR_kg;           /* mass remaining at EMRC (Eq. 4.4.11) */
+    double igm_Mdot_2_kgps;       /* S-IVB first-phase mass flow */
+    double igm_SMCG;              /* SMC gain (Eqs. 4.4.83-84) */
+    double igm_ROV;               /* engine misalignment factor (Eq. 4.4.31) */
+
+    /* IGM frame constants (TM-X-62831 Table 3B; EDD §2.3.5).
+     * phi_L and A_z are shared with the launch-site block above;
+     * lambda_N_deg (TMX phi_N) and i_orb_deg are IGM-specific. */
+    double igm_lambda_N_deg;      /* descending-node angle */
+    double igm_i_orb_deg;         /* target orbit inclination */
+
+    /* IGM enable timing (TM-X-62831 Table 3B). The LVDC starts IGM
+     * at T3 + igm_enable_from_T3_sec. Full T3 bookkeeping is a
+     * Phase D deliverable; the dispatcher currently uses a T1-based
+     * fallback (see igm_enable_from_T1_sec). */
+    double igm_enable_from_T3_sec;
+    double igm_enable_from_T1_sec;
 
     /* HSL cutoff (EDD §4.4.2.4; Part II). */
     double DeltaV_b_mps;          /* velocity cutoff bias, Part II T1-3 */

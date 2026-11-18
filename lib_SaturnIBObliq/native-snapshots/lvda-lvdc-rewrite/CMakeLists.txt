@@ -140,3 +140,11 @@ target_compile_options(test_igm_orchestrator_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_igm_orchestrator_smoke
          COMMAND test_igm_orchestrator_smoke)
+
+add_executable(test_igm_presets_smoke tests/test_igm_presets_smoke.c)
+target_link_libraries(test_igm_presets_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_igm_presets_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_igm_presets_smoke
+         COMMAND test_igm_presets_smoke)

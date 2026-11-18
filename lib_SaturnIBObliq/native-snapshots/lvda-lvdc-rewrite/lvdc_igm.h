@@ -45,6 +45,7 @@
 #define LVDC_IGM_H
 
 #include "lvdc_igm_output.h"  /* lvdc_igm_smc_state_t */
+#include "lvdc_params.h"     /* lvdc_params_t */
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,6 +134,33 @@ typedef struct {
  * lambda/phi_L/A_z/i. Zeros SMC state. */
 void lvdc_igm_init(lvdc_igm_state_t *s,
                    const lvdc_igm_presets_t *p);
+
+/* Build `out` from the AS-205 (or other mission) `params` struct.
+ * The field map is:
+ *
+ *   V_ex1_mps        <- params.V_ex1_mps                 (TMX Vex1)
+ *   V_ex3_mps        <- params.V_ex3_mps                 (TMX Vex3)
+ *   T_1i_initial_sec <- params.igm_T_1i_initial_sec      (TMX T1i)
+ *   T_3i_initial_sec <- params.igm_T_3i_initial_sec      (TMX T3i)
+ *   tau_10_sec       <- params.igm_tau_10_sec            (TMX tau10)
+ *   T_10_sec         <- params.igm_T_10_sec              (TMX T10)
+ *   M_GR_kg          <- params.igm_M_GR_kg               (TMX M03 artif.)
+ *   Mdot_2_kgps      <- params.igm_Mdot_2_kgps           (TMX MI artif.)
+ *   Mdot_3_kgps      <- params.Mdot_3_kgps               (TMX M3)
+ *   P_CMR_sec        <- params.igm_P_CMR_sec             (TMX CO)
+ *   R_T_m            <- params.target_R_T_m              (TMX TVX)
+ *   V_T_mps          <- params.target_V_T_mps            (TMX VT)
+ *   Theta_T_rad      <- params.target_Theta_T_deg (deg->rad)
+ *   G_T_mps2         <- params.target_Xdotdot_VGT_mps2   (TMX XVG)
+ *   ROV              <- params.igm_ROV
+ *   SMCG             <- params.igm_SMCG
+ *   lambda_rad       <- params.igm_lambda_N_deg (deg->rad)
+ *   phi_L_rad        <- params.phi_L_deg        (deg->rad)
+ *   A_z_rad          <- params.A_z_deg          (deg->rad)
+ *   i_orb_rad        <- params.igm_i_orb_deg    (deg->rad)
+ */
+void lvdc_igm_presets_from_params(const lvdc_params_t *params,
+                                  lvdc_igm_presets_t *out);
 
 /* Transition from PHASE1 to PHASE2_ARTIFICIAL_TAU at the EMRC event.
  *
