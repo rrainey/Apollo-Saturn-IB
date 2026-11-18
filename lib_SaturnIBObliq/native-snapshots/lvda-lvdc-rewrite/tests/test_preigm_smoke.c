@@ -49,27 +49,28 @@ static double eval_cubic(const double a[4], double t) {
 
 int main(void) {
     const lvdc_params_t p = lvdc_params_as205();
-    const double pad_roll_rad = 100.0 * M_PI / 180.0;  /* 100° */
     double chi[3];
 
     /* ------------------------------------------------------------
      * Scenario 1: before gantry clear.
+     * Per TM-X-62831 Appendix B, T ≤ 10: chi_x = −0.488692 rad,
+     * chi_y = chi_z = 0.
      * ---------------------------------------------------------- */
-    lvdc_preigm_chi_cmd(&p, 0.0, pad_roll_rad, chi);
-    CHECK_CLOSE(chi[0], pad_roll_rad, 1e-12,
-                "pre-gantry chi_x holds pad roll");
+    lvdc_preigm_chi_cmd(&p, 0.0, chi);
+    CHECK_CLOSE(chi[0], -0.488692, 1e-12,
+                "pre-gantry chi_x = TMX Appendix B value");
     CHECK_CLOSE(chi[1], 0.0, 1e-12, "pre-gantry chi_y = 0");
     CHECK_CLOSE(chi[2], 0.0, 1e-12, "pre-gantry chi_z = 0");
 
-    lvdc_preigm_chi_cmd(&p, 9.9, pad_roll_rad, chi);
-    CHECK_CLOSE(chi[0], pad_roll_rad, 1e-12,
-                "still-pre-gantry chi_x holds pad roll at T_c=9.9");
+    lvdc_preigm_chi_cmd(&p, 9.9, chi);
+    CHECK_CLOSE(chi[0], -0.488692, 1e-12,
+                "still-pre-gantry chi_x holds pad value at T=9.9");
     CHECK_CLOSE(chi[1], 0.0, 1e-12, "still-pre-gantry chi_y = 0");
 
     /* ------------------------------------------------------------
      * Scenario 2: after gantry clear, chi_x goes to zero.
      * ---------------------------------------------------------- */
-    lvdc_preigm_chi_cmd(&p, 10.1, pad_roll_rad, chi);
+    lvdc_preigm_chi_cmd(&p, 10.1, chi);
     CHECK_CLOSE(chi[0], 0.0, 1e-12, "post-gantry chi_x = 0");
 
     /* ------------------------------------------------------------

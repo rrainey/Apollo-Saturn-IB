@@ -46,33 +46,36 @@ lvdc_params_t lvdc_params_as205(void) {
     /* Guidance / targets / stage performance / HSL — Phase C. All
      * zero-initialised, populated when lvdc_igm is written. */
 
-    /* Chi time-tilt — EDD §4.4.1.2 Eq. 4.4.2 for AS-205.
-     * Coefficients and breakpoints taken from the current body at
-     * ../lvda-lvdc/LVDA_LVDC.c L564-613 and the PARAM_* defines in
-     * ../lvda-lvdc/LVDA_LVDC.h. */
+    /* Chi time-tilt — TM-X-62831 Appendix B (S-IB Stage Unbiased
+     * Pitch Program). AS-205 values. The EDD §4.4.1.2 defines the
+     * polynomial form; TM-X-62831 provides the mission-specific
+     * coefficients. The current body at ../lvda-lvdc/LVDA_LVDC.c
+     * L564-613 uses the same values. */
     p.P_final_rad   = -1.0352499;   /* ≈ −59.3° */
     p.T_S1_sec1_sec =  10.0;        /* gantry-clear */
     p.T_S1_sec      =  63.8;
     p.T_S2_sec      = 109.8;
     p.T_S3_sec      = 134.3;
 
-    /* F_1: segment [T_S1_sec1_sec, T_S1_sec] */
-    p.chi_y_F1[0] = -0.0139871;
-    p.chi_y_F1[1] =  0.00320258;
-    p.chi_y_F1[2] = -0.00022283;
-    p.chi_y_F1[3] =  1.1473e-6;
+    /* F_1 (A coefficients in TMX): segment 10 < T ≤ 63.8 */
+    p.chi_y_F1[0] = -0.139871e-1;   /* A_0 rad */
+    p.chi_y_F1[1] =  0.320258e-2;   /* A_1 rad/sec */
+    p.chi_y_F1[2] = -0.222830e-3;   /* A_2 rad/sec^2 */
+    p.chi_y_F1[3] =  0.114730e-5;   /* A_3 rad/sec^3 */
 
-    /* F_2: segment (T_S1_sec, T_S2_sec] */
-    p.chi_y_F2[0] =  0.337135;
-    p.chi_y_F2[1] = -0.0108052;
-    p.chi_y_F2[2] = -3.84334e-5;
-    p.chi_y_F2[3] =  3.50965e-7;
+    /* F_2 (B coefficients in TMX): segment 63.8 < T ≤ 109.8 */
+    p.chi_y_F2[0] =  0.337135e+0;   /* B_0 */
+    p.chi_y_F2[1] = -0.108052e-1;   /* B_1 */
+    p.chi_y_F2[2] = -0.384334e-4;   /* B_2 */
+    p.chi_y_F2[3] =  0.350965e-6;   /* B_3 */
 
-    /* F_3: segment (T_S2_sec, T_S3_sec] */
-    p.chi_y_F3[0] =  0.210868;
-    p.chi_y_F3[1] = -0.00978481;
-    p.chi_y_F3[2] = -1.0118e-5;
-    p.chi_y_F3[3] =  1.03404e-7;
+    /* F_3 (C coefficients in TMX): segment 109.8 < T ≤ 134.3 */
+    p.chi_y_F3[0] =  0.210868e+0;   /* C_0 */
+    p.chi_y_F3[1] = -0.978481e-2;   /* C_1 */
+    p.chi_y_F3[2] = -0.101180e-4;   /* C_2 */
+    p.chi_y_F3[3] =  0.103404e-6;   /* C_3 */
+
+    p.chi_x_pad_rad = -0.488692;    /* TMX Appendix B, T ≤ 10 */
 
     return p;
 }

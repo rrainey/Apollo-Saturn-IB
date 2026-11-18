@@ -13,7 +13,9 @@
  *           70-207-0001 Rev A, 11 April 1972. Section numbers refer
  *           to Part I; Table / Presetting references to Part II.
  *   TM    = NASA TM-X-62831, AS-205/CSM-101 Launch Vehicle
- *           Operational Trajectory Rev I, 10 Sep 1968.
+ *           Operational Trajectory Rev I, 10 Sep 1968. Appendix B
+ *           gives the AS-205 pitch, yaw, and roll programs in
+ *           authoritative form (coefficients and breakpoints).
  *   PASC  = Project Apollo Coordinate System Standards
  *           (MSC MA-1461, 1 Jun 1965).
  *   HW    = Saturn V LVDA hardware specification
@@ -141,21 +143,34 @@ typedef struct {
     double T_HSL_sec;             /* HSL time */
 
     /* -----------------------------------------------------------------
-     * Chi time-tilt — EDD §4.4.1.2 Eq. 4.4.2
+     * Chi time-tilt — EDD §4.4.1.2 Eq. 4.4.2, with AS-205 values from
+     * TM-X-62831 Appendix B (S-IB Stage Unbiased Pitch Program).
      *
-     * The pitch command `chi_y(T_c)` is a piecewise cubic polynomial
-     * in `T_c = T1 − T_d`. The segments are:
+     * The pitch command `chi_y(T)` is a piecewise cubic polynomial
+     * in `T`. The segments are:
      *
-     *   T_c ≤ T_S1_sec1_sec   : chi_y = 0   (vertical hold, LUT clear)
-     *   T_S1_sec1_sec < T_c ≤ T_S1_sec : F_1(T_c)
-     *   T_S1_sec      < T_c ≤ T_S2_sec : F_2(T_c)
-     *   T_S2_sec      < T_c ≤ T_S3_sec : F_3(T_c)
-     *   T_c > T_S3_sec                 : P_final_rad   (freeze)
+     *   T ≤ T_S1_sec1_sec              : chi_y = 0   (vertical hold)
+     *   T_S1_sec1_sec < T ≤ T_S1_sec   : F_1(T)
+     *   T_S1_sec      < T ≤ T_S2_sec   : F_2(T)
+     *   T_S2_sec      < T ≤ T_S3_sec   : F_3(T)
+     *   T > T_S3_sec                   : P_final_rad   (freeze)
      *
-     * Each F_i is `a0 + a1·T_c + a2·T_c² + a3·T_c³` in radians.
-     * The coefficients come from EDD Part II for the mission (match
-     * the current hand-edited body at
-     * ../lvda-lvdc/LVDA_LVDC.c L564-613).
+     * Each F_i is `a0 + a1·T + a2·T² + a3·T³` in radians.
+     *
+     * Time variable: `T` is "time from Time Base 1" per TM-X-62831
+     * Appendix B (unbiased). The EDD §4.4.1 Eq. 4.4.1 defines
+     * `T_c = T1 − T_d`, where `T_d ≈ 1.24 s` is the compute-to-
+     * command delay. The TM-X-62831 coefficients are calibrated for
+     * the unbiased time variable, matching the trajectory analysis
+     * assumption of instantaneous command application. The rewrite
+     * follows TM-X-62831 literally and does not apply `T_d`.
+     *
+     * Roll (chi_x) per TM-X-62831 Appendix B:
+     *   T ≤ 10 s : chi_x = chi_x_pad_rad (= −0.488692 rad = −28°)
+     *   T > 10 s : chi_x = 0
+     *
+     * Yaw (chi_z) per TM-X-62831 Appendix B: chi_z = 0 throughout
+     * S-IB phase.
      * -------------------------------------------------------------- */
     double P_final_rad;           /* chi_y after the final segment */
     double T_S1_sec1_sec;         /* gantry-clear time (chi_y held at 0) */
@@ -165,6 +180,7 @@ typedef struct {
     double chi_y_F1[4];           /* F_1 cubic coefficients, a0..a3 */
     double chi_y_F2[4];           /* F_2 cubic coefficients, a0..a3 */
     double chi_y_F3[4];           /* F_3 cubic coefficients, a0..a3 */
+    double chi_x_pad_rad;         /* roll command during pad hold */
 
 } lvdc_params_t;
 
