@@ -7,8 +7,7 @@
 
 #include <math.h>
 
-void lvdc_chi_to_psi_transform(const double chi_cmd_rad[3],
-                               const double chi_prime_rad[3],
+void lvdc_chi_to_psi_transform(const double chi_prime_rad[3],
                                const double theta_prime_rad[3],
                                double psi_rad_out[3]) {
     /* Platform-frame attitude error (EDD Eq. 8.2.2, Delta terms). */
@@ -16,12 +15,13 @@ void lvdc_chi_to_psi_transform(const double chi_cmd_rad[3],
     const double dY = theta_prime_rad[1] - chi_prime_rad[1];
     const double dZ = theta_prime_rad[2] - chi_prime_rad[2];
 
-    /* Predicted average roll and yaw angles for the next minor-loop
-     * support cycle (EDD Eqs. 8.3.3, 8.3.4, with `chi'_xp ≈ chi_x`
-     * and `chi'_zp ≈ chi_z` under the no-saturation approximation
-     * of Eq. 8.3.2). */
-    const double theta_xa = 0.5 * (chi_cmd_rad[0] + theta_prime_rad[0]);
-    const double theta_za = 0.5 * (chi_cmd_rad[2] + theta_prime_rad[2]);
+    /* Predicted average roll and yaw angles (EDD Eqs. 8.3.3, 8.3.4).
+     * The EDD defines `chi'_xp` as the predicted end-of-cycle value
+     * (Eq. 8.3.2). The rewrite uses the continuous-rate equivalent:
+     * substitute `chi'_x` for `chi'_xp`. The current hand-edited
+     * body uses the same convention. */
+    const double theta_xa = 0.5 * (chi_prime_rad[0] + theta_prime_rad[0]);
+    const double theta_za = 0.5 * (chi_prime_rad[2] + theta_prime_rad[2]);
 
     const double sin_xa = sin(theta_xa);
     const double cos_xa = cos(theta_xa);

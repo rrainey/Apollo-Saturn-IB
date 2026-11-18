@@ -34,10 +34,18 @@
  *   A_6 = SF                                   (Eq. 8.3.10)
  *
  * The EDD defines `chi'_xp` as the predicted value of `chi'_x` at
- * the end of the next minor-loop support cycle (Eq. 8.3.2). In the
- * rate-limit-not-saturated case, `chi'_xp` equals the guidance
- * command `chi_x`. The rewrite passes `chi_cmd_rad` as this
- * predicted value.
+ * the end of the next minor-loop support cycle (Eq. 8.3.2). The EDD
+ * computes this prediction from the increment Δχ' and the number
+ * of minor loops per support cycle.
+ *
+ * The rewrite uses the continuous-rate approximation (same shape as
+ * the current hand-edited body): it reads `chi'` at every
+ * fundamental step. For the average-angle computation of Eqs.
+ * 8.3.3-8.3.4 we therefore substitute `chi'_x` (current rate-limited
+ * value) for `chi'_xp`. Under the no-saturation limit this converges
+ * to the EDD form. During saturation it is a first-order
+ * approximation that stays closer to the physical attitude than the
+ * EDD two-rate form predicts.
  *
  * Scale factor: EDD §8.3.2 uses `SF = 3000 bits/pirad` to produce
  * ladder-bit output. The rewrite keeps everything in radians
@@ -56,19 +64,17 @@ extern "C" {
 
 /* Transform platform-frame attitude error into body-frame error.
  *
- *   chi_cmd_rad    guidance command, used as `chi'_xp` approximation
- *                  for the Eq. 8.3.3-8.3.4 predicted average angle.
- *                  Index convention (roll, pitch, yaw).
- *   chi_prime_rad  current minor-loop command. Used in the Eq.
- *                  8.2.2 error (`theta' - chi'`).
+ *   chi_prime_rad  current rate-limited minor-loop command. Used
+ *                  both in the Eq. 8.2.2 error (`theta' - chi'`)
+ *                  and in the Eq. 8.3.3-8.3.4 average-angle
+ *                  computation. Index convention (roll, pitch, yaw).
  *   theta_prime_rad current gimbal angle from the ST-124M resolver.
  *   psi_rad_out    body-frame attitude error. Output in radians,
  *                  roll-pitch-yaw indexing. The caller applies the
  *                  rate limit, magnitude saturation and D/A LSB
  *                  quantization through `lvdc_dac`.
  */
-void lvdc_chi_to_psi_transform(const double chi_cmd_rad[3],
-                               const double chi_prime_rad[3],
+void lvdc_chi_to_psi_transform(const double chi_prime_rad[3],
                                const double theta_prime_rad[3],
                                double psi_rad_out[3]);
 

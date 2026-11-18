@@ -23,9 +23,13 @@
 
 #include "LVDA_LVDC.h"
 
+#include "lvdc_chi_to_psi.h"
+#include "lvdc_dac.h"
 #include "lvdc_internal.h"
+#include "lvdc_minor_loop.h"
 #include "lvdc_nav.h"
 #include "lvdc_params.h"
+#include "lvdc_preigm.h"
 
 #include <math.h>
 #include <string.h>
@@ -40,8 +44,10 @@
  * Init resets this cleanly, so there is no cross-run state leak.
  * Per the RK4 report, statics survive across RK4 stages (good) and
  * across LVDC restarts (hence the explicit reset in init). */
-static lvdc_state_t  g_lvdc;
-static lvdc_params_t g_params;
+static lvdc_state_t             g_lvdc;
+static lvdc_params_t            g_params;
+static lvdc_minor_loop_state_t  g_minor_loop;
+static lvdc_dac_state_t         g_dac;
 
 /* Latch state for the liftoff edge. Lives outside g_lvdc because
  * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
@@ -72,8 +78,34 @@ static unsigned long long bml_ticks_per_BML(double dt) {
     return (n > 0.0) ? (unsigned long long)n : 0ULL;
 }
 
-/* Publish nav state to the obliq-2 ABI outputs. Called every
- * compute_outputs invocation (4× per major step); safe to re-run. */
+/* Return the number of fundamental ticks between minor loops. Per
+ * EDD §8.1 the boost minor-loop period is 40 ms. */
+static unsigned long long minor_loop_ticks(double dt) {
+    if (dt <= 0.0) return 0ULL;
+    const double n = round(0.04 / dt);
+    return (n > 0.0) ? (unsigned long long)n : 0ULL;
+}
+
+/* Convert a 3-vector from radians to degrees in place. */
+static void rad_to_deg_vec(const double in_rad[3], double out_deg[3]) {
+    const double k = 180.0 / M_PI;
+    for (int i = 0; i < 3; i++) {
+        out_deg[i] = in_rad[i] * k;
+    }
+}
+
+/* Convert a 3-vector from degrees to radians. */
+static void deg_to_rad_vec(const double in_deg[3], double out_rad[3]) {
+    const double k = M_PI / 180.0;
+    for (int i = 0; i < 3; i++) {
+        out_rad[i] = in_deg[i] * k;
+    }
+}
+
+/* Publish nav state and the attitude command to the obliq-2 ABI
+ * outputs. Called every compute_outputs invocation (4× per major
+ * step); safe to re-run because all state is held in module-local
+ * singletons that only update once per tick. */
 static void publish_outputs(LVDA_LVDC_t *model) {
     /* EDD §4.3.3: R_S_bar_m is the plumbline-frame position. The
      * published value is updated only on BML ticks inside
@@ -91,14 +123,17 @@ static void publish_outputs(LVDA_LVDC_t *model) {
            model->inputs.Theta_deg,
            sizeof(model->outputs.theta_deg));
 
-    /* Phase C+ outputs. Zero until lvdc_igm (guidance) and
-     * lvdc_scheduler (T0..T4) land. */
-    model->outputs.Psi_deg[0] = 0.0;
-    model->outputs.Psi_deg[1] = 0.0;
-    model->outputs.Psi_deg[2] = 0.0;
+    /* Attitude error command (EDD §8.2.3). g_dac.psi_rad holds the
+     * last DAC output in radians; the obliq-2 boundary is in
+     * degrees. */
+    rad_to_deg_vec(g_dac.psi_rad, model->outputs.Psi_deg);
 
-    model->outputs.T1_sec = 0.0;
+    /* T1_sec: elapsed time since liftoff, read for downstream
+     * consumers. */
+    model->outputs.T1_sec = g_lvdc.tb1.T1_sec;
 
+    /* Phase C.3+ discrete outputs. Zero until lvdc_igm and
+     * lvdc_scheduler land. */
     model->outputs.bSIVEngineStart     = false;
     model->outputs.bSIVCutoff          = false;
     model->outputs.bIECO               = false;
@@ -111,6 +146,40 @@ static void publish_outputs(LVDA_LVDC_t *model) {
     model->outputs.bSIBStageSep        = false;
 }
 
+/* Run the attitude-command pipeline once. See lvdc_preigm,
+ * lvdc_minor_loop, lvdc_chi_to_psi, and lvdc_dac for EDD section
+ * references.
+ *
+ * The caller gates the invocation to the minor-loop rate (40 ms per
+ * EDD §8.1 during boost). `dt_minor_sec` is the elapsed time since
+ * the previous invocation, in seconds. */
+static void step_attitude_pipeline(const LVDA_LVDC_t *model,
+                                   double dt_minor_sec) {
+    double chi_cmd_rad[3];
+    double chi_prime_rad[3];
+    double theta_prime_rad[3];
+    double psi_body_rad[3];
+    double psi_dac_rad[3];
+
+    /* Pre-IGM time-tilt (EDD §4.4.1, TMX Appendix B).
+     * Before liftoff, T1_sec is zero and lvdc_preigm_chi_cmd returns
+     * the pad-hold values. */
+    lvdc_preigm_chi_cmd(&g_params, g_lvdc.tb1.T1_sec, chi_cmd_rad);
+
+    /* Minor-loop rate-limit ramp (EDD §8.3.1). */
+    lvdc_minor_loop_step(&g_minor_loop, &g_params,
+                         chi_cmd_rad, dt_minor_sec, chi_prime_rad);
+
+    /* Gimbal-to-body transform (EDD §8.3.2 + Eq. 8.2.2). */
+    deg_to_rad_vec(model->inputs.Theta_deg, theta_prime_rad);
+    lvdc_chi_to_psi_transform(chi_prime_rad, theta_prime_rad,
+                              psi_body_rad);
+
+    /* Rate limit, saturate, quantize (EDD §8.2.3). */
+    lvdc_dac_step(&g_dac, &g_params, psi_body_rad, dt_minor_sec,
+                  psi_dac_rad);
+}
+
 /* ---------------------------------------------------------------------
  * ABI entry points
  * ------------------------------------------------------------------ */
@@ -120,6 +189,8 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     model->enabled = 1;
 
     lvdc_nav_reset(&g_lvdc);
+    lvdc_minor_loop_reset(&g_minor_loop);
+    lvdc_dac_reset(&g_dac);
     g_params = lvdc_params_as205();
     s_prev_bLiftoff = false;
 }
@@ -148,8 +219,18 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             lvdc_nav_liftoff_latch(&g_lvdc,
                                    model->inputs.V_m_bar_mps,
                                    X_0, V_0);
+            g_lvdc.tb1.t_liftoff_sec = model->time;
         }
         s_prev_bLiftoff = model->inputs.bLiftoff;
+
+        /* Update T1_sec (time since liftoff). Stays at zero before
+         * the liftoff edge. */
+        if (g_lvdc.sensor.liftoff_latched) {
+            g_lvdc.tb1.T1_sec = model->time - g_lvdc.tb1.t_liftoff_sec;
+            if (g_lvdc.tb1.T1_sec < 0.0) g_lvdc.tb1.T1_sec = 0.0;
+        } else {
+            g_lvdc.tb1.T1_sec = 0.0;
+        }
 
         /* --- BML gate (EDD §4.1, §4.2.4, §4.3.1) -----------------
          * Nominal 1.6 s cadence. The sample-tick modulo is the
@@ -165,6 +246,19 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                               &g_params,
                               model->inputs.V_m_bar_mps,
                               model->time);
+        }
+
+        /* --- Attitude command pipeline --------------------------
+         * Runs once per minor loop (40 ms per EDD §8.1 during
+         * boost). Between minor loops the DAC output is latched. */
+        const unsigned long long minor_ticks =
+            minor_loop_ticks(model->dt);
+        const bool at_minor =
+            (minor_ticks != 0ULL)
+            && ((model->sample_tick % minor_ticks) == 0ULL);
+        if (at_minor) {
+            const double dt_minor = (double)minor_ticks * model->dt;
+            step_attitude_pipeline(model, dt_minor);
         }
     }
 

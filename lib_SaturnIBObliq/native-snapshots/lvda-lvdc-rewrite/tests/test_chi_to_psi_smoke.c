@@ -46,7 +46,7 @@ int main(void) {
     chi_cmd[0]  = chi_cmd[1]  = chi_cmd[2]  = 0.1;
     chi_pr[0]   = chi_pr[1]   = chi_pr[2]   = 0.1;
     theta_pr[0] = theta_pr[1] = theta_pr[2] = 0.1;
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     CHECK_CLOSE(psi[0], 0.0, 1e-15, "zero error: ROLL = 0");
     CHECK_CLOSE(psi[1], 0.0, 1e-15, "zero error: PITCH = 0");
     CHECK_CLOSE(psi[2], 0.0, 1e-15, "zero error: YAW = 0");
@@ -64,7 +64,7 @@ int main(void) {
     theta_pr[0] = 0.0;
     theta_pr[1] = 1.0 * deg2rad;  /* pitch error */
     theta_pr[2] = 0.0;
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     CHECK_CLOSE(psi[0], 0.0, 1e-15, "pure pitch: ROLL = 0 at zero average");
     CHECK_CLOSE(psi[1], 1.0 * deg2rad, 1e-15,
                 "pure pitch: PITCH = dY at zero average");
@@ -82,7 +82,7 @@ int main(void) {
     theta_pr[0] = 0.0;
     theta_pr[1] = 0.0;
     theta_pr[2] = 1.0 * deg2rad;  /* yaw error */
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     CHECK_CLOSE(psi[0], 0.0, 1e-15, "pure yaw: ROLL = 0");
     CHECK_CLOSE(psi[1], 0.0, 1e-15,
                 "pure yaw: PITCH = 0 at zero average");
@@ -101,7 +101,7 @@ int main(void) {
     theta_pr[0] = 1.0 * deg2rad;  /* roll error */
     theta_pr[1] = 0.0;
     theta_pr[2] = 0.0;
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     CHECK_CLOSE(psi[0], 1.0 * deg2rad, 1e-15, "pure roll: ROLL = dX");
     CHECK_CLOSE(psi[1], 0.0, 1e-15, "pure roll: PITCH = 0");
     CHECK_CLOSE(psi[2], 0.0, 1e-15, "pure roll: YAW = 0");
@@ -123,7 +123,7 @@ int main(void) {
     theta_pr[0] = 0.0;
     theta_pr[1] = -60.0 * deg2rad + 0.5 * deg2rad;  /* 0.5 deg error */
     theta_pr[2] = 0.0;
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     CHECK_CLOSE(psi[1], 0.5 * deg2rad, 1e-12,
                 "pitched-over pitch error: PITCH = dY");
 
@@ -143,7 +143,7 @@ int main(void) {
     theta_pr[0] = 0.0;
     theta_pr[1] = 1.0 * deg2rad;
     theta_pr[2] = 0.0;              /* dZ = 0 - 90 deg; irrelevant to ROLL */
-    lvdc_chi_to_psi_transform(chi_cmd, chi_pr, theta_pr, psi);
+    lvdc_chi_to_psi_transform(chi_pr, theta_pr, psi);
     const double expect_roll = sin(45.0 * deg2rad) * (1.0 * deg2rad);
     CHECK_CLOSE(psi[0], expect_roll, 1e-15,
                 "pitch-to-roll coupling via A_3 = sin(theta_za)");

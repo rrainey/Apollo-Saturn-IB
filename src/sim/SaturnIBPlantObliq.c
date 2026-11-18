@@ -160,6 +160,7 @@ int SaturnIBPlantObliq_fill_lvdc_io_trace(
     out->V_m_bar_mps[i] = lv->inputs.V_m_bar_mps[i];
     out->Theta_deg[i]   = lv->inputs.Theta_deg[i];
     out->R_S_bar_m[i]   = lv->outputs.R_S_bar_m[i];
+    out->Psi_deg[i]     = lv->outputs.Psi_deg[i];
   }
   out->bLiftoff               = lv->inputs.bLiftoff;
   out->bSIBPropellantSensorDry = lv->inputs.bSIBPropellantSensorDry;

@@ -46,6 +46,7 @@ typedef struct {
     bool   bLiftoff;
     bool   bSIBPropellantSensorDry;
     double R_S_bar_m[3];
+    double Psi_deg[3];
 } TraceRow;
 
 static bool parse_row(const char *line, TraceRow *r) {
@@ -56,13 +57,15 @@ static bool parse_row(const char *line, TraceRow *r) {
         "%lf,%lf,%lf,"
         "%lf,%lf,%lf,"
         "%d,%d,"
+        "%lf,%lf,%lf,"
         "%lf,%lf,%lf",
         &r->t_sec, &r->sample_tick,
         &r->V_m_bar_mps[0], &r->V_m_bar_mps[1], &r->V_m_bar_mps[2],
         &r->Theta_deg[0],   &r->Theta_deg[1],   &r->Theta_deg[2],
         &b1, &b2,
-        &r->R_S_bar_m[0], &r->R_S_bar_m[1], &r->R_S_bar_m[2]);
-    if (n != 13) return false;
+        &r->R_S_bar_m[0], &r->R_S_bar_m[1], &r->R_S_bar_m[2],
+        &r->Psi_deg[0],   &r->Psi_deg[1],   &r->Psi_deg[2]);
+    if (n != 16) return false;
     r->bLiftoff                = (b1 != 0);
     r->bSIBPropellantSensorDry = (b2 != 0);
     return true;
@@ -117,7 +120,10 @@ int main(int argc, char **argv) {
                 "t_sec,sample_tick,"
                 "R_gold_x,R_gold_y,R_gold_z,"
                 "R_new_x,R_new_y,R_new_z,"
-                "dR_x,dR_y,dR_z,dR_mag\n");
+                "dR_x,dR_y,dR_z,dR_mag,"
+                "Psi_gold_r,Psi_gold_p,Psi_gold_y,"
+                "Psi_new_r,Psi_new_p,Psi_new_y,"
+                "dPsi_r,dPsi_p,dPsi_y,dPsi_max\n");
     }
 
     LVDA_LVDC_t model;
@@ -150,6 +156,8 @@ int main(int argc, char **argv) {
     long row_count = 0;
     double max_dR = 0.0;
     double sum_sq = 0.0;
+    double max_dPsi = 0.0;
+    double sum_sq_dPsi = 0.0;
     long post_latch_rows = 0;
 
     while (fgets(line, sizeof(line), fp) && row_count < max_rows) {
@@ -184,21 +192,33 @@ int main(int argc, char **argv) {
         model.sample_tick = row.sample_tick;
         model.time       += dt_sec;
 
-        /* Compare. */
+        /* Compare R_S_bar_m. */
         const double dRx = model.outputs.R_S_bar_m[0] - row.R_S_bar_m[0];
         const double dRy = model.outputs.R_S_bar_m[1] - row.R_S_bar_m[1];
         const double dRz = model.outputs.R_S_bar_m[2] - row.R_S_bar_m[2];
         const double dRmag = sqrt(dRx*dRx + dRy*dRy + dRz*dRz);
 
+        /* Compare Psi_deg. */
+        const double dPr = model.outputs.Psi_deg[0] - row.Psi_deg[0];
+        const double dPp = model.outputs.Psi_deg[1] - row.Psi_deg[1];
+        const double dPy = model.outputs.Psi_deg[2] - row.Psi_deg[2];
+        const double dPmax =
+            fmax(fabs(dPr), fmax(fabs(dPp), fabs(dPy)));
+
         if (row.bLiftoff) {
             post_latch_rows++;
             sum_sq += dRmag * dRmag;
             if (dRmag > max_dR) max_dR = dRmag;
+            sum_sq_dPsi += dPmax * dPmax;
+            if (dPmax > max_dPsi) max_dPsi = dPmax;
         }
 
         if (delta_fp) {
             fprintf(delta_fp,
                     "%.12g,%llu,"
+                    "%.17g,%.17g,%.17g,"
+                    "%.17g,%.17g,%.17g,"
+                    "%.6g,%.6g,%.6g,%.6g,"
                     "%.17g,%.17g,%.17g,"
                     "%.17g,%.17g,%.17g,"
                     "%.6g,%.6g,%.6g,%.6g\n",
@@ -207,7 +227,12 @@ int main(int argc, char **argv) {
                     model.outputs.R_S_bar_m[0],
                     model.outputs.R_S_bar_m[1],
                     model.outputs.R_S_bar_m[2],
-                    dRx, dRy, dRz, dRmag);
+                    dRx, dRy, dRz, dRmag,
+                    row.Psi_deg[0], row.Psi_deg[1], row.Psi_deg[2],
+                    model.outputs.Psi_deg[0],
+                    model.outputs.Psi_deg[1],
+                    model.outputs.Psi_deg[2],
+                    dPr, dPp, dPy, dPmax);
         }
 
         row_count++;
@@ -218,14 +243,18 @@ int main(int argc, char **argv) {
 
     const double rms_dR =
         (post_latch_rows > 0) ? sqrt(sum_sq / (double)post_latch_rows) : 0.0;
+    const double rms_dPsi =
+        (post_latch_rows > 0) ? sqrt(sum_sq_dPsi / (double)post_latch_rows) : 0.0;
 
     printf("replay_lvdc_trace: processed %ld rows, %ld post-liftoff\n",
            row_count, post_latch_rows);
-    printf("                   max |ΔR_S|  = %.6g m\n", max_dR);
-    printf("                   rms |ΔR_S|  = %.6g m\n", rms_dR);
-    printf("                   abs-tol-m   = %.6g m\n", abs_tol);
+    printf("                   max |ΔR_S|   = %.6g m\n", max_dR);
+    printf("                   rms |ΔR_S|   = %.6g m\n", rms_dR);
+    printf("                   max |ΔPsi|   = %.6g deg\n", max_dPsi);
+    printf("                   rms |ΔPsi|   = %.6g deg\n", rms_dPsi);
+    printf("                   abs-tol-m    = %.6g m\n", abs_tol);
     if (delta_path) {
-        printf("                   delta-csv   = %s\n", delta_path);
+        printf("                   delta-csv    = %s\n", delta_path);
     }
 
     if (max_dR > abs_tol) {

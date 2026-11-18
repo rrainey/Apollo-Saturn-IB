@@ -114,12 +114,22 @@ typedef struct {
     double  published_R_S_bar_m[3];
 } lvdc_nav_state_t;
 
+/* Time Base 1 tracking for the dispatcher (see LVDA_LVDC.c).
+ * `T1_sec` is the elapsed time since the liftoff tick; the pre-IGM
+ * time-tilt uses it as the polynomial argument per TM-X-62831
+ * Appendix B. */
+typedef struct {
+    double t_liftoff_sec;        /* `time` captured on the liftoff edge */
+    double T1_sec;               /* time - t_liftoff_sec, clamped >= 0 */
+} lvdc_tb1_state_t;
+
 /* ---------------------------------------------------------------------
  * Combined rewrite state singleton
  * ------------------------------------------------------------------ */
 typedef struct {
     lvdc_sensor_state_t sensor;
     lvdc_nav_state_t    nav;
+    lvdc_tb1_state_t    tb1;
 
     /* The sample tick at which the last once-per-step work ran.
      * For the per-tick-guard idiom in compute_outputs. */

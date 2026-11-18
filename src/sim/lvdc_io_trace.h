@@ -36,6 +36,9 @@ typedef struct LvdcIoTraceSample_tag {
 
     /* Golden nav output. */
     double R_S_bar_m[3];
+
+    /* Golden attitude command (EDD §8.2.3 D/A output). */
+    double Psi_deg[3];
 } LvdcIoTraceSample;
 
 const char *lvdc_io_trace_csv_header(void);
