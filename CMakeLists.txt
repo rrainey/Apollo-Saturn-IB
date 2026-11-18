@@ -26,6 +26,8 @@ include(cmake/FetchVirtualAGC.cmake)
 # ---------------------------------------------------------------------------
 option(BUILD_LVDC_REWRITE "Build the lvdc_rewrite static library (work in progress)" OFF)
 if(BUILD_LVDC_REWRITE)
+    # enable_testing must precede any add_test in a subdirectory
+    enable_testing()
     add_subdirectory(lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite)
 endif()
 
