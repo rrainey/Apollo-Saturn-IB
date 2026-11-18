@@ -3,8 +3,11 @@
  * analytical cases.
  *
  * Runs three scenarios:
- *   1. Pre-GRR: nav step is a no-op.
- *   2. GRR latch: X_S equals X_0 (Eq. 3.4.3); V_Sg = 0; V_m = 0.
+ *   1. Pre-latch: nav step is a no-op.
+ *   2. Liftoff latch: X_S equals X_0 (Eq. 3.4.3); V_Sg = 0; V_m = 0.
+ *      (On a real IB the latch fires at GRR, T_0 − 17 s; the obliq-2
+ *      parent model does not expose a GRR discrete, so we latch on
+ *      bLiftoff. See lvdc_internal.h for the balance analysis.)
  *   3. Constant-thrust burn: 10 BMLs at 20 m/s per BML sensed in
  *      the +X plumbline direction. Checks that F/M, V_m
  *      accumulation and X_S integration produce the right
@@ -53,17 +56,17 @@ int main(void) {
     lvdc_nav_reset(&s);
 
     /* ------------------------------------------------------------
-     * Scenario 1: pre-GRR BML step is a no-op.
+     * Scenario 1: pre-latch BML step is a no-op.
      * ---------------------------------------------------------- */
     {
         const double V_m_initial[3] = {100.0, 20.0, -5.0};
         lvdc_nav_bml_step(&s, &p, V_m_initial, 0.0);
         CHECK(s.nav.X_S[0] == 0.0 && s.nav.X_S[1] == 0.0 && s.nav.X_S[2] == 0.0,
-              "pre-GRR nav step is no-op");
+              "pre-latch nav step is no-op");
     }
 
     /* ------------------------------------------------------------
-     * Scenario 2: GRR latch at t = 0. Platform velocity on the pad
+     * Scenario 2: liftoff latch at t = 0. Platform velocity on the pad
      * is non-zero (earth-rotation contribution). X_S must equal
      * EDD Eq. 3.4.3 output; V_m accumulator must be zero.
      * ---------------------------------------------------------- */
@@ -82,16 +85,16 @@ int main(void) {
     CHECK_CLOSE(got_V0_mag, expected_V0_mag, 1e-6,
                 "Eq. 3.4.4 |V_0| == omega_E * R_L * cos(phi'_L)");
 
-    /* Perform the GRR latch. */
-    const double V_m_at_GRR[3] = {7.1234, -2.5, 0.123};
-    lvdc_nav_grr_latch(&s, V_m_at_GRR, X_0, V_0);
-    CHECK(s.sensor.GRR_latched, "GRR latched flag set");
+    /* Perform the liftoff latch. */
+    const double V_m_at_latch[3] = {7.1234, -2.5, 0.123};
+    lvdc_nav_liftoff_latch(&s, V_m_at_latch, X_0, V_0);
+    CHECK(s.sensor.liftoff_latched, "liftoff latched flag set");
     CHECK_CLOSE(s.nav.X_S[0], X_0[0], 1e-9, "X_S seeded from Eq. 3.4.3 [0]");
     CHECK_CLOSE(s.nav.X_S[1], X_0[1], 1e-9, "X_S seeded from Eq. 3.4.3 [1]");
     CHECK_CLOSE(s.nav.X_S[2], X_0[2], 1e-9, "X_S seeded from Eq. 3.4.3 [2]");
     CHECK_CLOSE(s.sensor.V_S_init[1], V_0[1], 1e-12, "V_S_init Y stored");
-    CHECK_CLOSE(s.sensor.V_m_mps[0], 0.0, 1e-12, "V_m accumulator zero post-GRR");
-    CHECK(s.sensor.V_m_pulses[0] == 0, "V_m_pulses zero post-GRR");
+    CHECK_CLOSE(s.sensor.V_m_mps[0], 0.0, 1e-12, "V_m accumulator zero post-latch");
+    CHECK(s.sensor.V_m_pulses[0] == 0, "V_m_pulses zero post-latch");
 
     /* ------------------------------------------------------------
      * Scenario 3: constant thrust burn in the +X plumbline
@@ -99,7 +102,7 @@ int main(void) {
      * 12.5 m/s^2 axial thrust, so sensed velocity grows by
      * 20 m/s per BML. Starting from the pad state.
      *
-     * Expected at BML N (counting from GRR+1):
+     * Expected at BML N (counting from latch+1):
      *   V_m[0] = 20 * N
      *   F/M   = 12.5 m/s^2  (once steady)
      *   X_S[0] growth: initial-value-free analytical answer is
@@ -112,7 +115,7 @@ int main(void) {
     const double accel_x_mps2 = 12.5;
     const double dT = p.delta_T_sec;
     const double dV_per_BML = accel_x_mps2 * dT;  /* 20 m/s */
-    double V_m_bar[3] = { V_m_at_GRR[0], V_m_at_GRR[1], V_m_at_GRR[2] };
+    double V_m_bar[3] = { V_m_at_latch[0], V_m_at_latch[1], V_m_at_latch[2] };
 
     for (int n = 1; n <= 10; n++) {
         V_m_bar[0] += dV_per_BML;

@@ -43,10 +43,21 @@
 static lvdc_state_t  g_lvdc;
 static lvdc_params_t g_params;
 
-/* Latch state for the GRR event — bLiftoff must go false → true on
- * the first tick to fire the latch. Lives outside g_lvdc because
- * g_lvdc.sensor.GRR_latched is the "has it ever fired" flag; this
- * tracks the previous tick's input for edge detection. */
+/* Latch state for the liftoff edge. Lives outside g_lvdc because
+ * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
+ * this tracks the previous tick's input for rising-edge detection.
+ *
+ * Note on GRR vs. liftoff: on a real Saturn IB, the PIPA zero-reset
+ * (EDD §4.2.3) and the X_0/V_0 seed (EDD §3.4) fire at Guidance
+ * Reference Release — an LVDC-internal event scheduled by the
+ * countdown program, nominally 17 s before liftoff. The obliq-2
+ * parent model does not provide a separate GRR discrete, so the
+ * rewrite latches on the bLiftoff rising edge instead, matching
+ * the current hand-edited snapshot. The ~17 s of pad-held PIPA
+ * integration is lost from V_m, but the matching integral of G_S
+ * is also absent, so Eq. 4.3.5 still yields the correct inertial
+ * velocity from liftoff onward. See lvdc_internal.h for the
+ * balance derivation and the Phase D deferred action. */
 static bool s_prev_bLiftoff;
 
 /* ---------------------------------------------------------------------
@@ -124,16 +135,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (first_call_this_step) {
         g_lvdc.last_compute_tick = model->sample_tick;
 
-        /* --- GRR latch (EDD §3.4, §4.2.3) -------------------------
+        /* --- Liftoff latch (EDD §3.4, §4.2.3 — see note above) ---
          * Fire on the rising edge of bLiftoff. The current snapshot
          * does the same at L1378. */
         if (!s_prev_bLiftoff && model->inputs.bLiftoff
-                && !g_lvdc.sensor.GRR_latched) {
+                && !g_lvdc.sensor.liftoff_latched) {
             double X_0[3], V_0[3];
             lvdc_nav_compute_initial_conditions(&g_params, X_0, V_0);
-            lvdc_nav_grr_latch(&g_lvdc,
-                               model->inputs.V_m_bar_mps,
-                               X_0, V_0);
+            lvdc_nav_liftoff_latch(&g_lvdc,
+                                   model->inputs.V_m_bar_mps,
+                                   X_0, V_0);
         }
         s_prev_bLiftoff = model->inputs.bLiftoff;
 
@@ -146,7 +157,7 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             (ticks_per_BML != 0ULL)
             && ((model->sample_tick % ticks_per_BML) == 0ULL);
 
-        if (at_BML && g_lvdc.sensor.GRR_latched) {
+        if (at_BML && g_lvdc.sensor.liftoff_latched) {
             lvdc_nav_bml_step(&g_lvdc,
                               &g_params,
                               model->inputs.V_m_bar_mps,

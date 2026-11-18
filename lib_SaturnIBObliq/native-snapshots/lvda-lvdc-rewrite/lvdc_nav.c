@@ -117,13 +117,15 @@ void lvdc_nav_compute_initial_conditions(const lvdc_params_t *p,
     V_0_eq344[2] = omega_R_cospr * sin_A;
 }
 
-void lvdc_nav_grr_latch(lvdc_state_t *s,
-                        const double V_m_bar_mps_now[3],
-                        const double X_0_eq343[3],
-                        const double V_0_eq344[3]) {
-    /* EDD §4.2.3 — accumulator initialized to zero at GRR, which we
-     * realise by snapshotting the current platform velocity as an
-     * offset and subtracting it on every subsequent read. */
+void lvdc_nav_liftoff_latch(lvdc_state_t *s,
+                            const double V_m_bar_mps_now[3],
+                            const double X_0_eq343[3],
+                            const double V_0_eq344[3]) {
+    /* EDD §4.2.3 — accumulator is zeroed at GRR, which the LVDC
+     * schedules internally (nominally T_0 − 17 s). The Phase B
+     * rewrite fires on the bLiftoff edge because the obliq-2
+     * parent model does not expose a GRR discrete; see the header
+     * and lvdc_internal.h for the numerical balance analysis. */
     for (int i = 0; i < 3; i++) {
         s->sensor.V_m_mps_offset[i] = V_m_bar_mps_now[i];
         s->sensor.V_m_mps_prev[i]   = 0.0;
@@ -151,7 +153,7 @@ void lvdc_nav_grr_latch(lvdc_state_t *s,
         s->sensor.MoverF_s_hist[k] = 0.0;
     }
 
-    s->sensor.GRR_latched = true;
+    s->sensor.liftoff_latched = true;
 }
 
 void lvdc_nav_compute_gravity(const double X_S[3],
@@ -271,7 +273,7 @@ void lvdc_nav_bml_step(lvdc_state_t *s,
                        const lvdc_params_t *p,
                        const double V_m_bar_mps_now[3],
                        double t_now_sec) {
-    if (!s->sensor.GRR_latched) {
+    if (!s->sensor.liftoff_latched) {
         return;
     }
 

@@ -55,11 +55,34 @@ typedef struct {
     double  t_prev_BML_sec;
     double  dT_BML_sec;
 
-    /* GRR state. Flight-program initialization latch (EDD §3.4 Eq.
-     * 3.4.3-4 and §4.2.3 zero reset). */
-    bool    GRR_latched;
-    double  V_m_mps_offset[3];  /* platform velocity at GRR, zero-reset */
-    double  X_S_init[3];        /* Eq. 3.4.3 position at GRR */
+    /* Zero-reset latch for the PIPA accumulator (EDD §4.2.3) and
+     * seed for the plumbline-frame position / earth-rotation
+     * velocity (EDD §3.4 Eq. 3.4.3-4).
+     *
+     * On a real Saturn IB, this latch fires at Guidance Reference
+     * Release (GRR, nominally T_0 − 17 s), which is an LVDC-internal
+     * event in the countdown-program timing: the moment the computer
+     * stops driving the ST-124M erection loop and lets the platform
+     * track inertial motion. The pulse accumulators are zeroed at
+     * that moment per EDD §4.2.3. There is no external GRR discrete
+     * — the LVDC owns the timing.
+     *
+     * Phase B rewrite behaviour: the obliq-2 parent model does not
+     * provide a separate GRR discrete or a pre-liftoff LVDC run
+     * period. The only timing input is bLiftoff (DI24 rising edge).
+     * We therefore latch at bLiftoff, matching the current hand-
+     * edited snapshot (../lvda-lvdc/LVDA_LVDC.c L1378). The ~17 s
+     * of pad-held specific-force integration from GRR to liftoff
+     * is lost from V_m, but the equal and opposite ∫G_S dt is
+     * also absent, so Eq. 4.3.5 (V_S = V_m + V_0 + V_Sg) still
+     * produces the correct inertial velocity from liftoff onward.
+     *
+     * A faithful GRR implementation (Phase D or later) would need
+     * either a GRR discrete from the parent or a pre-liftoff LVDC
+     * run period triggered by the prelaunch countdown. */
+    bool    liftoff_latched;
+    double  V_m_mps_offset[3];  /* platform velocity at latch time */
+    double  X_S_init[3];        /* Eq. 3.4.3 position at latch */
     double  V_S_init[3];        /* Eq. 3.4.4 earth-rotation seed */
 } lvdc_sensor_state_t;
 
