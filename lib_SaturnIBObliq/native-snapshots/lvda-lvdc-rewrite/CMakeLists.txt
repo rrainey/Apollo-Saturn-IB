@@ -11,6 +11,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_quant.c
     lvdc_nav.c
     lvdc_params.c
+    lvdc_preigm.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -49,3 +50,10 @@ target_compile_options(replay_lvdc_trace PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 # No ctest: needs a prerecorded trace CSV from batch_sim.
+
+add_executable(test_preigm_smoke tests/test_preigm_smoke.c)
+target_link_libraries(test_preigm_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_preigm_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_preigm_smoke COMMAND test_preigm_smoke)

@@ -141,12 +141,30 @@ typedef struct {
     double T_HSL_sec;             /* HSL time */
 
     /* -----------------------------------------------------------------
-     * Chi time-tilt (EDD §4.4.1; Phase C)
+     * Chi time-tilt — EDD §4.4.1.2 Eq. 4.4.2
+     *
+     * The pitch command `chi_y(T_c)` is a piecewise cubic polynomial
+     * in `T_c = T1 − T_d`. The segments are:
+     *
+     *   T_c ≤ T_S1_sec1_sec   : chi_y = 0   (vertical hold, LUT clear)
+     *   T_S1_sec1_sec < T_c ≤ T_S1_sec : F_1(T_c)
+     *   T_S1_sec      < T_c ≤ T_S2_sec : F_2(T_c)
+     *   T_S2_sec      < T_c ≤ T_S3_sec : F_3(T_c)
+     *   T_c > T_S3_sec                 : P_final_rad   (freeze)
+     *
+     * Each F_i is `a0 + a1·T_c + a2·T_c² + a3·T_c³` in radians.
+     * The coefficients come from EDD Part II for the mission (match
+     * the current hand-edited body at
+     * ../lvda-lvdc/LVDA_LVDC.c L564-613).
      * -------------------------------------------------------------- */
-    double P_final_deg;           /* final pitch angle */
+    double P_final_rad;           /* chi_y after the final segment */
+    double T_S1_sec1_sec;         /* gantry-clear time (chi_y held at 0) */
     double T_S1_sec;
     double T_S2_sec;
     double T_S3_sec;
+    double chi_y_F1[4];           /* F_1 cubic coefficients, a0..a3 */
+    double chi_y_F2[4];           /* F_2 cubic coefficients, a0..a3 */
+    double chi_y_F3[4];           /* F_3 cubic coefficients, a0..a3 */
 
 } lvdc_params_t;
 
