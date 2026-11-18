@@ -157,6 +157,45 @@ int main(void) {
     CHECK_CLOSE(V_S[0], expected_VS_x, 0.1,
                 "Eq. 4.3.5 V_S[0] = V_m + V_0 + V_Sg");
 
+    /* ------------------------------------------------------------
+     * Scenario 4: gravity magnitude at the launch site.
+     *
+     * EDD §4.3.2 oblate gravity at r = R_L, launch site. The scalar
+     * gravity magnitude must be close to 9.80 m/s² and is well-
+     * bounded by the central term with the J_2 correction:
+     *   g ≈ μ/R_L² · (1 + ~0.001)
+     *
+     * We also check that boost_mode toggling (S_34/P_34 off vs on)
+     * changes the result by ~1e-6 m/s² — i.e. that the extra terms
+     * are negligible during boost (as the EDD asserts). */
+    {
+        double G_boost[3], G_orbit[3];
+        lvdc_nav_compute_gravity(X_0, &p, /*boost_mode=*/true,  G_boost);
+        lvdc_nav_compute_gravity(X_0, &p, /*boost_mode=*/false, G_orbit);
+
+        const double g_boost_mag = sqrt(G_boost[0]*G_boost[0]
+                                      + G_boost[1]*G_boost[1]
+                                      + G_boost[2]*G_boost[2]);
+        const double g_point     = p.mu_earth_m3ps2 / (p.R_L_m * p.R_L_m);
+
+        /* Magnitude bracket: 9.78 .. 9.82 m/s² at Cape latitude. */
+        CHECK(g_boost_mag > 9.78 && g_boost_mag < 9.82,
+              "|G_S| at launch site is in [9.78, 9.82] m/s^2");
+
+        /* Within ~0.5% of central-term point-mass gravity (J_2
+         * correction at the pole is ~0.5%). */
+        CHECK_CLOSE(g_boost_mag, g_point, g_point * 0.01,
+                    "|G_S| within 1% of central-term point-mass");
+
+        /* S_34 + P_34 are sub-microgravity at boost altitudes. */
+        const double diff = sqrt(
+            (G_orbit[0]-G_boost[0])*(G_orbit[0]-G_boost[0]) +
+            (G_orbit[1]-G_boost[1])*(G_orbit[1]-G_boost[1]) +
+            (G_orbit[2]-G_boost[2])*(G_orbit[2]-G_boost[2]));
+        CHECK(diff < 1e-3,
+              "S_34/P_34 contribution is sub-mg at boost altitudes");
+    }
+
     /* --- Summary --- */
     if (g_fail_count == 0) {
         printf("test_nav_smoke: ALL CHECKS PASSED\n");

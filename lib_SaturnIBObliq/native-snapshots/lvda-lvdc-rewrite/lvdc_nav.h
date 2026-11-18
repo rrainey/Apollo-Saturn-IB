@@ -73,15 +73,20 @@ void lvdc_nav_compute_V_S(const lvdc_state_t *s, double V_S_out[3]);
 /* Magnitude of V_S (EDD Eq. 4.3.5.1). */
 double lvdc_nav_compute_V_S_magnitude(const lvdc_state_t *s);
 
-/* Compute gravitational acceleration G_S in the plumbline frame from
- * the vehicle position X_S. EDD §4.3.2 Eqs. 4.3.6-12.
+/* Compute gravitational acceleration G_S in the plumbline (S) frame
+ * from the vehicle position X_S. EDD §4.3.2 Eqs. 4.3.6-12 — oblate
+ * earth gravity with the second zonal harmonic (J_2).
  *
- * Phase B.2 implementation is a point-mass gravity (G_S = -μ·X_S/|X_S|^3).
- * Phase B.3 replaces this with the full J2 oblate expansion from the
- * EDD. The callers (lvdc_nav_bml_step) do not need to change.
- */
+ * During boost the EDD mandates zero S_34 and P_34 (the third and
+ * fourth zonal harmonics); set boost_mode = true. During orbital
+ * navigation set boost_mode = false to include S_34 / P_34.
+ *
+ * The plumbline-frame projection of the earth spin axis depends on
+ * the launch-site latitude and azimuth, which the function reads
+ * from p. */
 void lvdc_nav_compute_gravity(const double X_S[3],
                               const lvdc_params_t *p,
+                              bool boost_mode,
                               double G_S_out[3]);
 
 #ifdef __cplusplus

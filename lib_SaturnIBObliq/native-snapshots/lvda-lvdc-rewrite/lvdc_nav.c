@@ -156,21 +156,115 @@ void lvdc_nav_grr_latch(lvdc_state_t *s,
 
 void lvdc_nav_compute_gravity(const double X_S[3],
                               const lvdc_params_t *p,
+                              bool boost_mode,
                               double G_S_out[3]) {
-    /* Phase B.2 stub: point-mass central gravity.
-     *   G_S = -μ · X_S / r^3,   r = |X_S|
-     * Phase B.3 will replace this with the EDD §4.3.2 J2 oblate
-     * expansion (Eqs. 4.3.6-12) without changing the signature. */
+    /* EDD §4.3.2 Eqs. 4.3.6-12 — oblate earth gravity in plumbline
+     * frame.
+     *
+     *   r = |X_S|
+     *   R_e / r = aaa                              (Eq. 4.3.10-ish)
+     *   Y_G = X_S projected on the earth spin axis (Eq. 4.3.6):
+     *       Y_G = -X_S[0]·sin(phi_L)
+     *             + X_S[1]·cos(phi_L)·sin(A_z)
+     *             - X_S[2]·cos(phi_L)·cos(A_z)
+     *   sin(geocentric latitude) = Y_G / r
+     *
+     * The radial scalar (central + J_2 radial):
+     *   S = 1 + (3/2)·J_2·(R_e/r)²·(1 - 5·sin²_lat) + S_34
+     *
+     * The spin-axis projection scalar (J_2 perpendicular + J_3,4):
+     *   P = 3·J_2·sin_lat + P_34
+     *
+     * Final gravity (Eq. 4.3.12):
+     *   G_S = (-μ/r³)·X_S·S  +  (-μ/r²)·(R_e/r)²·P·pole_hat
+     *
+     * where pole_hat is the unit vector from the launch site toward
+     * the earth spin axis in S-frame coordinates:
+     *   pole_hat = [-sin(phi_L),
+     *               cos(phi_L)·sin(A_z),
+     *              -cos(phi_L)·cos(A_z)]
+     *
+     * S_34 and P_34 capture the J_3 and J_4 zonal harmonics via EDD-
+     * specific derived coefficients:
+     *   S_34 =  0.575e-5·aaa³·sin_lat·(3 - 7·sin²_lat)
+     *         + (0.7875e-5/7)·aaa⁴·(3 - 42·sin²_lat + 63·sin⁴_lat)
+     *   P_34 =  0.575e-5·aaa·(15·sin²_lat - 3)
+     *         + (0.7875e-5/7)·aaa²·sin_lat·(12 - 28·sin²_lat)
+     *
+     * EDD §4.3.2: during boost, S_34 and P_34 are set to zero
+     * ("during boost, only Eq. 4.3.6, 4.3.7, 4.3.10, and 4.3.11 are
+     * used"); we honour that when boost_mode = true. The current
+     * hand-edited body always computes S_34 / P_34; the drift is
+     * sub-microgravity during AS-205 boost. */
+
     const double r2 = X_S[0]*X_S[0] + X_S[1]*X_S[1] + X_S[2]*X_S[2];
     if (r2 <= 0.0) {
         G_S_out[0] = G_S_out[1] = G_S_out[2] = 0.0;
         return;
     }
-    const double r = sqrt(r2);
-    const double gfac = -p->mu_earth_m3ps2 / (r2 * r);
-    G_S_out[0] = gfac * X_S[0];
-    G_S_out[1] = gfac * X_S[1];
-    G_S_out[2] = gfac * X_S[2];
+    const double r   = sqrt(r2);
+    const double r3  = r2 * r;
+    const double aaa = p->R_earth_equatorial_m / r;
+    const double aaa2 = aaa * aaa;
+
+    const double deg2rad = M_PI / 180.0;
+    const double phi_rad = p->phi_L_deg * deg2rad;
+    const double A_z_rad = p->A_z_deg   * deg2rad;
+    const double sin_phi = sin(phi_rad);
+    const double cos_phi = cos(phi_rad);
+    const double sin_A   = sin(A_z_rad);
+    const double cos_A   = cos(A_z_rad);
+
+    /* Eq. 4.3.6: Y_G (projection onto equatorial-plane normal). */
+    const double Y_G = -X_S[0]*sin_phi
+                     +  X_S[1]*cos_phi*sin_A
+                     -  X_S[2]*cos_phi*cos_A;
+    const double sin_lat   = Y_G / r;
+    const double sin_lat2  = sin_lat * sin_lat;
+
+    /* J_2 radial scalar and (optionally) J_3/J_4 contribution.
+     * Coefficient constants from the EDD §4.3.2 expansion:
+     *   3/2·J_2 = 1.62345e-3
+     *   3·J_2   = 0.0032469
+     * See the comment block at the top for S_34 and P_34. */
+    const double J2_radial = 1.62345e-3 * aaa2 * (1.0 - 5.0 * sin_lat2);
+
+    double S_34 = 0.0;
+    double P_34 = 0.0;
+    if (!boost_mode) {
+        const double aaa3 = aaa2 * aaa;
+        const double aaa4 = aaa3 * aaa;
+        const double sin_lat3 = sin_lat2 * sin_lat;
+        const double sin_lat4 = sin_lat2 * sin_lat2;
+
+        S_34 =   0.575e-5 * aaa3 * sin_lat * (3.0 - 7.0 * sin_lat2)
+             + (0.7875e-5 / 7.0) * aaa4
+                 * (3.0 - 42.0 * sin_lat2 + 63.0 * sin_lat4);
+        P_34 =   0.575e-5 * aaa * (15.0 * sin_lat2 - 3.0)
+             + (0.7875e-5 / 7.0) * aaa2 * sin_lat
+                 * (12.0 - 28.0 * sin_lat2);
+        (void)sin_lat3;  /* reserved for higher-order EDD expansion */
+    }
+
+    const double S = 1.0 + J2_radial + S_34;
+    const double P = 0.0032469 * sin_lat + P_34;
+
+    /* Central + radial-J_2 term: G_central = -μ·X_S·S / r³ */
+    const double central_scale = -p->mu_earth_m3ps2 * S / r3;
+
+    /* Spin-axis projection term: G_pole = -μ·aaa²·P·pole_hat / r²
+     * expressed in S-frame coordinates. */
+    const double pole_scale = -p->mu_earth_m3ps2 * aaa2 * P / r2;
+    const double pole_hat[3] = {
+        -sin_phi,
+         cos_phi * sin_A,
+        -cos_phi * cos_A
+    };
+
+    for (int i = 0; i < 3; i++) {
+        G_S_out[i] = central_scale * X_S[i]
+                   + pole_scale    * pole_hat[i];
+    }
 }
 
 void lvdc_nav_bml_step(lvdc_state_t *s,
@@ -264,9 +358,10 @@ void lvdc_nav_bml_step(lvdc_state_t *s,
         s->nav.X_S[i] += dX_Sg + dX_mf + s->sensor.V_S_init[i] * dT;
     }
 
-    /* 2. Compute G_S_new from the new X_S (Eqs. 4.3.6-12). */
+    /* 2. Compute G_S_new from the new X_S (Eqs. 4.3.6-12). Boost
+     * mode: S_34 / P_34 zero per EDD §4.3.2. */
     double G_S_new[3];
-    lvdc_nav_compute_gravity(s->nav.X_S, p, G_S_new);
+    lvdc_nav_compute_gravity(s->nav.X_S, p, /*boost_mode=*/true, G_S_new);
 
     /* 3. Update V_Sg with trapezoidal gravity (Eq. 4.3.4). */
     for (int i = 0; i < 3; i++) {

@@ -12,13 +12,16 @@
 lvdc_params_t lvdc_params_as205(void) {
     lvdc_params_t p = {0};
 
-    /* Earth model (NESP via EDD §4.3.2). */
-    p.mu_earth_m3ps2       = 3.986032e14;   /* matches LVDA_LVDC.c gravity block */
+    /* Earth model (NESP via EDD §4.3.2). Values match the LVDA_LVDC.c
+     * gravity block constants (verified 2026-11-18). */
+    p.mu_earth_m3ps2       = 3.986032e14;   /* current gravity block */
     p.omega_E_radps        = M_PI * 2.321e-5; /* 7.2921e-5 rad/s sidereal */
-    p.R_earth_equatorial_m = 6378166.0;      /* Fischer 1960 equatorial, PASC */
-    p.J2                   = 1.08248e-3;     /* zonal 2 per NESP */
-    p.J3                   = 0.0;            /* boost: Eq. 4.3.8 set to 0 */
-    p.J4                   = 0.0;            /* boost: Eq. 4.3.9 set to 0 */
+    p.R_earth_equatorial_m = 6378165.0;      /* R_e per current gravity block */
+    /* J2 is encoded in the current code as (3/2)·J2 = 1.62345e-3, so
+     * J2 = 1.0823e-3 (Fischer-1960 era value, matches NESP). */
+    p.J2                   = 1.0823e-3;
+    p.J3                   = 0.0;            /* boost: EDD §4.3.2 sets S_34, P_34 to 0 */
+    p.J4                   = 0.0;            /* boost: EDD §4.3.2 sets S_34, P_34 to 0 */
 
     /* Launch site (TM-X-62831 Table 3B; EDD §3.4). AS-205 LC-34. */
     p.phi_L_deg        = 28.521963;
