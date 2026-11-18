@@ -13,6 +13,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_params.c
     lvdc_preigm.c
     lvdc_minor_loop.c
+    lvdc_chi_to_psi.c
     lvdc_dac.c
 )
 
@@ -67,3 +68,10 @@ target_compile_options(test_output_pipeline_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_output_pipeline_smoke
          COMMAND test_output_pipeline_smoke)
+
+add_executable(test_chi_to_psi_smoke tests/test_chi_to_psi_smoke.c)
+target_link_libraries(test_chi_to_psi_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_chi_to_psi_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_chi_to_psi_smoke COMMAND test_chi_to_psi_smoke)
