@@ -124,20 +124,25 @@ feeds `LVDA_LVDC.inputs.Theta_deg[3]` via `ST_124M_Stabilized_Platform_Memory`
 **quantum = 0.0575**, upstream clamp to ±15.3° (L402-405), rate limit
 via `Rate_Limiter` block. Output wired to `outputs.Psi_deg` (L4691).
 
-**Discrepancy flagged:** the current code uses **0.0575° per LSB**;
-the EDD specifies **0.06° per LSB**. These are different by about 4%.
-The origin of 0.0575 in the obliq-2 model is not documented. Possible
-hypotheses:
+**Discrepancy between authoritative sources:**
 
-- Derivation from a scale factor of 3130 bits/pirad instead of 3000:
-  180/3130 ≈ 0.0575. No EDD source for 3130.
-- Transcription from a hand-tuned trim rather than the EDD spec.
-- Legacy value from an earlier Saturn V EDD revision.
+| Document | Scope | D/A LSB |
+|----------|-------|---------|
+| Saturn IB LVDC EDD (IBM 70-207-0001 Rev A, 1972) §8.2.3 | Saturn IB | **0.06°** (derived from SF = 3000 bits/pirad) |
+| Saturn V hardware specification (MSFC `spc_stnv_000130.pdf`, UAH Digital Projects archive) | Saturn V LVDA | **0.0575°** |
 
-**Decision for the rewrite:** use **0.06°** per EDD §8.2.3. Record
-the pre-rewrite value (0.0575) for A/B comparison when Phase D lands.
-If the switch to 0.06 moves the trajectory residual, document as an
-EDD-cited correction, not a tune.
+The Saturn IB EDD value is derived (180°/3000 bits = 0.06° exact),
+while the Saturn V hardware document quotes 0.0575° as a measured /
+specified LSB. The Saturn IB and Saturn V LVDAs share hardware
+lineage, so the measured 0.0575° is almost certainly the correct
+value for both; the EDD's 0.06° appears to be the rounded ideal from
+the scale-factor derivation rather than the as-built LSB.
+
+**Decision for the rewrite:** use **0.0575°** per the Saturn V
+hardware spec. This matches the current obliq-2 model value, so no
+residual delta is expected at swap-in. Note the discrepancy in the
+EDD-mapping docs so future readers understand why the code value
+differs from the EDD §8.2.3 derivation.
 
 **Magnitude and rate limits:** EDD says these are mission-dependent
 (Part II timeline table). Current code uses ±15.3°. **Follow-up for
@@ -163,7 +168,7 @@ in v1. Noted as a known fidelity gap.
 |-------|-----------|---------------|---------------|-------------|
 | PIPA pulse | 0.05 m/s | 0.05 m/s (plant) | Plant `Accelerometer_Quantization` | Keep plant; accumulate integer pulse deltas in LVDA |
 | Fine resolver | 0.00279° | 0.00279° (plant) | Plant `Fine_Resolver_Quantization` | Keep plant |
-| D/A output | 0.06° | **0.0575°** (LVDA, discrepancy) | LVDA `D_A_Converter_Quantization` | **Correct to 0.06° per EDD §8.2.3** |
+| D/A output | 0.06° (EDD §8.2.3 derived) / **0.0575° (Saturn V hw spec)** | 0.0575° (LVDA) | LVDA `D_A_Converter_Quantization` | Keep 0.0575° per Saturn V hw spec; document the EDD-vs-hw discrepancy |
 | Minor loop rate | 40 ms (boost) | 40 ms (plant FCC path) | FCC sub-system rate | Internal scheduler gate at 40 ms |
 | BML rate | ≈ 1.6 s (variable) | 1.6 s fixed (LVDA) | LVDA internal gate | Same; jitter deferred |
 
@@ -182,9 +187,10 @@ after the clean EDD-anchored rewrite is blessed.
 
 ## Action items for the rewrite
 
-1. **Correct `D_A_Converter_Quantization` quantum from 0.0575 to 0.06°**
-   when the rewrite replaces the current body (Phase D), with EDD
-   §8.2.3 citation. Record pre-switch residual delta.
+1. **Keep `D_A_Converter_Quantization` at 0.0575°** per the Saturn V
+   hardware spec (`spc_stnv_000130.pdf`); cite the EDD §8.2.3 derived
+   value (0.06°) alongside as the alternate source and the reason for
+   the discrepancy. No change at swap-in; no expected residual delta.
 2. **Model the minor loop internally at 40 ms** (25 Hz during boost).
    Confirm the FCC consumer is tolerant of a 40 ms rate (the parent
    model's FCC stage uses its own rate; the LVDA output is latched).
