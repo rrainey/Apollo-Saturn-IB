@@ -77,5 +77,20 @@ lvdc_params_t lvdc_params_as205(void) {
 
     p.chi_x_pad_rad = -0.488692;    /* TMX Appendix B, T ≤ 10 */
 
+    /* Minor-loop attitude increment limits — EDD §8.3.1, AS-205
+     * values from TM-X-62831 p. 2 (1 deg/sec pitch and yaw). Roll
+     * carries the same value per the current body. */
+    const double one_deg_per_sec_in_radps = M_PI / 180.0;
+    p.chi_rate_limit_radps[0] = one_deg_per_sec_in_radps;  /* roll */
+    p.chi_rate_limit_radps[1] = one_deg_per_sec_in_radps;  /* pitch */
+    p.chi_rate_limit_radps[2] = one_deg_per_sec_in_radps;  /* yaw */
+
+    /* Attitude-error command pipeline — EDD §8.2.3, Saturn V
+     * hardware spec for the D/A LSB. Mag + rate limits from the
+     * current body pending EDD Part II verification. */
+    p.psi_mag_limit_rad    =  15.3 * M_PI / 180.0;
+    p.psi_rate_limit_radps =  12.0 * M_PI / 180.0;
+    p.dac_lsb_rad          = 0.0575 * M_PI / 180.0;
+
     return p;
 }

@@ -182,6 +182,40 @@ typedef struct {
     double chi_y_F3[4];           /* F_3 cubic coefficients, a0..a3 */
     double chi_x_pad_rad;         /* roll command during pad hold */
 
+    /* -----------------------------------------------------------------
+     * Minor-loop attitude increment limits — EDD §8.3.1 Eq. 8.3.1
+     *
+     * The LVDC ramps the guidance commands `chi_i` into the minor
+     * loop `chi'_i` with a fixed increment per minor loop. The
+     * magnitude of each increment must not exceed its mission-
+     * dependent limit.
+     *
+     * TM-X-62831 (p. 2) states the AS-205 boost rate limits:
+     *   "Guidance command angle rate limit of 1 deg/sec in pitch
+     *    and yaw". The current body uses the same value in roll.
+     * -------------------------------------------------------------- */
+    double chi_rate_limit_radps[3]; /* rate limits in {roll, pitch, yaw} */
+
+    /* -----------------------------------------------------------------
+     * Attitude-error command output pipeline — EDD §8.2.3
+     *
+     * After the gimbal-to-body transform (§8.3.2), each attitude-
+     * error signal is magnitude-limited, rate-limited, and sent to
+     * the LVDA D/A ladder. The LSB is 0.0575 deg per the Saturn V
+     * hardware specification (see docs/LVDC_QUANTIZATION_INVENTORY.md
+     * for the EDD-vs-hw discrepancy).
+     *
+     * The current body uses:
+     *   magnitude limit = 15.3 deg per axis
+     *   rate limit      = 12  deg/sec per axis
+     * These are mission-dependent per EDD Part II Event Sequence
+     * Timeline Table; values pulled from the current body pending
+     * Part II verification.
+     * -------------------------------------------------------------- */
+    double psi_mag_limit_rad;     /* per-axis saturation on Psi */
+    double psi_rate_limit_radps;  /* per-axis rate limit on Psi */
+    double dac_lsb_rad;           /* D/A quantization LSB (0.0575 deg) */
+
 } lvdc_params_t;
 
 /* Return the AS-205 preset. Values anchored to the citations above. */

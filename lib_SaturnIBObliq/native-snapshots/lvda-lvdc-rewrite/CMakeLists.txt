@@ -12,6 +12,8 @@ add_library(lvdc_rewrite STATIC
     lvdc_nav.c
     lvdc_params.c
     lvdc_preigm.c
+    lvdc_minor_loop.c
+    lvdc_dac.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -57,3 +59,11 @@ target_compile_options(test_preigm_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_preigm_smoke COMMAND test_preigm_smoke)
+
+add_executable(test_output_pipeline_smoke tests/test_output_pipeline_smoke.c)
+target_link_libraries(test_output_pipeline_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_output_pipeline_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_output_pipeline_smoke
+         COMMAND test_output_pipeline_smoke)
