@@ -16,6 +16,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_chi_to_psi.c
     lvdc_dac.c
     lvdc_igm_intermediate.c
+    lvdc_igm_phasing.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -84,3 +85,11 @@ target_compile_options(test_igm_intermediate_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_igm_intermediate_smoke
          COMMAND test_igm_intermediate_smoke)
+
+add_executable(test_igm_phasing_smoke tests/test_igm_phasing_smoke.c)
+target_link_libraries(test_igm_phasing_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_igm_phasing_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_igm_phasing_smoke
+         COMMAND test_igm_phasing_smoke)
