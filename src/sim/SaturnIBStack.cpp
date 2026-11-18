@@ -102,12 +102,20 @@ SaturnIBStack::GetErrorMessage() const
 #include "ic_trace.h"
 #include "onpad_trace.h"
 #include "sib_trace.h"
+#include "lvdc_io_trace.h"
 
 bool
 SaturnIBStack::FillIgmTrace(struct IgmTraceSample_tag *out, double t_sec) const
 {
     if (!out || !m_pPlant) return false;
     return SaturnIBPlantObliq_fill_igm_trace(m_pPlant, t_sec, out) == 0;
+}
+
+bool
+SaturnIBStack::FillLvdcIoTrace(struct LvdcIoTraceSample_tag *out, double t_sec) const
+{
+    if (!out || !m_pPlant) return false;
+    return SaturnIBPlantObliq_fill_lvdc_io_trace(m_pPlant, t_sec, out) == 0;
 }
 
 bool

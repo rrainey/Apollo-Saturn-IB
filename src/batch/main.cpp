@@ -18,6 +18,7 @@
 #include <SimSupport.h>
 
 #include "igm_trace.h"
+#include "lvdc_io_trace.h"
 #include "ic_trace.h"
 #include "onpad_trace.h"
 #include "sib_trace.h"
@@ -312,6 +313,7 @@ struct CliArgs {
     std::string ic_trace_path;           // empty = disabled (<S5> JSON once)
     std::string onpad_trace_path;        // empty = disabled (<S8> JSON once)
     std::string sib_trace_path;          // empty = disabled (OUT11 JSON once)
+    std::string lvdc_io_trace_path;      // empty = disabled (lvdc-rewrite shadow run)
 };
 
 CliArgs parse_cli(int argc, char **argv) {
@@ -334,16 +336,20 @@ CliArgs parse_cli(int argc, char **argv) {
             a.onpad_trace_path = argv[++i];
         } else if (s == "--sib-trace" && i + 1 < argc) {
             a.sib_trace_path = argv[++i];
+        } else if (s == "--lvdc-io-trace" && i + 1 < argc) {
+            a.lvdc_io_trace_path = argv[++i];
         } else if (s == "--help" || s == "-h") {
             std::fprintf(stderr,
                 "batch_sim <inputs.json> [--run-time SEC] [--final PATH] [--csv PATH]\n"
                 "          [--igm-trace PATH] [--igm-trace-dt SEC]\n"
                 "          [--ic-trace PATH] [--onpad-trace PATH] [--sib-trace PATH]\n"
+                "          [--lvdc-io-trace PATH]\n"
                 "  --igm-trace      write Layer-1 IGM interface CSV \n"
                 "  --igm-trace-dt   sample period (default %.1f s)\n"
                 "  --ic-trace       write <S5> Initial Conditions JSON (once when valid)\n"
                 "  --onpad-trace    write <S8> On Pad / OUT22 JSON (once when valid)\n"
-                "  --sib-trace      write S-IB OUT11 JSON (once when valid; pad gate)\n",
+                "  --sib-trace      write S-IB OUT11 JSON (once when valid; pad gate)\n"
+                "  --lvdc-io-trace  write LVDA_LVDC I/O trace CSV (every step)\n",
                 IGM_TRACE_DT_SEC);
             std::exit(0);
         } else if (a.inputs_path.empty() && s[0] != '-') {
@@ -422,6 +428,22 @@ int main(int argc, char **argv) {
         igm_next_t = igm_dt;
         std::fprintf(stderr, "  igm-trace: %s (dt=%.3f s)\n",
                      cli.igm_trace_path.c_str(), igm_dt);
+    }
+
+    FILE *lvdc_io_fp = nullptr;
+    if (!cli.lvdc_io_trace_path.empty()) {
+        lvdc_io_fp = std::fopen(cli.lvdc_io_trace_path.c_str(), "w");
+        if (!lvdc_io_fp) {
+            std::fprintf(stderr, "batch_sim: cannot write lvdc-io-trace %s\n",
+                         cli.lvdc_io_trace_path.c_str());
+            std::_Exit(3);
+        }
+        std::fprintf(lvdc_io_fp, "%s\n", lvdc_io_trace_csv_header());
+        LvdcIoTraceSample samp;
+        if (lv->FillLvdcIoTrace(&samp, 0.0))
+            lvdc_io_trace_write_row(lvdc_io_fp, &samp);
+        std::fprintf(stderr, "  lvdc-io-trace: %s (every step)\n",
+                     cli.lvdc_io_trace_path.c_str());
     }
 
     bool ic_written = false;
@@ -522,6 +544,11 @@ int main(int argc, char **argv) {
                 igm_trace_write_row(igm_fp, &samp);
             igm_next_t += igm_dt;
         }
+        if (lvdc_io_fp) {
+            LvdcIoTraceSample samp;
+            if (lv->FillLvdcIoTrace(&samp, t))
+                lvdc_io_trace_write_row(lvdc_io_fp, &samp);
+        }
     }
     auto wall_end = std::chrono::steady_clock::now();
     double wall_sec = std::chrono::duration<double>(wall_end - wall_start).count();
@@ -534,6 +561,7 @@ int main(int argc, char **argv) {
             "batch_sim: sim error: %s\n", lv->GetErrorMessage());
         csv.flush();
         if (igm_fp) std::fclose(igm_fp);
+        if (lvdc_io_fp) std::fclose(lvdc_io_fp);
         std::_Exit(3);
     }
 
@@ -555,6 +583,10 @@ int main(int argc, char **argv) {
     if (igm_fp) {
         std::fflush(igm_fp);
         std::fclose(igm_fp);
+    }
+    if (lvdc_io_fp) {
+        std::fflush(lvdc_io_fp);
+        std::fclose(lvdc_io_fp);
     }
     std::fflush(nullptr);
 

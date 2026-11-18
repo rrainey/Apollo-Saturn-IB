@@ -12,6 +12,7 @@
 #include "SaturnIBStackAdapter.h"
 #include "saturn_ib_stack.h"
 #include "igm_trace.h"
+#include "lvdc_io_trace.h"
 
 struct SaturnIBPlantObliq_tag {
   double dt_sec;
@@ -138,5 +139,29 @@ int SaturnIBPlantObliq_fill_igm_trace(
     (&out->MES_PAD_Ve_x)[i] = v;
     (&out->MES_PAD_Xe_x)[i] = x;
   }
+  return 0;
+}
+
+int SaturnIBPlantObliq_fill_lvdc_io_trace(
+  const SaturnIBPlantObliq *plant,
+  double t_sec,
+  struct LvdcIoTraceSample_tag *out
+)
+{
+  if (!plant || !out || !plant->model_inited) return -1;
+
+  const saturn_ib_stack_t *m = &plant->model;
+  const LVDA_LVDC_t *lv = &m->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC;
+
+  out->t_sec = t_sec;
+  out->sample_tick = m->sample_tick;
+
+  for (int i = 0; i < 3; i++) {
+    out->V_m_bar_mps[i] = lv->inputs.V_m_bar_mps[i];
+    out->Theta_deg[i]   = lv->inputs.Theta_deg[i];
+    out->R_S_bar_m[i]   = lv->outputs.R_S_bar_m[i];
+  }
+  out->bLiftoff               = lv->inputs.bLiftoff;
+  out->bSIBPropellantSensorDry = lv->inputs.bSIBPropellantSensorDry;
   return 0;
 }

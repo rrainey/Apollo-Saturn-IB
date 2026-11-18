@@ -38,6 +38,20 @@ int SaturnIBPlantObliq_fill_igm_trace(
   struct IgmTraceSample_tag *out
 );
 
+/**
+ * Fill LVDA/LVDC I/O trace sample from live plant state.
+ * Captures the four legitimate boundary inputs (V_m_bar_mps,
+ * Theta_deg, bLiftoff, bSIBPropellantSensorDry) and R_S_bar_m as
+ * the golden nav output. Used by the lvdc-rewrite shadow-run test.
+ * Returns 0 on success, -1 if unavailable.
+ */
+struct LvdcIoTraceSample_tag;
+int SaturnIBPlantObliq_fill_lvdc_io_trace(
+  const SaturnIBPlantObliq *plant,
+  double t_sec,
+  struct LvdcIoTraceSample_tag *out
+);
+
 #ifdef __cplusplus
 }
 #endif

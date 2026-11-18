@@ -49,6 +49,7 @@ add_library(saturnib STATIC
     src/sim/ic_trace.c
     src/sim/onpad_trace.c
     src/sim/sib_trace.c
+    src/sim/lvdc_io_trace.c
     src/support/Date.cpp
     src/support/Log.cpp
     src/support/SimClock.cpp
