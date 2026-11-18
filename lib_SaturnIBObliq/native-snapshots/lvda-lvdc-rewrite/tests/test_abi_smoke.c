@@ -92,37 +92,21 @@ int main(void) {
     CHECK(!model.outputs.bSIVEngineStart, "pre-GRR bSIVEngineStart false");
 
     /* ------------------------------------------------------------
-     * Scenario 2: bLiftoff rising edge fires GRR latch. On the
-     * same step, R_S_bar_m should jump to X_0 (Eq. 3.4.3).
+     * Scenario 2: bLiftoff rising edge fires the liftoff latch.
+     * The internal nav.X_S is set to X_0 (Eq. 3.4.3) on the latch
+     * tick, but R_S_bar_m is BML-gated and only commits at BML
+     * boundaries. So on the latch tick itself (not a BML), the
+     * R_S_bar_m output stays at its init value (zero).
      *
      * Important: verify output is stable across all four RK4
      * stages of this step — all four compute_outputs calls must
      * return the same R_S_bar_m.
      * ---------------------------------------------------------- */
-    const lvdc_params_t p = lvdc_params_as205();
-    double X_0_expected[3], V_0_expected[3];
-    {
-        /* Recreate the expected X_0 locally to compare. */
-        const double deg2rad = M_PI / 180.0;
-        const double delta_rad = (p.phi_L_deg - p.phi_L_prime_deg) * deg2rad;
-        const double A_z_rad = p.A_z_deg * deg2rad;
-        const double sin_d = sin(delta_rad);
-        const double cos_d = cos(delta_rad);
-        const double sin_A = sin(A_z_rad);
-        const double cos_A = cos(A_z_rad);
-        X_0_expected[0] =  p.R_L_m * cos_d;
-        X_0_expected[1] =  p.R_L_m * sin_d * sin_A;
-        X_0_expected[2] = -p.R_L_m * sin_d * cos_A;
-        /* V_0 is computed but unused here; silence warning. */
-        V_0_expected[0] = 0.0;
-        V_0_expected[1] = 0.0;
-        V_0_expected[2] = 0.0;
-        (void)V_0_expected;
-    }
-
     model.inputs.bLiftoff = true;
 
-    /* Four compute calls at the GRR tick. Collect R_S_bar_m from each. */
+    /* Four compute calls at the liftoff tick. Collect R_S_bar_m from
+     * each. The output should stay at zero (no BML tick has fired
+     * yet), and be bit-identical across stages. */
     double R_stage[4][3];
     LVDA_LVDC_compute_outputs(&model);
     memcpy(R_stage[0], model.outputs.R_S_bar_m, sizeof(R_stage[0]));
@@ -137,12 +121,12 @@ int main(void) {
     model.sample_tick++;
 
     for (int stage = 0; stage < 4; stage++) {
-        CHECK_CLOSE(R_stage[stage][0], X_0_expected[0], 1e-6,
-                    "GRR-step R_S_bar_m[0] stable across RK4 stage");
-        CHECK_CLOSE(R_stage[stage][1], X_0_expected[1], 1e-6,
-                    "GRR-step R_S_bar_m[1] stable across RK4 stage");
-        CHECK_CLOSE(R_stage[stage][2], X_0_expected[2], 1e-6,
-                    "GRR-step R_S_bar_m[2] stable across RK4 stage");
+        CHECK(R_stage[stage][0] == 0.0,
+              "liftoff-tick R_S_bar_m[0] = 0 (BML not yet fired)");
+        CHECK(R_stage[stage][1] == 0.0,
+              "liftoff-tick R_S_bar_m[1] = 0 (BML not yet fired)");
+        CHECK(R_stage[stage][2] == 0.0,
+              "liftoff-tick R_S_bar_m[2] = 0 (BML not yet fired)");
     }
 
     /* And they are identical to each other. */
@@ -236,9 +220,12 @@ int main(void) {
           "re-init restores R_S_bar_m to zero");
 
     model.inputs.bLiftoff = true;
-    drive_major_step(&model, dt);
+    /* Drive enough steps to pass at least one BML (320 ticks @ 0.005 s). */
+    for (int i = 0; i < 400; i++) {
+        drive_major_step(&model, dt);
+    }
     CHECK(model.outputs.R_S_bar_m[0] != 0.0,
-          "re-init still permits GRR latch on next rising edge");
+          "re-init still permits latch + BML update on next rising edge");
 
     /* --- Summary --- */
     if (g_fail_count == 0) {

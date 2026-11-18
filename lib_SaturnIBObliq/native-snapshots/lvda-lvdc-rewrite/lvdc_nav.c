@@ -376,6 +376,14 @@ void lvdc_nav_bml_step(lvdc_state_t *s,
     for (int i = 0; i < 3; i++) {
         s->nav.V_m_mps_past[i] = V_m_now[i];
     }
+
+    /* 5. Commit the new X_S to the output cache. publish_outputs
+     * reads from published_R_S_bar_m so that between BMLs the
+     * dispatcher's output stays constant — matches the golden
+     * body's Product18 publication timing (BML-gated). */
+    for (int i = 0; i < 3; i++) {
+        s->nav.published_R_S_bar_m[i] = s->nav.X_S[i];
+    }
 }
 
 void lvdc_nav_compute_V_S(const lvdc_state_t *s, double V_S_out[3]) {

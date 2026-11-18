@@ -102,6 +102,16 @@ typedef struct {
 
     /* V_m_mps from the previous BML, for the Eq. 4.3.2 trap step. */
     double  V_m_mps_past[3];
+
+    /* Last R_S value committed to the output at a BML tick. The
+     * obliq-2 parent consumes R_S_bar_m from the segregated-
+     * subsystem boundary only at BML cadence (its gravity block and
+     * downstream IGM consumers are BML-gated). To match the current
+     * hand-edited body's publish behaviour — Product18 is only
+     * written inside the BML gate at L1434 — the dispatcher's
+     * publish_outputs reads from this cached value, which the BML
+     * step updates. Between BMLs the output stays constant. */
+    double  published_R_S_bar_m[3];
 } lvdc_nav_state_t;
 
 /* ---------------------------------------------------------------------

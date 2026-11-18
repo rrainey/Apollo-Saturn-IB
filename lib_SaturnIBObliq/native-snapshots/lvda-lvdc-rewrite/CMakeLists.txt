@@ -42,3 +42,10 @@ target_compile_options(test_abi_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_abi_smoke COMMAND test_abi_smoke)
+
+add_executable(replay_lvdc_trace tests/replay_lvdc_trace.c)
+target_link_libraries(replay_lvdc_trace PRIVATE lvdc_rewrite)
+target_compile_options(replay_lvdc_trace PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+# No ctest: needs a prerecorded trace CSV from batch_sim.

@@ -76,9 +76,12 @@ static unsigned long long bml_ticks_per_BML(double dt) {
  * compute_outputs invocation (4× per major step); safe to re-run. */
 static void publish_outputs(LVDA_LVDC_t *model) {
     /* EDD §4.3.3: R_S_bar_m is the plumbline-frame position. The
-     * current snapshot emits this on the same port. */
+     * published value is updated only on BML ticks inside
+     * lvdc_nav_bml_step, so between BMLs the output stays constant.
+     * Matches the current hand-edited body's Product18 publication
+     * timing, which gates the write by the BML sample-tick modulo. */
     for (int i = 0; i < 3; i++) {
-        model->outputs.R_S_bar_m[i] = g_lvdc.nav.X_S[i];
+        model->outputs.R_S_bar_m[i] = g_lvdc.nav.published_R_S_bar_m[i];
     }
 
     /* Pass-through of the ST-124M resolver readings. The parent FCC
