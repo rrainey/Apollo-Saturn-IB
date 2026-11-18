@@ -18,6 +18,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_igm_intermediate.c
     lvdc_igm_phasing.c
     lvdc_igm_frames.c
+    lvdc_igm_steering.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -102,3 +103,11 @@ target_compile_options(test_igm_frames_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_igm_frames_smoke
          COMMAND test_igm_frames_smoke)
+
+add_executable(test_igm_steering_smoke tests/test_igm_steering_smoke.c)
+target_link_libraries(test_igm_steering_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_igm_steering_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_igm_steering_smoke
+         COMMAND test_igm_steering_smoke)
