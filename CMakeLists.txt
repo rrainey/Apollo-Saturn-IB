@@ -19,6 +19,17 @@ option(BUILD_GUI "Build the legacy apolloa interactive panel (deprecated; use ds
 include(cmake/FetchVirtualAGC.cmake)
 
 # ---------------------------------------------------------------------------
+# LVDC rewrite (branch lvdc-rewrite; see docs/LVDC_REWRITE_PLAN.md).
+# Work-in-progress replacement for the hand-edited native snapshot.
+# Builds a separate static library; NOT linked into saturnib until
+# Phase D swap-in. Off by default.
+# ---------------------------------------------------------------------------
+option(BUILD_LVDC_REWRITE "Build the lvdc_rewrite static library (work in progress)" OFF)
+if(BUILD_LVDC_REWRITE)
+    add_subdirectory(lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite)
+endif()
+
+# ---------------------------------------------------------------------------
 # saturnib: pure launch-vehicle engine (Obliq plant + LVDC + IMU physics).
 # Zero yaAGC dependency; batch_sim and tests link only this.
 # LVDA_LVDC is compiled from native-snapshots/ (the hand-edited source).
