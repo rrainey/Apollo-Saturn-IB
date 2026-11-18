@@ -25,6 +25,7 @@
 
 #include "lvdc_chi_to_psi.h"
 #include "lvdc_dac.h"
+#include "lvdc_igm.h"
 #include "lvdc_internal.h"
 #include "lvdc_minor_loop.h"
 #include "lvdc_nav.h"
@@ -48,6 +49,16 @@ static lvdc_state_t             g_lvdc;
 static lvdc_params_t            g_params;
 static lvdc_minor_loop_state_t  g_minor_loop;
 static lvdc_dac_state_t         g_dac;
+
+/* IGM scaffolding (Phase C.3f-2). The state lives here but is not
+ * yet driven: `g_igm_enabled` stays false until the three upstream
+ * gaps close. See docs/LVDC_IGM_INTEGRATION.md for the list. The
+ * orchestrator and its equation layers ARE tested end-to-end by
+ * lvdc_rewrite_igm_orchestrator_smoke; what is missing is the
+ * dispatcher data feed, not the IGM internals. */
+static lvdc_igm_state_t         g_igm;
+static lvdc_igm_presets_t       g_igm_presets;
+static bool                     g_igm_enabled;
 
 /* Latch state for the liftoff edge. Lives outside g_lvdc because
  * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
@@ -166,6 +177,12 @@ static void step_attitude_pipeline(const LVDA_LVDC_t *model,
      * the pad-hold values. */
     lvdc_preigm_chi_cmd(&g_params, g_lvdc.tb1.T1_sec, chi_cmd_rad);
 
+    /* Future IGM wire-in point. Once docs/LVDC_IGM_INTEGRATION.md
+     * is closed (preset population, M/F smoothing, enable logic),
+     * replace chi_cmd_rad[1] and chi_cmd_rad[2] with the IGM
+     * chi_y, chi_z when g_igm_enabled is true. Roll (chi_cmd_rad[0])
+     * stays with preigm per EDD §4.4.1. */
+
     /* Minor-loop rate-limit ramp (EDD §8.3.1). */
     lvdc_minor_loop_step(&g_minor_loop, &g_params,
                          chi_cmd_rad, dt_minor_sec, chi_prime_rad);
@@ -193,6 +210,15 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     lvdc_dac_reset(&g_dac);
     g_params = lvdc_params_as205();
     s_prev_bLiftoff = false;
+
+    /* IGM scaffolding: initialise state with zeroed presets so the
+     * struct is defined. The state is NOT driven until
+     * `g_igm_enabled` latches true (see the phase C.3f-2 doc).
+     * Running lvdc_igm_update on zero presets would produce
+     * garbage, so the dispatcher skips the call for now. */
+    memset(&g_igm_presets, 0, sizeof(g_igm_presets));
+    lvdc_igm_init(&g_igm, &g_igm_presets);
+    g_igm_enabled = false;
 }
 
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
