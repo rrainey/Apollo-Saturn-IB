@@ -15,6 +15,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_minor_loop.c
     lvdc_chi_to_psi.c
     lvdc_dac.c
+    lvdc_igm_intermediate.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -75,3 +76,11 @@ target_compile_options(test_chi_to_psi_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_chi_to_psi_smoke COMMAND test_chi_to_psi_smoke)
+
+add_executable(test_igm_intermediate_smoke tests/test_igm_intermediate_smoke.c)
+target_link_libraries(test_igm_intermediate_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_igm_intermediate_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_igm_intermediate_smoke
+         COMMAND test_igm_intermediate_smoke)
