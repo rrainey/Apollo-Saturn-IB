@@ -10,6 +10,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_frames.c
     lvdc_quant.c
     lvdc_nav.c
+    lvdc_params.c
 )
 
 target_include_directories(lvdc_rewrite
