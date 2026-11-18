@@ -24,3 +24,14 @@ target_compile_options(lvdc_rewrite PRIVATE
 )
 
 target_link_libraries(lvdc_rewrite PUBLIC m)
+
+# ---------------------------------------------------------------------------
+# Smoke tests. Built when BUILD_LVDC_REWRITE is on. Each test is also
+# registered with ctest.
+# ---------------------------------------------------------------------------
+add_executable(test_nav_smoke tests/test_nav_smoke.c)
+target_link_libraries(test_nav_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_nav_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_nav_smoke COMMAND test_nav_smoke)
