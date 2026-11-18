@@ -145,38 +145,42 @@ The real LVDC runs multiple rates on top of a 25 ms minor loop:
 
 | Rate | Purpose | EDD anchor |
 |------|---------|------------|
-| 25 ms (40 Hz) | Minor loop — attitude error path to FCC, Chi-rate limit | §4.4.5, §4.4 Chi steering |
+| **40 ms (25 Hz)** | Minor loop — resolver read, attitude error command to FCC, DI24 interrogation | §4.1, §8.1 (boost rate; 100 ms orbit rate is out of scope) |
 | 1.0 s (1 Hz) | Major cycle — time-base bookkeeping, routine dispatch | §7.2 |
-| 1.6 s (0.625 Hz) | Boost major computation — accelerometer read, nav integration, IGM | §4.2.5 ($\overline{F/M}_s$ smoothing window), §4.3.1 (BML cadence) |
+| 1.6 s (nominal, variable) | Boost major loop (BML) — accelerometer read, nav integration, IGM, F/M, M/F smoothing | §4.1, §4.2.5, §4.3.1 |
 
 In the obliq-2 host, the native block gets called at the parent
 fundamental step (0.005 s per `globalSettings.simulationTimeStep`).
 The native block's `sampleTimeSec` property gates the call: only
 ticks where `sample_tick % round(sampleTimeSec / dt) == 0` get a call.
 
-**Approach:** set the native block `sampleTimeSec` to **0.025 s**
-(the minor-loop rate). Inside `compute_outputs` and
-`update_memory_states`, gate the slower rates with internal counters:
+**Approach:** keep `LVDA_LVDC_compute_outputs` called at the parent
+fundamental step (0.005 s) as it is today — see
+`LVDC_RK4_REENTRY_REPORT.md` for the empirical observation that the
+current host does not gate by `sampleTimeSec` on this subsystem.
+Inside `compute_outputs` (guarded by the per-tick-guard idiom) and
+`update_memory_states`, run the minor loop every 40 ms and the slower
+rates on internal counters:
 
 ```c
-/* in compute_outputs */
-if (tick_changed()) {
-    minor_loop_step(lvdc);                   /* every 25 ms */
-    if (++major_cycle_ctr >= 40) {           /* 1 s = 40·25 ms */
-        major_cycle_step(lvdc);
-        major_cycle_ctr = 0;
-    }
-    if (++bml_ctr >= 64) {                   /* 1.6 s = 64·25 ms */
-        bml_step(lvdc);
-        bml_ctr = 0;
-    }
+/* in update_memory_states, running once per major step at 0.005 s */
+if (++minor_loop_ctr >= 8) {                 /* 40 ms = 8 · 0.005 s */
+    minor_loop_step(lvdc);                   /* 25 Hz during boost */
+    minor_loop_ctr = 0;
+}
+if (++major_cycle_ctr >= 200) {              /* 1 s = 200 · 0.005 s */
+    major_cycle_step(lvdc);
+    major_cycle_ctr = 0;
+}
+if (++bml_ctr >= 320) {                      /* 1.6 s = 320 · 0.005 s */
+    bml_step(lvdc);
+    bml_ctr = 0;
 }
 ```
 
-The 0.025 s choice puts 5 obliq-2 fundamental ticks (0.005 s each)
-between LVDC calls, which matches the real IU's input-sampling
-staleness. If the AS-205 regression needs a finer minor-loop grid
-later, the parameter is one JSON edit.
+In Phase D we can revisit adding an explicit `sampleTimeSec: 0.005`
+(or coarser) on the subsystem to save host cycles, but it is not
+required for correctness.
 
 **Phase A.1 probe tests must confirm:** `sample_tick` monotonicity
 across RK4 stages, update_memory_states timing, and the behaviour
