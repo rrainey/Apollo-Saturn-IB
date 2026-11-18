@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-17T15:01:10.041Z
+ * Generated on: 2026-11-18T15:22:43.126Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -37,9 +37,9 @@
  * Static lookup tables
  */
 /* Lookup table for S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T */
-static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 3.5, 6};
-static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.852, 0.624};
-static const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 8;
+static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
+static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
+static const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
 
 /* 2D Lookup table for S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha */
 static const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
@@ -258,9 +258,9 @@ static const double S_IB_Stage_Vehicle_Mass_Properties_Izz_outputs[] = {
 static const int S_IB_Stage_Vehicle_Mass_Properties_Izz_size = 33;
 
 /* Lookup table for S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T */
-static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 3.5, 6};
-static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.852, 0.624};
-static const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 8;
+static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
+static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
+static const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
 
 /* 2D Lookup table for S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha */
 static const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CN_alpha_input1[] = {0, 0.2, 0.4, 1, 2, 3, 4.8};
@@ -3973,9 +3973,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double output = 0.0;
         
                 // Lookup table data
-                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[8] = {0, 0.5, 0.75, 1, 1.25, 1.5, 3.5, 6};
-                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[8] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.852, 0.624};
-                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 8;
+                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
+                const double S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
+                const int S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
                 if (S_IB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {
                     output = 0.0;
@@ -4430,8 +4430,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor (gain = 1.0442964051705572)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time * 1.0442964051705572;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor (gain = 1.03798885488332)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time * 1.03798885488332;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
@@ -4708,8 +4708,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor (gain = 1.060794698612024)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time * 1.060794698612024;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor (gain = 1.0543874986324)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time * 1.0543874986324;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Product5 (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
@@ -4895,8 +4895,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_6) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor (gain = 1.053379269795897)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time * 1.053379269795897;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor (gain = 1.04701685900633)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time * 1.04701685900633;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_6 > Triggered_Timer) */
@@ -5134,8 +5134,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor (gain = 1.042261304943785)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time * 1.042261304943785;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor (gain = 1.03596604666193)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time * 1.03596604666193;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
@@ -5309,8 +5309,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor (gain = 1.049386744923527)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time * 1.049386744923527;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor (gain = 1.04304844898419)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time * 1.04304844898419;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
@@ -5523,8 +5523,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_2) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor (gain = 1.0376473754220188)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time * 1.0376473754220188;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor (gain = 1.03137998527447)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time * 1.03137998527447;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_2 > Triggered_Timer) */
@@ -5877,8 +5877,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_3) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor (gain = 1.0488378374832272)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time * 1.0488378374832272;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor (gain = 1.04250285694483)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time * 1.04250285694483;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_3 > Triggered_Timer) */
@@ -6231,8 +6231,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_4) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor (gain = 1.0328522028775122)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time * 1.0328522028775122;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor (gain = 1.02661377557213)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time * 1.02661377557213;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_4 > Triggered_Timer) */
@@ -7206,9 +7206,9 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
                 double output = 0.0;
         
                 // Lookup table data
-                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[8] = {0, 0.5, 0.75, 1, 1.25, 1.5, 3.5, 6};
-                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[8] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.852, 0.624};
-                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 8;
+                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_inputs[7] = {0, 0.5, 0.75, 1, 1.25, 1.5, 6};
+                const double S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_outputs[7] = {0.3, 0.3, 0.34, 0.7, 0.78, 0.95, 0.48};
+                const int S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size = 7;
         
                 if (S_IVB_Stage_Aerodynamic_Forces_and_Moments_CA_T_size <= 0) {
                     output = 0.0;
