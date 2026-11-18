@@ -90,7 +90,7 @@ Lower low-MR thrust slows ΔV / T3 burn-down, so HSL/mode→4 no longer fires in
 
 ## H-1 thrust / \(\dot{W}\) → TM Table 11 (SL)
 
-Table 11 lists **average longitudinal sea-level** thrust (H-1 + turbine) per engine and stage \(\dot{W}=6210.77\,\mathrm{lb/s}\). Model kept the shared altitude-ramped `Thrust_vs_Time` LUT; per-engine `Engine_Performace_Scaling_Factor` was retargeted so \(\mathrm{LUT}(t=0)\times\mathrm{scale}=\) Table 11 SL, and `m_dot` → \(6210.77/8\) lbm/s.
+Table 11 lists **average longitudinal sea-level** thrust (H-1 + turbine) per engine and stage \(\dot{W}=6210.77\,\mathrm{lb/s}\). Model kept the shared altitude-ramped `Thrust_vs_Time` LUT; per-engine `Engine_Performance_Scaling_Factor` was retargeted so \(\mathrm{LUT}(t=0)\times\mathrm{scale}=\) Table 11 SL, and `m_dot` → \(6210.77/8\) lbm/s.
 
 | Eng | Table 11 SL (lbf) | New scale |
 |-----|-------------------|-----------|

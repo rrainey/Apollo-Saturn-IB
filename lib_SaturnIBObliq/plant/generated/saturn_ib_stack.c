@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-18T15:22:43.126Z
+ * Generated on: 2026-11-18T15:43:49.732Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -4428,15 +4428,15 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor (gain = 1.03798885488332)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time * 1.03798885488332;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performance_Scaling_Factor (gain = 1.03798885488332)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_vs_Time * 1.03798885488332;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_5_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_5_Mux (from S_IB_Stage > H_1_Engine_Cluster > Engine_5) */
@@ -4706,15 +4706,15 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor (gain = 1.0543874986324)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time * 1.0543874986324;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performance_Scaling_Factor (gain = 1.0543874986324)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_vs_Time * 1.0543874986324;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Product5 (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_1_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_1_Mux1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_1) */
@@ -4893,10 +4893,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_6) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_6) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor (gain = 1.04701685900633)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time * 1.04701685900633;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performance_Scaling_Factor (gain = 1.04701685900633)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_vs_Time * 1.04701685900633;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_6 > Triggered_Timer) */
@@ -4965,7 +4965,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_6) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_6_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_6_Mux (from S_IB_Stage > H_1_Engine_Cluster > Engine_6) */
@@ -5132,15 +5132,15 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor (gain = 1.03596604666193)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time * 1.03596604666193;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performance_Scaling_Factor (gain = 1.03596604666193)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_vs_Time * 1.03596604666193;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_7_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_7_Mux (from S_IB_Stage > H_1_Engine_Cluster > Engine_7) */
@@ -5307,15 +5307,15 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor (gain = 1.04304844898419)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time * 1.04304844898419;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performance_Scaling_Factor (gain = 1.04304844898419)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_vs_Time * 1.04304844898419;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Product1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Product1 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_8_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_8_Mux (from S_IB_Stage > H_1_Engine_Cluster > Engine_8) */
@@ -5521,10 +5521,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_2) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_2) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor (gain = 1.03137998527447)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time * 1.03137998527447;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performance_Scaling_Factor (gain = 1.03137998527447)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_vs_Time * 1.03137998527447;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_2 > Triggered_Timer) */
@@ -5593,7 +5593,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Product5 (from S_IB_Stage > H_1_Engine_Cluster > Engine_2) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_2_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_2_Mux1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_2) */
@@ -5875,10 +5875,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_3) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_3) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor (gain = 1.04250285694483)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time * 1.04250285694483;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performance_Scaling_Factor (gain = 1.04250285694483)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_vs_Time * 1.04250285694483;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_3 > Triggered_Timer) */
@@ -5947,7 +5947,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Product5 (from S_IB_Stage > H_1_Engine_Cluster > Engine_3) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_3_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_3_Mux1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_3) */
@@ -6229,10 +6229,10 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
             }
     }
 
-    /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_4) */
+    /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performance_Scaling_Factor (from S_IB_Stage > H_1_Engine_Cluster > Engine_4) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor (gain = 1.02661377557213)
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time * 1.02661377557213;
+            // Scale block: S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performance_Scaling_Factor (gain = 1.02661377557213)
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performance_Scaling_Factor = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_vs_Time * 1.02661377557213;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Triggered_Timer_Clock (from S_IB_Stage > H_1_Engine_Cluster > Engine_4 > Triggered_Timer) */
@@ -6301,7 +6301,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Product5 (from S_IB_Stage > H_1_Engine_Cluster > Engine_4) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay;
+            model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Product5 = model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performance_Scaling_Factor * model->signals.S_IB_Stage_H_1_Engine_Cluster_Engine_4_Thrust_Decay;
     }
 
     /* S_IB_Stage_H_1_Engine_Cluster_Engine_4_Mux1 (from S_IB_Stage > H_1_Engine_Cluster > Engine_4) */

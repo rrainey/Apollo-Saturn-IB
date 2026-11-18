@@ -842,7 +842,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Constant1;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Constant2;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Mount_Point_Rotation[3];
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Euler_Angles_to_Direction_Cosine_Matrix1[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_1_Euler_Angles_to_Direction_Cosine_Matrix2[3][3];
@@ -880,7 +880,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Constant1;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Constant2;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Mount_Point_Rotation[3];
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Euler_Angles_to_Direction_Cosine_Matrix1[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_2_Euler_Angles_to_Direction_Cosine_Matrix2[3][3];
@@ -918,7 +918,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Constant1;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Constant2;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Mount_Point_Rotation[3];
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Euler_Angles_to_Direction_Cosine_Matrix1[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_3_Euler_Angles_to_Direction_Cosine_Matrix2[3][3];
@@ -956,7 +956,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Constant1;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Constant2;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Mount_Point_Rotation[3];
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Euler_Angles_to_Direction_Cosine_Matrix1[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_4_Euler_Angles_to_Direction_Cosine_Matrix2[3][3];
@@ -987,7 +987,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Add[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Angle_Conversion[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Constant2;
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Installation_location_m[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_5_Mux[3];
@@ -1008,7 +1008,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Add[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Angle_Conversion[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Constant2;
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Installation_location_m[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_6_Mux[3];
@@ -1029,7 +1029,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Add[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Angle_Conversion[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Constant2;
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Installation_location_m[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_7_Mux[3];
@@ -1050,7 +1050,7 @@ typedef struct {
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Add[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Angle_Conversion[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Constant2;
-    double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performace_Scaling_Factor;
+    double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Engine_Performance_Scaling_Factor;
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Euler_Angles_to_Direction_Cosine_Matrix[3][3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Installation_location_m[3];
     double S_IB_Stage_H_1_Engine_Cluster_Engine_8_Mux[3];
