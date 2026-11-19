@@ -101,6 +101,11 @@ public:
     /** Fill IGM Layer-1 allowlist sample (igm_trace.h). */
     bool FillIgmTrace(struct IgmTraceSample_tag *out, double t_sec) const;
 
+    /** Fill LVDC I/O trace sample — inputs the body actually reads
+     *  plus R_S_bar_m as the golden nav output. For the lvdc-rewrite
+     *  shadow-run test. */
+    bool FillLvdcIoTrace(struct LvdcIoTraceSample_tag *out, double t_sec) const;
+
     /** IC (<S5>) trace — stub on Obliq until plant exposes BlockIO equivalents. */
     bool FillIcTrace(struct IcTraceSample_tag *out, double t_sec) const;
 

@@ -231,7 +231,7 @@ initiation.` — the subscript denotes time-in-TB3, so the TM-preset value is
 The source Simulink model (`model/provenance/saturn_ib_stack.mdl:40417`,
 block "IGM Enable (3)") carries a hardcoded `Compare To Constant
 const "44.0"`, which propagated through codegen to
-`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c:444` and the
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.c:444` and the
 regenerated `plant/generated/` copy.  Sibling Compare-To-Constant blocks in
 the same MDL sheet match TM Table 1 (IECO at 3.2, J-2 Engine Start at 2.7);
 only this one diverged.  The repo's own preset carries the correct value at
@@ -242,7 +242,7 @@ only this one diverged.  The repo's own preset carries the correct value at
 engagement (sim `igm_enable` flipping at flight ~188 s vs TM 168.11 s).
 
 **Fix applied (point-fix).**  Changed the literal 44.0 → 25.0 in
-`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c:444` only — the
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.c:444` only — the
 obliq-2 native snapshot is what `batch_sim` links.  The legacy
 `model/provenance/saturn_ib_stack.mdl` and the regenerated
 `plant/generated/LVDA_LVDC.c` are deliberately left untouched (we're
@@ -369,7 +369,7 @@ T_3i  = (V_T − ΔV_b − V) / (A' + A''·T_3i)                   (4.4.93)   [A
 T_CO  = T_3i + T_as                                           (4.4.94)   [implicit in fire gate]
 ```
 
-**Implementation** (`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c`):
+**Implementation** (`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.c`):
 
 - Added module-scope V-history pipeline (`s_hsl_V_curr`, `s_hsl_V_prev`,
   `s_hsl_V_prev2`, `s_hsl_dT_curr`, `s_hsl_dT_prev`, `s_hsl_V_samples`)
