@@ -73,6 +73,7 @@ if(LVDC_USE_REWRITE)
         ${LVDC_REWRITE_DIR}/lvdc_igm.c
         ${LVDC_REWRITE_DIR}/lvdc_moverf.c
         ${LVDC_REWRITE_DIR}/lvdc_timebase.c
+        ${LVDC_REWRITE_DIR}/lvdc_hsl.c
         ${LVDC_REWRITE_DIR}/lvdc_plant_shim.c
     )
     set(LVDC_INCLUDE_DIR ${LVDC_REWRITE_DIR})

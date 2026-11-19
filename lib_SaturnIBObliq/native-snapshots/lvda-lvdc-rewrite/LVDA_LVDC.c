@@ -25,6 +25,7 @@
 
 #include "lvdc_chi_to_psi.h"
 #include "lvdc_dac.h"
+#include "lvdc_hsl.h"
 #include "lvdc_igm.h"
 #include "lvdc_internal.h"
 #include "lvdc_minor_loop.h"
@@ -70,6 +71,11 @@ static double                   g_chi_igm_rad[2];  /* [0]=pitch, [1]=yaw */
 /* Time-base + event-discrete state. Advanced every tick inside
  * compute_outputs; read by publish_outputs. */
 static lvdc_timebase_state_t    g_timebase;
+
+/* HSL state (EDD §4.4.2.4). Stepped each BML once IGM is enabled;
+ * fires the cutoff edge into the time-base state machine. */
+static lvdc_hsl_state_t         g_hsl;
+static bool                     g_hsl_cutoff_edge_pending;
 
 /* Latch state for the liftoff edge. Lives outside g_lvdc because
  * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
@@ -243,6 +249,8 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     g_chi_igm_rad[1] = 0.0;
 
     lvdc_timebase_reset(&g_timebase);
+    lvdc_hsl_reset(&g_hsl);
+    g_hsl_cutoff_edge_pending = false;
 }
 
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
@@ -275,15 +283,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
         /* --- Time-base state machine (EDD §4.1) -----------------
          * T1..T4 latched from plant discretes and earlier events.
-         * siv_cutoff_edge is driven by the IGM mode machine; HSL
-         * (Eqs. 4.4.88-94) will refine this later. For now, no
-         * explicit cutoff edge — the SIV cutoff flag stays false
-         * until a later phase wires it up. */
+         * siv_cutoff_edge is driven by the HSL (EDD §4.4.2.4);
+         * captured below in the BML gate and consumed here on
+         * the following tick. */
+        const bool cutoff_edge_this_tick = g_hsl_cutoff_edge_pending;
+        g_hsl_cutoff_edge_pending = false;
         lvdc_timebase_step(&g_timebase,
                            model->time,
                            model->inputs.bLiftoff,
                            model->inputs.bSIBPropellantSensorDry,
-                           /*siv_cutoff_edge*/ false);
+                           cutoff_edge_this_tick);
 
         /* Update T1_sec (time since liftoff). Stays at zero before
          * the liftoff edge. */
@@ -368,6 +377,22 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 /* rc != 0 means a domain error; hold the last good
                  * chi rather than zeroing. The next BML will
                  * retry with fresh state. */
+
+                /* HSL step (EDD §4.4.2.4). Runs once per BML while
+                 * IGM is active. Entry is gated on T_3i <= eps_prime.
+                 * When the cutoff edge fires, latch it for the next
+                 * tick's timebase step. */
+                if (lvdc_hsl_step(&g_hsl,
+                                  model->time,
+                                  V_mag,
+                                  g_igm.T_3i_sec,
+                                  /*eps_prime*/ 5.0,
+                                  g_params.target_V_T_mps,
+                                  g_params.DeltaV_b_mps)) {
+                    g_hsl_cutoff_edge_pending = true;
+                    /* Tell the IGM mode machine we've cut off. */
+                    lvdc_igm_cutoff(&g_igm);
+                }
             }
         }
 

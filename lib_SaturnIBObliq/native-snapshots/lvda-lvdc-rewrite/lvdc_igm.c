@@ -14,6 +14,7 @@
 #include "lvdc_igm_output.h"
 
 #include <math.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -279,8 +280,23 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
         return -1;
     }
 
-    /* Eq. 4.4.52-53 — update T_3i and T*. */
-    const double T_3i_improved = s->T_3i_sec + dT_3_prime;
+    /* Eq. 4.4.52 — persist the improved T_3i; Eq. 4.4.53 — refresh
+     * T*. The EDD places both equations in the §4.4.2.2 Phase 2
+     * narrative ("Improved Estimate of Total Time-to-go"), so the
+     * persist only applies once we're in a Phase 2 mode. In
+     * PHASE1 we use the refined value this cycle (for position
+     * correction) but do not persist it — doing so would couple
+     * the Phase-2 velocity-to-be-gained predictor to the Phase-1
+     * state and the AS-205 shadow run plunges within seconds. */
+    const bool in_phase2 =
+        (s->mode == LVDC_IGM_MODE_PHASE2_ARTIFICIAL_TAU)
+        || (s->mode == LVDC_IGM_MODE_PHASE2_REAL_TAU);
+    if (in_phase2) {
+        s->T_3i_sec += dT_3_prime;
+    }
+    const double T_3i_improved = in_phase2
+        ? s->T_3i_sec
+        : (s->T_3i_sec + dT_3_prime);
     const double T_star_improved = s->T_1i_sec + T_3i_improved;
 
     double dV_V[3];
@@ -333,11 +349,20 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
     case LVDC_IGM_MODE_PHASE1:
         /* Eq. 4.4.8 — T_1i -= ΔT. */
         s->T_1i_sec = lvdc_igm_decrement_T_1i(s->T_1i_sec, dT_sec);
-        /* Eq. 4.4.17 — T_3i -= ΔT. Phase 1 may or may not advance
-         * T_3i; the EDD places Eq. 4.4.17 under "Second Phase
-         * Time-to-go Calculations" so it is only the pre-EMRC
-         * terminal-time window that we set from presets.
-         * We do NOT decrement T_3i in Phase 1. */
+        /* Auto-EMRC proxy: when T_1i reaches zero the preset
+         * Phase 1 duration has elapsed. The real LVDC triggers
+         * EMRC from an F/M-decrease detector (TMX Table 3B
+         * `*nIGMMode` + `FLAG`); without that plant signal we
+         * use the time-based preset as a conservative stand-in.
+         * This transitions us into Phase 2 with tau_10 captured
+         * from the final Phase-1 tau_1 estimate. */
+        if (s->T_1i_sec <= 0.0) {
+            s->T_1i_sec = 0.0;
+            /* tau_1 at EMRC is the last-cycle tau_1 we just used. */
+            lvdc_igm_emrc(s, tau_1);
+        }
+        /* T_3i stays at preset until PHASE2 starts (Eq. 4.4.17 is
+         * a Phase-2-only equation). */
         break;
 
     case LVDC_IGM_MODE_PHASE2_ARTIFICIAL_TAU:
