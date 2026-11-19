@@ -1,9 +1,14 @@
-# LVDC IGM — Integration Status and Remaining Work
+# LVDC IGM — Integration Status
 
-## Status (Phase C.3f-2, 2026-11-18)
+## Status (Phase C.3f-5, 2026-11-18)
 
-The IGM equation layers and the per-BML orchestrator exist and are
-tested end-to-end:
+**IGM is now live in the dispatcher.** The attitude command
+pipeline uses IGM pitch and yaw once `g_igm_enabled` latches on
+the first BML at or after T1 ≥ `igm_enable_from_T1_sec` (166.8 s
+for AS-205 per TMX T3+25). Pre-IGM pitch poly covers the pad
+hold and S-IB phase; IGM takes over for S-IVB.
+
+The IGM equation layers and the per-BML orchestrator:
 
 - `lvdc_igm_frames.{c,h}`         — EDD §2.3.4-5, §4.4.2.2 Eqs. 4.4.18-19, 4.4.42-45
 - `lvdc_igm_intermediate.{c,h}`   — EDD §4.4.2 Eqs. 4.4.20-28
@@ -14,20 +19,22 @@ tested end-to-end:
 - `lvdc_igm.{c,h}`                — mode state machine and
                                     per-BML orchestrator
 
-The dispatcher (`LVDA_LVDC.c`) instantiates the IGM state and calls
-`lvdc_igm_init` at reset, but DOES NOT run `lvdc_igm_update`. The
-`g_igm_enabled` flag stays false. The attitude command pipeline
-still uses the pre-IGM polynomial throughout boost.
+The dispatcher (`LVDA_LVDC.c`) builds the IGM preset struct from
+`g_params` via `lvdc_igm_presets_from_params`, primes the
+(M/F)_S smoothing with `(M/F)_0`, and runs the orchestrator once
+per BML inside the existing BML gate. The output chi_y, chi_z
+land in `g_chi_igm_rad` and replace the preigm pitch/yaw in
+`step_attitude_pipeline` once the enable latch flips.
 
-## Why IGM is not yet active
+## Three upstream items (now closed)
 
-Three upstream items must close before the dispatcher can run IGM:
+The three items that blocked integration in Phase C.3f-2 are
+done:
 
-### 1. Preset population (TMX Appendix B / EDD Part II)
+### 1. Preset population (TMX Appendix B / EDD Part II) — **DONE** (C.3f-3)
 
-`lvdc_params.c` declares every IGM input but leaves the following
-AT ZERO (grep `target_`, `V_ex`, `Mdot_`, `F1_N`, `F3_N`, `M1_kg`,
-`M03_kg`, `V_GRD_mps`, `T_HSL_sec`):
+`lvdc_params.c` now carries every AS-205 IGM preset as an
+`AS205_*` #define. Populated from TMX Table 3B:
 
 | Field                            | Authoritative source            |
 | -------------------------------- | ------------------------------- |
@@ -46,60 +53,54 @@ AT ZERO (grep `target_`, `V_ex`, `Mdot_`, `F1_N`, `F3_N`, `M1_kg`,
 | `tau_10_sec`, `T_10_sec`         | EDD §4.4.2 / TMX                |
 | `M_GR_kg`, `Mdot_2_kgps`         | EDD §4.4.2                      |
 
-Plus the IGM-specific preset fields (T_1i_initial, T_3i_initial)
-that do not yet exist in `lvdc_params_t` and need to be added. A
-new helper `lvdc_igm_presets_from_params(const lvdc_params_t*)` is
-the natural place to assemble `lvdc_igm_presets_t`.
+The helper `lvdc_igm_presets_from_params(const lvdc_params_t*,
+lvdc_igm_presets_t*)` builds the IGM preset struct from
+`lvdc_params_t`. `test_igm_presets_smoke` pins every TMX value.
 
-### 2. (M/F)_S smoothing (EDD §4.2.5-6)
+### 2. (M/F)_S smoothing (EDD §4.2 Eq. 4.2.9-11) — **DONE** (C.3f-4)
 
-IGM consumes `MoverF_s_s2pm`, the smoothed reciprocal specific
-force. The EDD defines:
+`lvdc_moverf.{c,h}` implements:
 
-- Eq. 4.2.X — instantaneous (M/F) from V_m delta:
-  `(M/F)_inst = ΔT / ΔV_m` over one BML.
-- §4.2.5 — four-point moving average with magnitude and rate
-  limits (`MoverF_s_limit_s2pm`, `MoverF_s_rate_limit_per_BML`).
-- §4.2.6 — initialisation from `MoverF_0_s2pm` before T3+0.
+- Eq. 4.2.9  — A_m from V_m delta.
+- Eq. 4.2.10 — F/M magnitude.
+- Eq. 4.2.11 — 8-tap IIR filter (4 inst + 4 smoothed past).
+- §4.2.5    — magnitude + rate clamps.
 
-`lvdc_params_t` already holds the limit and seed values. The
-smoothing code itself is not yet written. This is a Phase B/C
-gap, not a Phase C.3 task, but IGM blocks until it is done.
+MFK1..8 and (M/F)_0 are populated from TMX Table 1-3 in
+`lvdc_params_as205`. The filter is primed with (M/F)_0 at reset
+and stepped each BML by the dispatcher.
 
-### 3. IGM enable latch
+### 3. IGM enable latch — **DONE** (C.3f-5, T1-based fallback)
 
-The LVDC transitions from pre-IGM pitch polynomial to IGM at a
-specific instant during Time Base 4 (S-IVB burn). The enable
-depends on:
+The dispatcher latches `g_igm_enabled` on the first BML at or
+after T1 ≥ `params.igm_enable_from_T1_sec` (166.8 s for AS-205,
+derived from TMX T3 + 25 s and the nominal T1→T3 offset). At
+latch, presets are rebuilt from `g_params` and `lvdc_igm_init`
+runs so IGM starts from a clean mode state.
 
-- T4 start time (S-IVB ignition latch).
-- Chi-freeze window after staging — the LVDC holds the last
-  pre-IGM command for a few seconds across separation before
-  starting IGM.
+This is a T1-based fallback. When the Phase D time-base state
+machine lands (task #6), swap it for a T3-based enable using
+`params.igm_enable_from_T3_sec` directly.
 
-EDD §4.1 and Part II Event Sequence Timeline give the authoritative
-timing. The dispatcher needs:
+## Remaining work for a full "IGM live" baseline
 
-- An S-IVB-ignition latch (plant input or time-base event).
-- A chi-freeze timer.
-- The IGM-enable edge-trigger that calls `lvdc_igm_init` with
-  populated presets and then flips `g_igm_enabled` true.
+- **Phase D**  — Time bases T1..T7. Replace T1-based enable with
+  T3-based. Also enables the chi-freeze window across staging
+  (currently preigm runs right up to the IGM enable, no explicit
+  freeze).
+- **Phase D+** — PTL controller with EDD-faithful GRR at T-5 s
+  per TMX (see `reference_as205_grr_minus_5sec`).
+- **C.3g**     — Shadow replay over full boost with IGM active;
+  verify residuals against TM-X-62831 trajectory tables.
+- **HSL** (EDD §4.4.2.4, Eqs. 4.4.88-94) — last-10-s cutoff
+  timing. Separate module, not covered by C.3f.
+- **Task #9** — Resolve XVG = -9.10 vs -9.15 discrepancy.
 
-## Suggested future sub-phases
+## What the current wiring proves
 
-- **C.3f-3** — Populate `lvdc_params.c` IGM fields from TMX App B
-  and EDD Part II. Add `lvdc_igm_presets_from_params` helper. Add
-  smoke test that round-trips an AS-205 preset struct.
-- **C.3f-4** — Implement §4.2.5-6 (M/F) smoothing in the nav layer.
-- **C.3f-5** — IGM enable latch and S-IVB ignition hook. Replace
-  the pre-IGM polynomial with IGM output once enabled.
-- **C.3g**   — Shadow replay over full boost with IGM active.
-
-## What the current scaffold proves
-
-- `lvdc_igm_init` compiles and links from the dispatcher.
-- The IGM state struct does not conflict with existing module
-  statics.
-- The dispatcher continues to produce byte-identical outputs
-  because `g_igm_enabled` stays false; the current body's
-  behaviour is unchanged.
+- `lvdc_igm` compiles, links, and runs from the dispatcher once
+  per BML during AS-205 S-IVB burn.
+- Pre-enable behaviour is byte-identical to the previous
+  dispatcher output (preigm pitch poly throughout).
+- At T1 ≥ 166.8 s the IGM output replaces the preigm pitch/yaw
+  inputs to the minor-loop ramp.

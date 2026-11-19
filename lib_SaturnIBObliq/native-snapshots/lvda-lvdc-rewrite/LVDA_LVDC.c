@@ -28,6 +28,7 @@
 #include "lvdc_igm.h"
 #include "lvdc_internal.h"
 #include "lvdc_minor_loop.h"
+#include "lvdc_moverf.h"
 #include "lvdc_nav.h"
 #include "lvdc_params.h"
 #include "lvdc_preigm.h"
@@ -50,15 +51,20 @@ static lvdc_params_t            g_params;
 static lvdc_minor_loop_state_t  g_minor_loop;
 static lvdc_dac_state_t         g_dac;
 
-/* IGM scaffolding (Phase C.3f-2). The state lives here but is not
- * yet driven: `g_igm_enabled` stays false until the three upstream
- * gaps close. See docs/LVDC_IGM_INTEGRATION.md for the list. The
- * orchestrator and its equation layers ARE tested end-to-end by
- * lvdc_rewrite_igm_orchestrator_smoke; what is missing is the
- * dispatcher data feed, not the IGM internals. */
+/* IGM state (Phase C.3f-2/5). `g_igm_enabled` latches true the
+ * first BML on or after T1 >= params.igm_enable_from_T1_sec (a
+ * coarse surrogate for T3+25 until Phase D wires up the time
+ * bases). At the latch, presets are rebuilt from g_params and
+ * the state is re-initialised so IGM starts from a clean slate.
+ *
+ * The IGM is driven once per BML inside the BML gate; the output
+ * chi_y, chi_z are held in g_chi_igm_rad for the 25 Hz minor
+ * loop to consume. */
 static lvdc_igm_state_t         g_igm;
 static lvdc_igm_presets_t       g_igm_presets;
+static lvdc_moverf_state_t      g_moverf;
 static bool                     g_igm_enabled;
+static double                   g_chi_igm_rad[2];  /* [0]=pitch, [1]=yaw */
 
 /* Latch state for the liftoff edge. Lives outside g_lvdc because
  * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
@@ -177,11 +183,15 @@ static void step_attitude_pipeline(const LVDA_LVDC_t *model,
      * the pad-hold values. */
     lvdc_preigm_chi_cmd(&g_params, g_lvdc.tb1.T1_sec, chi_cmd_rad);
 
-    /* Future IGM wire-in point. Once docs/LVDC_IGM_INTEGRATION.md
-     * is closed (preset population, M/F smoothing, enable logic),
-     * replace chi_cmd_rad[1] and chi_cmd_rad[2] with the IGM
-     * chi_y, chi_z when g_igm_enabled is true. Roll (chi_cmd_rad[0])
-     * stays with preigm per EDD §4.4.1. */
+    /* IGM takeover (EDD §4.4.2, Eqs. 4.4.86-87). Once g_igm_enabled
+     * latches, the pitch (chi_y, index 1) and yaw (chi_z, index 2)
+     * commands come from the BML-rate IGM compute held in
+     * g_chi_igm_rad. Roll (chi_x, index 0) stays with preigm per
+     * EDD §4.4.1 — IGM does not command roll. */
+    if (g_igm_enabled) {
+        chi_cmd_rad[1] = g_chi_igm_rad[0];  /* pitch */
+        chi_cmd_rad[2] = g_chi_igm_rad[1];  /* yaw   */
+    }
 
     /* Minor-loop rate-limit ramp (EDD §8.3.1). */
     lvdc_minor_loop_step(&g_minor_loop, &g_params,
@@ -211,14 +221,17 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     g_params = lvdc_params_as205();
     s_prev_bLiftoff = false;
 
-    /* IGM scaffolding: initialise state with zeroed presets so the
-     * struct is defined. The state is NOT driven until
-     * `g_igm_enabled` latches true (see the phase C.3f-2 doc).
-     * Running lvdc_igm_update on zero presets would produce
-     * garbage, so the dispatcher skips the call for now. */
-    memset(&g_igm_presets, 0, sizeof(g_igm_presets));
+    /* IGM: build presets from params and init with those. The
+     * state is re-initialised at the IGM-enable latch so this
+     * initial call is just for a well-defined struct. (M/F)
+     * smoothing primes with (M/F)_0 and starts collecting the
+     * instantaneous ring at the first BML after liftoff. */
+    lvdc_igm_presets_from_params(&g_params, &g_igm_presets);
     lvdc_igm_init(&g_igm, &g_igm_presets);
+    lvdc_moverf_prime(&g_moverf, g_params.MoverF_0_s2pm);
     g_igm_enabled = false;
+    g_chi_igm_rad[0] = 0.0;
+    g_chi_igm_rad[1] = 0.0;
 }
 
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
@@ -272,6 +285,57 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                               &g_params,
                               model->inputs.V_m_bar_mps,
                               model->time);
+
+            /* (M/F)_S smoothing per EDD §4.2.5 Eq. 4.2.11. Runs
+             * every BML once liftoff has latched. */
+            const double moverf_s =
+                lvdc_moverf_step(&g_moverf,
+                                 model->inputs.V_m_bar_mps,
+                                 g_lvdc.sensor.dT_BML_sec,
+                                 g_params.MFK,
+                                 g_params.MoverF_s_limit_s2pm,
+                                 g_params.MoverF_s_rate_limit_per_BML);
+
+            /* IGM enable latch (Phase D fallback: T1-based). When
+             * the Phase D time-base state machine lands, swap this
+             * for a T3-based enable (T3 + igm_enable_from_T3_sec). */
+            if (!g_igm_enabled
+                && g_params.igm_enable_from_T1_sec > 0.0
+                && g_lvdc.tb1.T1_sec >= g_params.igm_enable_from_T1_sec) {
+                lvdc_igm_presets_from_params(&g_params, &g_igm_presets);
+                lvdc_igm_init(&g_igm, &g_igm_presets);
+                g_igm_enabled = true;
+            }
+
+            /* IGM compute (once per BML when enabled). Output
+             * chi_y, chi_z are latched into g_chi_igm_rad for the
+             * minor loop. */
+            if (g_igm_enabled) {
+                double V_S[3];
+                lvdc_nav_compute_V_S(&g_lvdc, V_S);
+                const double V_mag = lvdc_nav_compute_V_S_magnitude(&g_lvdc);
+
+                double chi_y = 0.0, chi_z = 0.0;
+                const int rc = lvdc_igm_update(
+                    &g_igm,
+                    g_lvdc.sensor.dT_BML_sec,
+                    V_mag,
+                    moverf_s,
+                    g_lvdc.nav.X_S,
+                    V_S,
+                    g_lvdc.nav.G_S,
+                    g_lvdc.sensor.FoverM_axis[0],
+                    g_lvdc.sensor.FoverM_axis[1],
+                    g_lvdc.sensor.FoverM_axis[2],
+                    &chi_y, &chi_z);
+                if (rc == 0) {
+                    g_chi_igm_rad[0] = chi_y;
+                    g_chi_igm_rad[1] = chi_z;
+                }
+                /* rc != 0 means a domain error; hold the last good
+                 * chi rather than zeroing. The next BML will
+                 * retry with fresh state. */
+            }
         }
 
         /* --- Attitude command pipeline --------------------------
