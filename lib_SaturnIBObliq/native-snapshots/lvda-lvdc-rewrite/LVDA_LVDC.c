@@ -36,7 +36,14 @@
 #include "lvdc_timebase.h"
 
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+/* Debug trace file. Enabled by setting env var
+ * LVDC_IGM_DEBUG_CSV to a path. Written once per BML inside the
+ * IGM update block. */
+static FILE *g_igm_dbg_fp;
 
 /* The rewrite keeps its own state in a module-local singleton. The
  * obliq-2 native atomic ABI stores sub-system state in the
@@ -61,11 +68,14 @@ static lvdc_dac_state_t         g_dac;
  *
  * The IGM is driven once per BML inside the BML gate; the output
  * chi_y, chi_z are held in g_chi_igm_rad for the 25 Hz minor
- * loop to consume. */
+ * loop to consume. `g_igm_valid` is set to true the first BML
+ * IGM returns a non-error result; before that the dispatcher
+ * passes through preigm commands to avoid commanding chi = 0. */
 static lvdc_igm_state_t         g_igm;
 static lvdc_igm_presets_t       g_igm_presets;
 static lvdc_moverf_state_t      g_moverf;
 static bool                     g_igm_enabled;
+static bool                     g_igm_valid;
 static double                   g_chi_igm_rad[2];  /* [0]=pitch, [1]=yaw */
 
 /* Time-base + event-discrete state. Advanced every tick inside
@@ -203,7 +213,7 @@ static void step_attitude_pipeline(const LVDA_LVDC_t *model,
      * commands come from the BML-rate IGM compute held in
      * g_chi_igm_rad. Roll (chi_x, index 0) stays with preigm per
      * EDD §4.4.1 — IGM does not command roll. */
-    if (g_igm_enabled) {
+    if (g_igm_enabled && g_igm_valid) {
         chi_cmd_rad[1] = g_chi_igm_rad[0];  /* pitch */
         chi_cmd_rad[2] = g_chi_igm_rad[1];  /* yaw   */
     }
@@ -245,12 +255,31 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     lvdc_igm_init(&g_igm, &g_igm_presets);
     lvdc_moverf_prime(&g_moverf, g_params.MoverF_0_s2pm);
     g_igm_enabled = false;
+    g_igm_valid   = false;
     g_chi_igm_rad[0] = 0.0;
     g_chi_igm_rad[1] = 0.0;
 
     lvdc_timebase_reset(&g_timebase);
     lvdc_hsl_reset(&g_hsl);
     g_hsl_cutoff_edge_pending = false;
+
+    /* Open the debug trace if requested. */
+    if (g_igm_dbg_fp) { fclose(g_igm_dbg_fp); g_igm_dbg_fp = NULL; }
+    const char *dbg_path = getenv("LVDC_IGM_DEBUG_CSV");
+    if (dbg_path && *dbg_path) {
+        g_igm_dbg_fp = fopen(dbg_path, "w");
+        if (g_igm_dbg_fp) {
+            fprintf(g_igm_dbg_fp,
+                "t_sec,mode,T_1i,T_3i,P_C,tau_1,tau_3,"
+                "L_1,J_1,S_1,P_1,Q_1,U_1,L_prime_3,J_prime_3,L_prime_y,"
+                "moverf_s,igm_rc,V_mps,phi_i,phi_iT,phi_T,delta_2,"
+                "dL_3,L_3,dT_3_prime,"
+                "chi_tilde_y,chi_tilde_z,"
+                "K_1,K_2,K_3,K_4,"
+                "chi_y4,chi_z4,SMCY,SMCZ,"
+                "eps_2_active\n");
+        }
+    }
 }
 
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
@@ -346,6 +375,14 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 && g_lvdc.tb1.T1_sec >= g_params.igm_enable_from_T1_sec) {
                 lvdc_igm_presets_from_params(&g_params, &g_igm_presets);
                 lvdc_igm_init(&g_igm, &g_igm_presets);
+                /* EDD §4.2.6 — re-prime the (M/F)_S filter with
+                 * (M/F)_0 at IGM initiation ("initialized at T0+0").
+                 * Continuous run from liftoff accumulates S-IB-phase
+                 * samples through staging and the IIR filter swings
+                 * negative during the (M/F) step from 0.02 to 0.125
+                 * at S-IVB ignition — producing invalid tau_1 for
+                 * ~37 seconds after IGM enable without a re-prime. */
+                lvdc_moverf_prime(&g_moverf, g_params.MoverF_0_s2pm);
                 g_igm_enabled = true;
             }
 
@@ -373,10 +410,45 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 if (rc == 0) {
                     g_chi_igm_rad[0] = chi_y;
                     g_chi_igm_rad[1] = chi_z;
+                    g_igm_valid = true;
                 }
-                /* rc != 0 means a domain error; hold the last good
-                 * chi rather than zeroing. The next BML will
-                 * retry with fresh state. */
+                /* rc != 0 means a domain error; the pipeline below
+                 * falls back to preigm until g_igm_valid latches.
+                 * Once valid, we hold the last good chi on any
+                 * subsequent transient error. */
+
+                /* Debug trace of IGM internals. */
+                if (g_igm_dbg_fp) {
+                    fprintf(g_igm_dbg_fp,
+                        "%.4f,%d,%.4f,%.4f,%.4f,"
+                        "%.6g,%.6g,"
+                        "%.6g,%.6g,%.6g,%.6g,%.6g,%.6g,"
+                        "%.6g,%.6g,%.6g,"
+                        "%.6g,%d,%.6g,%.9g,%.9g,%.9g,%.6g,"
+                        "%.6g,%.6g,%.6g,"
+                        "%.9g,%.9g,"
+                        "%.9g,%.9g,%.9g,%.9g,"
+                        "%.9g,%.9g,%.9g,%.9g,%d\n",
+                        model->time,
+                        (int)g_igm.mode,
+                        g_igm.T_1i_sec, g_igm.T_3i_sec, g_igm.P_C_sec,
+                        g_igm.trace.tau_1, g_igm.trace.tau_3,
+                        g_igm.trace.L_1, g_igm.trace.J_1, g_igm.trace.S_1,
+                        g_igm.trace.P_1, g_igm.trace.Q_1, g_igm.trace.U_1,
+                        g_igm.trace.L_prime_3, g_igm.trace.J_prime_3,
+                        g_igm.trace.L_prime_y,
+                        moverf_s, rc, V_mag,
+                        g_igm.trace.phi_i, g_igm.trace.phi_iT, g_igm.trace.phi_T,
+                        g_igm.trace.delta_2,
+                        g_igm.trace.dL_3, g_igm.trace.L_3,
+                        g_igm.trace.dT_3_prime,
+                        g_igm.trace.chi_tilde_y, g_igm.trace.chi_tilde_z,
+                        g_igm.trace.K_1, g_igm.trace.K_2,
+                        g_igm.trace.K_3, g_igm.trace.K_4,
+                        g_igm.chi_y4_rad, g_igm.chi_z4_rad,
+                        g_igm.smc.SMCY, g_igm.smc.SMCZ,
+                        g_igm.trace.eps_2_active);
+                }
 
                 /* HSL BML pass (EDD §4.4.2.4). Runs Eqs. 4.4.88-94
                  * once per BML to maintain the 3-sample V history,

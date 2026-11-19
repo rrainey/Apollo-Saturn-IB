@@ -137,6 +137,25 @@ typedef struct {
 
     /* SMC integrator (Eqs. 4.4.83-84). */
     lvdc_igm_smc_state_t smc;
+
+    /* Logging snapshot of the most recent per-BML update. These
+     * are read-only from outside; no equation consumes them. */
+    struct {
+        double tau_1;
+        double tau_3;
+        double L_1, J_1, S_1, P_1, Q_1, U_1;
+        double L_prime_3, J_prime_3, L_prime_y;
+        double phi_i, phi_iT, phi_T;
+        double V_mps;
+        double delta_2;
+        double dL_3, L_3, dT_3_prime;
+        double chi_tilde_y, chi_tilde_z;
+        double K_1, K_2, K_3, K_4;
+        double chi_y_final_rad, chi_z_final_rad;
+        double T_3i_before_52;
+        double T_3i_after_52;
+        int    eps_2_active;
+    } trace;
 } lvdc_igm_state_t;
 
 /* Reset `s` to IGM-enable initial conditions using `p`. Starts in

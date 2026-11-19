@@ -328,6 +328,33 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
         return -1;
     }
 
+    /* Trace snapshot. */
+    s->trace.tau_1 = tau_1;
+    s->trace.tau_3 = tau_3;
+    s->trace.L_1 = im.L_1;
+    s->trace.J_1 = im.J_1;
+    s->trace.S_1 = im.S_1;
+    s->trace.P_1 = im.P_1;
+    s->trace.Q_1 = im.Q_1;
+    s->trace.U_1 = im.U_1;
+    s->trace.L_prime_3 = im.L_prime_3;
+    s->trace.J_prime_3 = im.J_prime_3;
+    s->trace.L_prime_y = im.L_prime_y;
+    s->trace.phi_i = phi_i;
+    s->trace.phi_iT = phi_iT;
+    s->trace.phi_T = phi_T;
+    s->trace.V_mps = V_mps;
+    s->trace.delta_2 = d2;
+    s->trace.dL_3 = dL_3;
+    s->trace.L_3 = L_3;
+    s->trace.dT_3_prime = dT_3_prime;
+    s->trace.chi_tilde_y = chi_tilde_y;
+    s->trace.chi_tilde_z = chi_tilde_z;
+    s->trace.K_1 = pc_out.K_1;
+    s->trace.K_2 = pc_out.K_2;
+    s->trace.K_3 = pc_out.K_3;
+    s->trace.K_4 = pc_out.K_4;
+
     /* EDD §4.4.2.4 ¶1 — When T_3i ≤ ε_2, Ẋ-steering commences:
      * zero K_1, K_2, K_3, K_4 in Eqs. 4.4.81-82 so only the
      * velocity-constraint terms drive chi_y4, chi_z4. The
@@ -336,6 +363,9 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
     if (s->p.eps_2_sec > 0.0 && s->T_3i_sec <= s->p.eps_2_sec) {
         pc_out.chi_y4_rad = chi_tilde_y - phi_T - M_PI_2;
         pc_out.chi_z4_rad = chi_tilde_z;
+        s->trace.eps_2_active = 1;
+    } else {
+        s->trace.eps_2_active = 0;
     }
 
     s->chi_y4_rad = pc_out.chi_y4_rad;
