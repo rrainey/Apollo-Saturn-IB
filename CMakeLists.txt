@@ -20,11 +20,22 @@ include(cmake/FetchVirtualAGC.cmake)
 
 # ---------------------------------------------------------------------------
 # LVDC rewrite (branch lvdc-rewrite; see docs/LVDC_REWRITE_PLAN.md).
-# Work-in-progress replacement for the hand-edited native snapshot.
-# Builds a separate static library; NOT linked into saturnib until
-# Phase D swap-in. Off by default.
+#
+#   BUILD_LVDC_REWRITE=ON   builds the lvdc_rewrite static library +
+#                           smoke tests. Does NOT change saturnib.
+#   LVDC_USE_REWRITE=ON     swaps the rewrite's LVDA_LVDC.c (and its
+#                           per-section modules) into saturnib in place
+#                           of the hand-edited native snapshot. Implies
+#                           BUILD_LVDC_REWRITE.
+#
+# Off by default. Flip LVDC_USE_REWRITE when ready to validate the
+# rewrite end-to-end through batch_sim.
 # ---------------------------------------------------------------------------
 option(BUILD_LVDC_REWRITE "Build the lvdc_rewrite static library (work in progress)" OFF)
+option(LVDC_USE_REWRITE "Swap the rewrite LVDA_LVDC.c into saturnib (implies BUILD_LVDC_REWRITE)" OFF)
+if(LVDC_USE_REWRITE)
+    set(BUILD_LVDC_REWRITE ON CACHE BOOL "Forced on by LVDC_USE_REWRITE" FORCE)
+endif()
 if(BUILD_LVDC_REWRITE)
     # enable_testing must precede any add_test in a subdirectory
     enable_testing()
@@ -34,10 +45,41 @@ endif()
 # ---------------------------------------------------------------------------
 # saturnib: pure launch-vehicle engine (Obliq plant + LVDC + IMU physics).
 # Zero yaAGC dependency; batch_sim and tests link only this.
-# LVDA_LVDC is compiled from native-snapshots/ (the hand-edited source).
+#
+# LVDA_LVDC source selection:
+#   default (LVDC_USE_REWRITE=OFF): hand-edited native snapshot.
+#   LVDC_USE_REWRITE=ON          : rewrite dispatcher + per-section modules.
 # ---------------------------------------------------------------------------
-set(PLANT_GEN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
-set(LVDC_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
+set(PLANT_GEN_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
+set(LVDC_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
+set(LVDC_REWRITE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite)
+
+if(LVDC_USE_REWRITE)
+    set(LVDC_SOURCES
+        ${LVDC_REWRITE_DIR}/LVDA_LVDC.c
+        ${LVDC_REWRITE_DIR}/lvdc_nav.c
+        ${LVDC_REWRITE_DIR}/lvdc_params.c
+        ${LVDC_REWRITE_DIR}/lvdc_preigm.c
+        ${LVDC_REWRITE_DIR}/lvdc_minor_loop.c
+        ${LVDC_REWRITE_DIR}/lvdc_chi_to_psi.c
+        ${LVDC_REWRITE_DIR}/lvdc_dac.c
+        ${LVDC_REWRITE_DIR}/lvdc_quant.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_frames.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_intermediate.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_phasing.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_steering.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_position_correction.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm_output.c
+        ${LVDC_REWRITE_DIR}/lvdc_igm.c
+        ${LVDC_REWRITE_DIR}/lvdc_moverf.c
+        ${LVDC_REWRITE_DIR}/lvdc_timebase.c
+        ${LVDC_REWRITE_DIR}/lvdc_plant_shim.c
+    )
+    set(LVDC_INCLUDE_DIR ${LVDC_REWRITE_DIR})
+else()
+    set(LVDC_SOURCES ${LVDC_DIR}/LVDA_LVDC.c)
+    set(LVDC_INCLUDE_DIR ${LVDC_DIR})
+endif()
 
 add_library(saturnib STATIC
     src/sim/SaturnIBPlantObliq.c
@@ -56,12 +98,12 @@ add_library(saturnib STATIC
     src/support/Vector.cpp
     src/support/save_state.cpp
     ${PLANT_GEN_DIR}/saturn_ib_stack.c
-    ${LVDC_DIR}/LVDA_LVDC.c
+    ${LVDC_SOURCES}
 )
 target_include_directories(saturnib
     PUBLIC  src/sim src/support
     # The LVDA_LVDC.h in native-snapshots must win over the generated one.
-    PRIVATE ${LVDC_DIR} ${PLANT_GEN_DIR}
+    PRIVATE ${LVDC_INCLUDE_DIR} ${PLANT_GEN_DIR}
 )
 target_link_libraries(saturnib PUBLIC m)
 

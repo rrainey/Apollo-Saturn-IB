@@ -309,6 +309,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                               model->inputs.V_m_bar_mps,
                               model->time);
 
+            /* Mirror nav-side state into the plant shim globals
+             * so SaturnIBPlantObliq's --igm-trace emission has
+             * live values. See lvdc_plant_shim.c. */
+            extern double s_V_Sg[3];
+            extern double s_G_S_prev[3];
+            for (int i = 0; i < 3; i++) {
+                s_V_Sg[i]     = g_lvdc.nav.V_Sg[i];
+                s_G_S_prev[i] = g_lvdc.nav.G_S_prev[i];
+            }
+
             /* (M/F)_S smoothing per EDD §4.2.5 Eq. 4.2.11. Runs
              * every BML once liftoff has latched. */
             const double moverf_s =
