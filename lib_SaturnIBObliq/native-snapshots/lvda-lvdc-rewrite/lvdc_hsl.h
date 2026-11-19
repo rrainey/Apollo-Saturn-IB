@@ -66,8 +66,12 @@ void lvdc_hsl_reset(lvdc_hsl_state_t *s);
  *   BN_1_sec      : accumulation threshold (TMX: 14.4 s).
  *   V_T_mps       : target terminal velocity.
  *   dV_b_mps      : ΔV_b bias (TMX Part II Table 1-3: 7.2381 m/s).
- */
-void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
+ *
+ * Returns true when the Eq. 4.4.93 refinement produces a
+ * predicted T_3i below the EDD ¶528 20 ms immediate-fire
+ * threshold — the caller latches that as the S-IVB cutoff edge
+ * without waiting for the next minor loop. */
+bool lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
                        double now_sec,
                        double V_mps,
                        double T_3i_igm_sec,
@@ -77,10 +81,12 @@ void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
                        double V_T_mps,
                        double dV_b_mps);
 
-/* Minor-loop-rate step (nominally 40 ms per EDD §4.4.2.4). While
- * HSL is active, decrement T_3i_hsl_sec by dt_sec and return
- * true when T_3i_hsl_sec < 60 ms — the dispatcher latches that
- * as the S-IVB cutoff edge. No-op when HSL is not yet active. */
+/* Minor-loop-rate step (nominally 40 ms per EDD §4.4.2.4 ¶520).
+ * While HSL is active, decrement T_3i_hsl_sec by dt_sec and
+ * return true when T_3i_hsl_sec <= 0 — i.e. when the real time
+ * clock has reached T_CO = T_3i + T_as (Eq. 4.4.94). The
+ * dispatcher latches that return as the S-IVB cutoff edge.
+ * No-op when HSL is not yet active. */
 bool lvdc_hsl_minor_step(lvdc_hsl_state_t *s, double dt_sec);
 
 /* Read helpers. */

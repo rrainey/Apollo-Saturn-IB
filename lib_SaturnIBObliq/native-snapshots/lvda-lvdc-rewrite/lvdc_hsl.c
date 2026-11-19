@@ -9,8 +9,19 @@
 #include <stddef.h>
 #include <string.h>
 
-/* EDD §4.4.2.4 ¶7 — fire when predicted T_3i drops below 60 ms. */
-#define HSL_FIRE_THRESH_SEC   0.060
+/* EDD §4.4.2.4 fire thresholds:
+ *
+ *   ¶520: at T_3i < 60 ms the LVDC enters a tight loop that
+ *         continuously compares real_clock to T_CO = T_3i + T_as
+ *         (Eq. 4.4.94) and fires when real_clock >= T_CO. In this
+ *         minor-loop implementation the per-tick decrement makes
+ *         T_3i the remaining time to T_CO, so the "real_clock >=
+ *         T_CO" condition is T_3i_hsl_sec <= 0.
+ *   ¶528: a BML computation (Eq. 4.4.93) yielding T_3i < 20 ms
+ *         fires immediately — the tight-loop window never opens
+ *         because the refinement already puts us past it. Checked
+ *         in `lvdc_hsl_bml_step` after the Eq. 4.4.93 solve. */
+#define HSL_IMMEDIATE_SEC    0.020
 
 void lvdc_hsl_reset(lvdc_hsl_state_t *s) {
     if (s == NULL) return;
@@ -58,7 +69,7 @@ static double solve_T_3i(double A_prime, double A_dprime,
     return (a1 <= a2) ? t1 : t2;
 }
 
-void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
+bool lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
                        double now_sec,
                        double V_mps,
                        double T_3i_igm_sec,
@@ -67,14 +78,14 @@ void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
                        double BN_1_sec,
                        double V_T_mps,
                        double dV_b_mps) {
-    if (s == NULL) return;
+    if (s == NULL) return false;
 
     /* §4.4.2.4 ¶2 — Start V-history accumulation when the
      * predicted T_3i drops below BN_1. */
     if (!s->accumulating && T_3i_igm_sec <= BN_1_sec) {
         s->accumulating = true;
     }
-    if (!s->accumulating) return;
+    if (!s->accumulating) return false;
 
     push_sample(s, V_mps, now_sec);
 
@@ -98,7 +109,7 @@ void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
         }
     }
 
-    if (!s->active) return;
+    if (!s->active) return false;
 
     /* §4.4.2.4 ¶5 — First-pass bias correction (Eq. 4.4.89),
      * one-shot. */
@@ -117,10 +128,18 @@ void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
         const double Vpp = s->V[2];
 
         if (dT > 0.0 && dTp > 0.0) {
-            /* Eq. 4.4.91 — A''. */
-            const double num = (Vm - Vp) * (dTp / dT)
-                             - (Vp - Vpp) * (dT / dTp);
-            const double A_dp = num / (dTp + dT);
+            /* Eq. 4.4.91 — A''. EDD vol 5 page I-14-24 typesets this as
+             *     A'' = [(V-V')·ΔT' - (V'-V'')·ΔT] / [ΔT·ΔT'·(ΔT+ΔT')]
+             * which gives the coefficient of τ² in the backward quadratic
+             * fit V(τ) = V - A'·τ + A''·τ² to the three samples
+             * (V,0), (V',ΔT), (V'',ΔT+ΔT'). Equivalently:
+             *     A'' = [(V-V')/ΔT - (V'-V'')/ΔT'] / (ΔT+ΔT')
+             * Both OCR renderings (chandra + marker) of Eq. 4.4.91
+             * garble the denominator — derive from Eq. 4.4.92
+             * (A' = A''·ΔT + (V-V')/ΔT), which both OCRs agree on. */
+            const double num = (Vm - Vp) * dTp
+                             - (Vp - Vpp) * dT;
+            const double A_dp = num / (dT * dTp * (dTp + dT));
 
             /* Eq. 4.4.92 — A'. */
             const double A_pr = A_dp * dT + (Vm - Vp) / dT;
@@ -134,17 +153,22 @@ void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
             }
         }
     }
+
+    /* EDD ¶528 — if the refined T_3i is below 20 ms, fire now
+     * rather than waiting for the minor loop. */
+    return (s->T_3i_hsl_sec < HSL_IMMEDIATE_SEC);
 }
 
 bool lvdc_hsl_minor_step(lvdc_hsl_state_t *s, double dt_sec) {
     if (s == NULL || !s->active) return false;
     if (dt_sec <= 0.0) return false;
 
-    /* §4.4.2.4 ¶7 — decrement T_3i every 40 ms (Eq. 4.4.90). */
+    /* §4.4.2.4 ¶520 — decrement T_3i every 40 ms (Eq. 4.4.90) and
+     * fire when it reaches zero (= real_clock >= T_CO). The ¶528
+     * "T_3i < 20 ms immediate-fire" path belongs to the BML, not
+     * here; see `bml_fire_now` below. */
     s->T_3i_hsl_sec -= dt_sec;
-
-    /* Fire cutoff edge when T_3i_hsl_sec < 60 ms. */
-    return (s->T_3i_hsl_sec < HSL_FIRE_THRESH_SEC);
+    return (s->T_3i_hsl_sec <= 0.0);
 }
 
 double lvdc_hsl_T_3i(const lvdc_hsl_state_t *s) {

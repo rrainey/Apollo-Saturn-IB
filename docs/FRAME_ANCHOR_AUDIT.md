@@ -68,7 +68,7 @@ the launch meridian** at the nominal T_GRR".
 
 ## Finding 3 — the X_0 / V_0 latch has an extra inconsistency
 
-My LVDC code (`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c:1343-1360`)
+My LVDC code (`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.c:1343-1360`)
 latches X_0 and V_0 when `bLiftoff` goes true:
 
 ```c
@@ -182,7 +182,7 @@ compensating in the integrated IGM error budget.
 `grep -rn MES_DCM src/ lib_SaturnIBObliq/native-snapshots/` shows:
 - `src/sim/SaturnIBPlantObliq.c:135-136` — diagnostic
   `MES_PAD_Xe` / `MES_PAD_Ve` only
-- `lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.h:79` — the
+- `lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.h:79` — the
   input port (unused after the rewrite)
 
 The plant's state integrator does not consume `MES_DCM`.  What does

@@ -1,9 +1,10 @@
 # Phase D — Closure
 
-Phase D is complete. The LVDC rewrite now swaps cleanly into
-`saturnib` via `-DLVDC_USE_REWRITE=ON`, flies the plant
-end-to-end on AS-205, and matches the hand-edited golden on
-TMX Appendix C validation.
+Phase D is complete and the rewrite is now the **default** LVDA_LVDC
+implementation (`LVDC_USE_REWRITE=ON`). The hand-edited golden has
+been moved to `lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/`
+and is linked only when `LVDC_USE_REWRITE=OFF`. Full ctest suite
+(20 tests: 4 batch + 16 per-module smokes) passes under the default.
 
 ## Sub-phases
 

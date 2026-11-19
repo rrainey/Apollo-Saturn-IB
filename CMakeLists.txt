@@ -21,18 +21,17 @@ include(cmake/FetchVirtualAGC.cmake)
 # ---------------------------------------------------------------------------
 # LVDC rewrite (branch lvdc-rewrite; see docs/LVDC_REWRITE_PLAN.md).
 #
-#   BUILD_LVDC_REWRITE=ON   builds the lvdc_rewrite static library +
-#                           smoke tests. Does NOT change saturnib.
-#   LVDC_USE_REWRITE=ON     swaps the rewrite's LVDA_LVDC.c (and its
-#                           per-section modules) into saturnib in place
-#                           of the hand-edited native snapshot. Implies
-#                           BUILD_LVDC_REWRITE.
+# The rewrite is the default LVDA_LVDC implementation. The hand-edited
+# "golden" snapshot is retained under native-snapshots/lvda-lvdc-legacy/
+# for A/B comparison and historical reference.
 #
-# Off by default. Flip LVDC_USE_REWRITE when ready to validate the
-# rewrite end-to-end through batch_sim.
+#   LVDC_USE_REWRITE=ON  (default): rewrite dispatcher + per-section modules.
+#   LVDC_USE_REWRITE=OFF          : legacy hand-edited LVDA_LVDC.c.
+#   BUILD_LVDC_REWRITE=ON         : build the lvdc_rewrite smoke-test library
+#                                   (implied by LVDC_USE_REWRITE).
 # ---------------------------------------------------------------------------
-option(BUILD_LVDC_REWRITE "Build the lvdc_rewrite static library (work in progress)" OFF)
-option(LVDC_USE_REWRITE "Swap the rewrite LVDA_LVDC.c into saturnib (implies BUILD_LVDC_REWRITE)" OFF)
+option(BUILD_LVDC_REWRITE "Build the lvdc_rewrite static library + smoke tests" ON)
+option(LVDC_USE_REWRITE "Use the rewrite LVDA_LVDC in saturnib (OFF reverts to legacy)" ON)
 if(LVDC_USE_REWRITE)
     set(BUILD_LVDC_REWRITE ON CACHE BOOL "Forced on by LVDC_USE_REWRITE" FORCE)
 endif()
@@ -47,14 +46,15 @@ endif()
 # Zero yaAGC dependency; batch_sim and tests link only this.
 #
 # LVDA_LVDC source selection:
-#   default (LVDC_USE_REWRITE=OFF): hand-edited native snapshot.
-#   LVDC_USE_REWRITE=ON          : rewrite dispatcher + per-section modules.
+#   default (LVDC_USE_REWRITE=ON): rewrite dispatcher + per-section modules.
+#   LVDC_USE_REWRITE=OFF         : legacy hand-edited native snapshot.
 # ---------------------------------------------------------------------------
 set(PLANT_GEN_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/plant/generated)
-set(LVDC_DIR          ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc)
+set(LVDC_LEGACY_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy)
 set(LVDC_REWRITE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite)
 
 if(LVDC_USE_REWRITE)
+    add_compile_definitions(LVDC_USE_REWRITE=1)
     set(LVDC_SOURCES
         ${LVDC_REWRITE_DIR}/LVDA_LVDC.c
         ${LVDC_REWRITE_DIR}/lvdc_nav.c
@@ -78,8 +78,8 @@ if(LVDC_USE_REWRITE)
     )
     set(LVDC_INCLUDE_DIR ${LVDC_REWRITE_DIR})
 else()
-    set(LVDC_SOURCES ${LVDC_DIR}/LVDA_LVDC.c)
-    set(LVDC_INCLUDE_DIR ${LVDC_DIR})
+    set(LVDC_SOURCES ${LVDC_LEGACY_DIR}/LVDA_LVDC.c)
+    set(LVDC_INCLUDE_DIR ${LVDC_LEGACY_DIR})
 endif()
 
 add_library(saturnib STATIC

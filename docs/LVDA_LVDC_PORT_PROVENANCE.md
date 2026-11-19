@@ -2,7 +2,7 @@
 
 **Scope:** every input port on the `LVDA_LVDC` native atomic subsystem as
 exposed by `model/saturn_ib_stack.json` and consumed in
-`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c`.
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/LVDA_LVDC.c`.
 
 **Purpose:** before the `lvdc-rewrite` effort, pin down which ports are
 real sensor / discrete inputs to the LVDA/LVDC chain, and which are
@@ -76,17 +76,22 @@ The rewrite target is a clean ABI with these legitimate inputs only:
 | `bLiftoff` | 1-bit DIN | |
 | `bSIBPropellantSensorDry` | 1-bit DIN | |
 
-**Phase A/B/C action:** keep the current nine-port boundary on
+**Phase A/B/C action:** kept the current nine-port boundary on
 `saturn_ib_stack.json` unchanged. The new C body consumes only the four
-legitimate ports. Parent JSON stays unchanged; obliq-2 regen stays
+legitimate ports. Parent JSON stayed unchanged; obliq-2 regen stayed
 unchanged; no risk of breaking shadow comparisons during development.
 
-**Phase D action:** when the new module replaces the old at the
-obliq-2 boundary, prune the nine unused ports from
-`saturn_ib_stack.json`. Expected side effect: the eight
-"auto-promoted crossing tags" warnings in
-`lib_SaturnIBObliq/plant/generated/cgen-manifest.json` disappear.
-Parent-model diff gets shown for approval before it is applied.
+**Phase D action (post-promotion, not applied):** pruning the nine
+unused ports from `saturn_ib_stack.json` was attempted on 2026-11-18
+but reverted — see `memory/project_lvdc_legacy_port_prune_approach.md`.
+Deleting the inner `sheet_label_source` blocks caused obliq-2's type
+inference to collapse `double[3]` signals to scalar in the generated
+parent plant, which produced a `LVDA_LVDC_t` layout mismatch between
+the rewrite snapshot and the regenerated parent (heap corruption at
+runtime). The cleaner path is to replace the dead sources with
+constant-source blocks of the correct `double[3]`/`double[3][3]`
+types; left as future work since the cost of the auto-promoted ports
+is one memcpy per tick and has no behavioural effect.
 
 ## Follow-ups
 

@@ -30,3 +30,14 @@ double s_hsl_V_prev2   = 0.0;
  * trace hook. Default to zero for pre-liftoff. */
 double s_V_Sg[3]      = { 0.0, 0.0, 0.0 };
 double s_G_S_prev[3]  = { 0.0, 0.0, 0.0 };
+
+/* IGM-side state for --igm-trace. The hand-edited legacy LVDC
+ * published these via codegen signals/enable_states struct fields;
+ * the rewrite keeps them in g_igm + g_lvdc.nav and mirrors them
+ * here each BML. */
+int    s_igm_enabled    = 0;
+double s_T_3_eff_sec    = 0.0;   /* g_igm.T_3i_sec during IGM mode */
+double s_V_S_mag_mps    = 0.0;   /* |V_S| from EDD Eq. 4.3.5.1 */
+double s_T_HSL_bias_sec = 0.0;   /* HSL entry threshold T_HSL + dT_b */
+double s_XS[3]          = { 0.0, 0.0, 0.0 };  /* g_lvdc.nav.X_S */
+double s_VS[3]          = { 0.0, 0.0, 0.0 };  /* V_S from Eq. 4.3.5 */

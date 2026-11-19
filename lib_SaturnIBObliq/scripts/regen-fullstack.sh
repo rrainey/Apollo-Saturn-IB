@@ -3,17 +3,22 @@
 #
 # Usage:
 #   ./scripts/regen-fullstack.sh              # regen parent + LVDA into plant/generated only
-#   ./scripts/regen-fullstack.sh --initialize # also seed native-snapshots/lvda-lvdc/
+#   ./scripts/regen-fullstack.sh --initialize # also seed native-snapshots/lvda-lvdc-legacy/
 #
-# Hand-edited LVDA_LVDC lives in native-snapshots/lvda-lvdc/ (Silver compile source).
-# Codegen always refreshes plant/generated/LVDA_LVDC.* as a disposable reference;
-# those files are NOT copied over the snapshot unless --initialize is passed.
+# The active LVDA_LVDC implementation lives in native-snapshots/lvda-lvdc-rewrite/
+# and is used by saturnib via LVDC_USE_REWRITE=ON (default). The legacy "golden"
+# hand-edited LVDA_LVDC lives in native-snapshots/lvda-lvdc-legacy/ for reference
+# and A/B comparison (LVDC_USE_REWRITE=OFF).
+#
+# Codegen always refreshes plant/generated/LVDA_LVDC.* as a disposable reference.
+# --initialize seeds the LEGACY snapshot from codegen (reserved for forensic
+# work on the golden path); the rewrite snapshot is never auto-overwritten.
 set -euo pipefail
 
 LIB="$(cd "$(dirname "$0")/.." && pwd)"
 OBLIQ="${OBLIQ_ROOT:-$HOME/src/obliq-2}"
 OUT="${LIB}/plant/generated"
-SNAP="${LIB}/native-snapshots/lvda-lvdc"
+SNAP="${LIB}/native-snapshots/lvda-lvdc-legacy"
 JSON="${LIB}/../model/saturn_ib_stack.json"
 
 INITIALIZE=0
@@ -54,7 +59,7 @@ fi
 cat > "$OUT/CMakeLists.txt" << 'CMAKE'
 cmake_minimum_required(VERSION 3.16)
 project(saturn_ib_stack_cgen C)
-set(LVDC_SNAP "${CMAKE_CURRENT_SOURCE_DIR}/../../native-snapshots/lvda-lvdc")
+set(LVDC_SNAP "${CMAKE_CURRENT_SOURCE_DIR}/../../native-snapshots/lvda-lvdc-legacy")
 add_library(saturn_ib_stack STATIC
   saturn_ib_stack.c
   ${LVDC_SNAP}/LVDA_LVDC.c

@@ -53,11 +53,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7772.81 m/s | −7.86 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 234.43 km | +6.49 km |
-| HSL cutoff decision engages (post-liftoff) | n/a | 610.40 s | — |
+| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7772.99 m/s | −7.68 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 234.36 km | +6.42 km |
+| HSL cutoff fire (sim time; flight time) | n/a | 914.10 s / 614.10 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.86 m/s plant \|V_e\| peak residual is just outside that envelope, but note from the PASCs 13 row above that the LVDC's own \|V_S\| at Table 4's reference instant is within −1.00 m/s of V_T — the HSL cutoff decision fires at essentially the right moment internally. The remaining gap between the LVDC's \|V_S\| view (7779.67) and the plant's \|V_e\| peak (7772.81) is tracked as a separate investigation.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.68 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment (7763.05) sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
 
 ### Mid-flight fit
 
@@ -76,6 +76,7 @@ The current mid-flight shape reflects:
 - Per-engine H-1 thrust gains in `model/saturn_ib_stack.json` are composed as `(TM-X-62831 Table 11 measured per-engine SL thrust ÷ Reference-2 curve t=0 value) × 1.004 × 0.99`, where the ×1.004 is the TM-X-62831 §V.A systematic flight-vs-ground bias and the ×0.99 is an empirical ~−1% de-rate to center the mid-flight residuals (the Reference-2 curve bakes altitude boost into the time axis; applying the per-engine measured-SL ratio uniformly over-boosts the altitude-dependent component). A proper structural fix would split thrust into `F_vac(t) × chamber_scale_i − P_amb(h_actual) × A_exit` (A_exit ≈ 1.4 m² back-solved from the curve). See `memory/project_h1_thrust_gain_provenance.md`.
 - J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
 - `(M/F)_S` FIR filter history and `Rate_Limiter_0_005` state are seeded to the current raw 1/|a| sample on IGM enable rising edge. EDD §4.2.11 is a pure FIR with no slew cap; the modeled rate limiter is an obliq-2 model artifact whose cold-start lag (~5 BMLs to catch up from the S-IB→S-IVB staging coast step) was producing an 8° Chi-Y pitch-up transient on the first IGM BMLs. Seeding on IGM enable removes that transient.
+- **HSL EDD-fidelity fixes (2026-11-19).** Two EDD §4.4.2.4 transcription corrections in `lvdc_hsl.c`: (1) Eq. 4.4.91 computes A'' as `[(V−V')·ΔT' − (V'−V'')·ΔT] / [ΔT·ΔT'·(ΔT+ΔT')]` — both OCR renderings of the EDD typeset form garble the denominator; derive from Eq. 4.4.92 (`A' = A''·ΔT + (V−V')/ΔT`), which both OCRs agree on. (2) Fire logic now honors ¶520 ("fire when real_clock ≥ T_CO" → T_3i_hsl ≤ 0 in minor loop) and ¶528 (BML's refined T_3i < 20 ms fires immediately), replacing the previous "fire at T_3i < 60 ms" shortcut. Moved cutoff \|V_e\| peak from 7770.96 → 7772.99 (−2 m/s residual improvement) and shifted fire time 914.00 → 914.10 s. The PASCs 13 Table 4 and mid-flight fit rows above were last measured against the pre-rewrite legacy build; they have not been re-run since the rewrite promotion and will differ by the same ~2 m/s at cutoff.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 
@@ -125,11 +126,13 @@ simulation is usable without a CMC in the loop:
   │                   saturnib  (no yaAGC)                         │
   │                                                                │
   │  ┌────────────────────┐   ┌───────────────────────────────┐   │
-  │  │  Obliq-2 plant     │   │  LVDC guidance (hand-edited)  │   │
+  │  │  Obliq-2 plant     │   │  LVDC guidance (modular C).   │   │
   │  │  (vehicle dyn,     │◄──┤  lib_SaturnIBObliq/           │   │
-  │  │   S-IB & S-IVB     │   │  native-snapshots/lvda-lvdc/  │   │
-  │  │   stages, aero,    │   │  LVDA_LVDC.c                  │   │
-  │  │   engines)         │   └───────────────────────────────┘   │
+  │  │   S-IB & S-IVB     │   │  native-snapshots/             │   │
+  │  │   stages, aero,    │   │    lvda-lvdc-rewrite/          │   │
+  │  │   engines)         │   │  (legacy golden snapshot:      │   │
+  │  │                    │   │   .../lvda-lvdc-legacy/)       │   │
+  │  │                    │   └───────────────────────────────┘   │
   │  │                    │                                       │
   │  │ lib_SaturnIBObliq/ │   ┌───────────────────────────────┐   │
   │  │ plant/generated/   │   │  SaturnIBStack (plant + IMU   │   │
@@ -180,7 +183,7 @@ hook points degrade to no-ops through the default `NullAgcBridge`.
 is the `SimModel` registered with the clock.  The vehicle and LVDC paths
 in both programs are byte-for-byte identical; only the AGC layer differs.
 
-The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn_ib_stack.json`) is cross-compiled to C by an external tool and lives under `lib_SaturnIBObliq/plant/generated/`, except for `LVDA_LVDC.c` which is hand-edited in `lib_SaturnIBObliq/native-snapshots/lvda-lvdc/` and overrides the regenerated copy. See [`lib_SaturnIBObliq/README.md`](lib_SaturnIBObliq/README.md) for the regeneration workflow.
+The `saturnib` library is itself a composition: the Obliq-2 model (`model/saturn_ib_stack.json`) is cross-compiled to C by an external tool and lives under `lib_SaturnIBObliq/plant/generated/`, except for `LVDA_LVDC` which is replaced by the modular C rewrite in `lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite/` (default; set `-DLVDC_USE_REWRITE=OFF` to link the legacy hand-edited golden under `lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/`). See [`lib_SaturnIBObliq/README.md`](lib_SaturnIBObliq/README.md) for the regeneration workflow.
 
 ## Project layout
 
@@ -207,7 +210,7 @@ A few things are worth calling out explicitly:
 
 **`lib_SaturnIBObliq/plant/generated/saturn_ib_stack.c`** is the compiled vehicle dynamics. The model covers both Saturn stages (H-1 cluster + J-2), aerodynamics, mass flow and center-of-mass migration, the ST-124M stable platform, and the LVDC major loop. The file is regenerated from `model/saturn_ib_stack.json` by an external Obliq-2 tool and is not edited by hand.
 
-**`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.c`** is the LVDC guidance computer. It is the one hand-edited C module in the whole stack: certain guidance details (IGM major-cycle timing, HSL cutoff prediction, Chi-freeze gating) are maintained here with EDD / TM citations in block comments. The regenerated companion at `lib_SaturnIBObliq/plant/generated/LVDA_LVDC.c` is kept for diffing but is not linked.
+**`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite/`** is the active LVDC guidance computer — a modular C rewrite of `LVDA_LVDC` split across per-section translation units (`lvdc_nav.c`, `lvdc_igm*.c`, `lvdc_hsl.c`, `lvdc_moverf.c`, `lvdc_timebase.c`, `lvdc_chi_to_psi.c`, `lvdc_minor_loop.c`, `lvdc_dac.c`, `lvdc_preigm.c`, …). Each module carries EDD / TM citations in block comments and has a per-module smoke test under `tests/`. The legacy hand-edited golden lives in `.../lvda-lvdc-legacy/LVDA_LVDC.c` and is kept for A/B comparison; link it by configuring with `-DLVDC_USE_REWRITE=OFF`. The regenerated companion at `lib_SaturnIBObliq/plant/generated/LVDA_LVDC.c` is kept for diffing but is not linked.
 
 **`model/provenance/`** holds the pre-Obliq lineage: the original Simulink `.mdl` and a 1000-s reference CSV / final-state JSON. The current build does not read these, but they are the historical baseline every current result is measured against.
 

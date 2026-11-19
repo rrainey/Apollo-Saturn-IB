@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-# LVDC rewrite static library. Built only when BUILD_LVDC_REWRITE is on.
-# Not linked into saturnib until Phase D swap-in.
+# LVDC rewrite static library + per-module smoke tests.
+# Linked into saturnib by default (LVDC_USE_REWRITE=ON).
 #
 # See docs/LVDC_REWRITE_PLAN.md and ../README.md in this directory.
 
@@ -49,14 +49,14 @@ target_link_libraries(test_nav_smoke PRIVATE lvdc_rewrite)
 target_compile_options(test_nav_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
-add_test(NAME lvdc_rewrite_nav_smoke COMMAND test_nav_smoke)
+add_test(NAME lvdc_rewrite_nav_smoke COMMAND $<TARGET_FILE:test_nav_smoke>)
 
 add_executable(test_abi_smoke tests/test_abi_smoke.c)
 target_link_libraries(test_abi_smoke PRIVATE lvdc_rewrite)
 target_compile_options(test_abi_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
-add_test(NAME lvdc_rewrite_abi_smoke COMMAND test_abi_smoke)
+add_test(NAME lvdc_rewrite_abi_smoke COMMAND $<TARGET_FILE:test_abi_smoke>)
 
 add_executable(replay_lvdc_trace tests/replay_lvdc_trace.c)
 target_link_libraries(replay_lvdc_trace PRIVATE lvdc_rewrite)
@@ -70,7 +70,7 @@ target_link_libraries(test_preigm_smoke PRIVATE lvdc_rewrite)
 target_compile_options(test_preigm_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
-add_test(NAME lvdc_rewrite_preigm_smoke COMMAND test_preigm_smoke)
+add_test(NAME lvdc_rewrite_preigm_smoke COMMAND $<TARGET_FILE:test_preigm_smoke>)
 
 add_executable(test_output_pipeline_smoke tests/test_output_pipeline_smoke.c)
 target_link_libraries(test_output_pipeline_smoke PRIVATE lvdc_rewrite)
@@ -78,14 +78,14 @@ target_compile_options(test_output_pipeline_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_output_pipeline_smoke
-         COMMAND test_output_pipeline_smoke)
+         COMMAND $<TARGET_FILE:test_output_pipeline_smoke>)
 
 add_executable(test_chi_to_psi_smoke tests/test_chi_to_psi_smoke.c)
 target_link_libraries(test_chi_to_psi_smoke PRIVATE lvdc_rewrite)
 target_compile_options(test_chi_to_psi_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
-add_test(NAME lvdc_rewrite_chi_to_psi_smoke COMMAND test_chi_to_psi_smoke)
+add_test(NAME lvdc_rewrite_chi_to_psi_smoke COMMAND $<TARGET_FILE:test_chi_to_psi_smoke>)
 
 add_executable(test_igm_intermediate_smoke tests/test_igm_intermediate_smoke.c)
 target_link_libraries(test_igm_intermediate_smoke PRIVATE lvdc_rewrite)
@@ -93,7 +93,7 @@ target_compile_options(test_igm_intermediate_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_intermediate_smoke
-         COMMAND test_igm_intermediate_smoke)
+         COMMAND $<TARGET_FILE:test_igm_intermediate_smoke>)
 
 add_executable(test_igm_phasing_smoke tests/test_igm_phasing_smoke.c)
 target_link_libraries(test_igm_phasing_smoke PRIVATE lvdc_rewrite)
@@ -101,7 +101,7 @@ target_compile_options(test_igm_phasing_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_phasing_smoke
-         COMMAND test_igm_phasing_smoke)
+         COMMAND $<TARGET_FILE:test_igm_phasing_smoke>)
 
 add_executable(test_igm_frames_smoke tests/test_igm_frames_smoke.c)
 target_link_libraries(test_igm_frames_smoke PRIVATE lvdc_rewrite)
@@ -109,7 +109,7 @@ target_compile_options(test_igm_frames_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_frames_smoke
-         COMMAND test_igm_frames_smoke)
+         COMMAND $<TARGET_FILE:test_igm_frames_smoke>)
 
 add_executable(test_igm_steering_smoke tests/test_igm_steering_smoke.c)
 target_link_libraries(test_igm_steering_smoke PRIVATE lvdc_rewrite)
@@ -117,7 +117,7 @@ target_compile_options(test_igm_steering_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_steering_smoke
-         COMMAND test_igm_steering_smoke)
+         COMMAND $<TARGET_FILE:test_igm_steering_smoke>)
 
 add_executable(test_igm_position_correction_smoke
                tests/test_igm_position_correction_smoke.c)
@@ -126,7 +126,7 @@ target_compile_options(test_igm_position_correction_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_position_correction_smoke
-         COMMAND test_igm_position_correction_smoke)
+         COMMAND $<TARGET_FILE:test_igm_position_correction_smoke>)
 
 add_executable(test_igm_output_smoke tests/test_igm_output_smoke.c)
 target_link_libraries(test_igm_output_smoke PRIVATE lvdc_rewrite)
@@ -134,7 +134,7 @@ target_compile_options(test_igm_output_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_output_smoke
-         COMMAND test_igm_output_smoke)
+         COMMAND $<TARGET_FILE:test_igm_output_smoke>)
 
 add_executable(test_igm_orchestrator_smoke
                tests/test_igm_orchestrator_smoke.c)
@@ -143,7 +143,7 @@ target_compile_options(test_igm_orchestrator_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_orchestrator_smoke
-         COMMAND test_igm_orchestrator_smoke)
+         COMMAND $<TARGET_FILE:test_igm_orchestrator_smoke>)
 
 add_executable(test_igm_presets_smoke tests/test_igm_presets_smoke.c)
 target_link_libraries(test_igm_presets_smoke PRIVATE lvdc_rewrite)
@@ -151,7 +151,7 @@ target_compile_options(test_igm_presets_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_igm_presets_smoke
-         COMMAND test_igm_presets_smoke)
+         COMMAND $<TARGET_FILE:test_igm_presets_smoke>)
 
 add_executable(test_moverf_smoke tests/test_moverf_smoke.c)
 target_link_libraries(test_moverf_smoke PRIVATE lvdc_rewrite)
@@ -159,7 +159,7 @@ target_compile_options(test_moverf_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_moverf_smoke
-         COMMAND test_moverf_smoke)
+         COMMAND $<TARGET_FILE:test_moverf_smoke>)
 
 add_executable(test_timebase_smoke tests/test_timebase_smoke.c)
 target_link_libraries(test_timebase_smoke PRIVATE lvdc_rewrite)
@@ -167,7 +167,7 @@ target_compile_options(test_timebase_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_timebase_smoke
-         COMMAND test_timebase_smoke)
+         COMMAND $<TARGET_FILE:test_timebase_smoke>)
 
 add_executable(test_hsl_smoke tests/test_hsl_smoke.c)
 target_link_libraries(test_hsl_smoke PRIVATE lvdc_rewrite)
@@ -175,4 +175,4 @@ target_compile_options(test_hsl_smoke PRIVATE
     -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
 )
 add_test(NAME lvdc_rewrite_hsl_smoke
-         COMMAND test_hsl_smoke)
+         COMMAND $<TARGET_FILE:test_hsl_smoke>)

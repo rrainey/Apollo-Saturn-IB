@@ -72,12 +72,24 @@ int SaturnIBPlantObliq_fill_igm_trace(
      parent path. The LVDA_LVDC sits under IU/LVDA_LVDC in the model. */
   const LVDA_LVDC_t *lv = &m->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC;
 
+#if defined(LVDC_USE_REWRITE)
+  /* igm_enable, T_3_eff and |V_S| come from the rewrite's shim
+     (legacy enable_states / signals struct are stubbed under
+     LVDC_USE_REWRITE=ON). */
+  {
+    extern int    s_igm_enabled;
+    extern double s_T_3_eff_sec;
+    out->igm_enable  = s_igm_enabled ? 1.0 : 0.0;
+    out->T_3_eff_sec = s_T_3_eff_sec;
+  }
+#else
   out->igm_enable = lv->enable_states.LVDC_Iterative_Guidance_Mode_enabled ? 1.0 : 0.0;
+  out->T_3_eff_sec = lv->signals.LVDC_Iterative_Guidance_Mode_Add8;
+#endif
   out->T_1_i_sec =
     lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_1_i_sec;
   out->T_3_i_sec =
     lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_T_3_i_sec;
-  out->T_3_eff_sec = lv->signals.LVDC_Iterative_Guidance_Mode_Add8;
   out->nIGMMode =
     (double)lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_nIGMMode;
   out->nHSLActive =
@@ -90,20 +102,34 @@ int SaturnIBPlantObliq_fill_igm_trace(
   out->SMCZ_rad =
     lv->data_stores.Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDC_Iterative_Guidance_Mode_SMCZ_rad;
 
-  /* LVDC S-frame state vectors (sensor-path view, Eqns 4.3.1-5).
-     Product18 = X_S, Product6 = V_S. */
+  /* LVDC S-frame state vectors + HSL entry inputs (EDD §4.3.1-5, §4.4.2.4).
+     Under the rewrite the plant shim (lvdc_plant_shim.c) mirrors
+     g_lvdc.nav.X_S + Eq. 4.3.5 V_S into globals. Under the legacy
+     body the obliq-2–generated conditional subsystem still populates
+     the signals struct, so read it directly there. */
+#if defined(LVDC_USE_REWRITE)
+  {
+    extern double s_XS[3], s_VS[3];
+    extern double s_V_S_mag_mps;
+    extern double s_T_HSL_bias_sec;
+    out->XS_x = s_XS[0]; out->XS_y = s_XS[1]; out->XS_z = s_XS[2];
+    out->VS_x = s_VS[0]; out->VS_y = s_VS[1]; out->VS_z = s_VS[2];
+    out->V_S_mag_mps    = s_V_S_mag_mps;
+    out->vigained_mps   = PARAM_V_T_mps - out->V_S_mag_mps;
+    out->T_HSL_bias_sec = s_T_HSL_bias_sec;
+  }
+#else
   {
     const double *xs = lv->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product18;
     const double *vs = lv->signals.LVDC_S_Frame_Position_Velocity_Calculations_Position_and_Velocity_Calculation_S_Frame_Eqns_4_3_1_5_Product6;
     out->XS_x = xs[0]; out->XS_y = xs[1]; out->XS_z = xs[2];
     out->VS_x = vs[0]; out->VS_y = vs[1]; out->VS_z = vs[2];
   }
-
-  /* HSL entry inputs (EDD §4.4.2.4). vigained = V_T − |V|_S. */
   out->V_S_mag_mps = lv->signals.LVDC_Iterative_Guidance_Mode_Math_Function3;
   out->vigained_mps = PARAM_V_T_mps - out->V_S_mag_mps;
   out->T_HSL_bias_sec =
     lv->signals.LVDC_Iterative_Guidance_Mode_IGM_Phase2_artificial_tau_complete_Sum;
+#endif
 
   out->V_m_raw_x = lv->inputs.V_m_bar_mps[0];
   out->V_m_raw_y = lv->inputs.V_m_bar_mps[1];

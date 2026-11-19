@@ -71,7 +71,7 @@ typedef struct {
      * provide a separate GRR discrete or a pre-liftoff LVDC run
      * period. The only timing input is bLiftoff (DI24 rising edge).
      * We therefore latch at bLiftoff, matching the current hand-
-     * edited snapshot (../lvda-lvdc/LVDA_LVDC.c L1378). The ~17 s
+     * edited legacy snapshot (../lvda-lvdc-legacy/LVDA_LVDC.c L1378). The ~17 s
      * of pad-held specific-force integration from GRR to liftoff
      * is lost from V_m, but the equal and opposite ∫G_S dt is
      * also absent, so Eq. 4.3.5 (V_S = V_m + V_0 + V_Sg) still

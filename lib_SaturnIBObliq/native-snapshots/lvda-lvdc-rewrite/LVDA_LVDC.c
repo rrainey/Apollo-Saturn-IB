@@ -352,10 +352,18 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
              * live values. See lvdc_plant_shim.c. */
             extern double s_V_Sg[3];
             extern double s_G_S_prev[3];
+            extern double s_XS[3], s_VS[3], s_V_S_mag_mps;
+            double V_S_trace[3];
+            lvdc_nav_compute_V_S(&g_lvdc, V_S_trace);
+            const double V_S_mag_trace =
+                lvdc_nav_compute_V_S_magnitude(&g_lvdc);
             for (int i = 0; i < 3; i++) {
                 s_V_Sg[i]     = g_lvdc.nav.V_Sg[i];
                 s_G_S_prev[i] = g_lvdc.nav.G_S_prev[i];
+                s_XS[i]       = g_lvdc.nav.X_S[i];
+                s_VS[i]       = V_S_trace[i];
             }
+            s_V_S_mag_mps = V_S_mag_trace;
 
             /* (M/F)_S smoothing per EDD §4.2.5 Eq. 4.2.11. Runs
              * every BML once liftoff has latched. */
@@ -366,6 +374,17 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                                  g_params.MFK,
                                  g_params.MoverF_s_limit_s2pm,
                                  g_params.MoverF_s_rate_limit_per_BML);
+
+            /* Publish the IGM-enable latch and HSL-entry bias to
+             * the --igm-trace shims. T_HSL_bias is a static preset
+             * pair; publish both now and update T_3_eff below. */
+            {
+                extern int    s_igm_enabled;
+                extern double s_T_HSL_bias_sec;
+                s_igm_enabled    = g_igm_enabled ? 1 : 0;
+                s_T_HSL_bias_sec = g_params.T_HSL_sec
+                                 + g_hsl.delta_T_b_sec;
+            }
 
             /* IGM enable latch (Phase D fallback: T1-based). When
              * the Phase D time-base state machine lands, swap this
@@ -417,6 +436,20 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                  * Once valid, we hold the last good chi on any
                  * subsequent transient error. */
 
+                /* Publish the running time-to-go-to-cutoff and refined
+                 * |V_S| for --igm-trace. Once HSL is active, its own
+                 * prediction (`g_hsl.T_3i_hsl_sec`) is what drives the
+                 * fire decision, so expose that; otherwise expose the
+                 * IGM's T_3i. */
+                {
+                    extern double s_T_3_eff_sec;
+                    extern double s_V_S_mag_mps;
+                    s_T_3_eff_sec = lvdc_hsl_active(&g_hsl)
+                                  ? lvdc_hsl_T_3i(&g_hsl)
+                                  : g_igm.T_3i_sec;
+                    s_V_S_mag_mps = V_mag;
+                }
+
                 /* Debug trace of IGM internals. */
                 if (g_igm_dbg_fp) {
                     fprintf(g_igm_dbg_fp,
@@ -453,17 +486,25 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 /* HSL BML pass (EDD §4.4.2.4). Runs Eqs. 4.4.88-94
                  * once per BML to maintain the 3-sample V history,
                  * compute ΔT_b, check entry, and refine the
-                 * predicted T_3i. The actual cutoff edge is
-                 * detected in the minor-loop pass below. */
-                lvdc_hsl_bml_step(&g_hsl,
-                                  model->time,
-                                  V_mag,
-                                  g_igm.T_3i_sec,
-                                  g_params.T_HSL_sec,
-                                  g_params.V_GRD_mps,
-                                  g_params.BN_1_sec,
-                                  g_params.target_V_T_mps,
-                                  g_params.DeltaV_b_mps);
+                 * predicted T_3i. Normally the cutoff edge is
+                 * detected in the minor-loop pass below, but EDD
+                 * ¶528 says a refined T_3i < 20 ms must fire
+                 * immediately — the BML step returns true in that
+                 * case so we don't wait the minor-loop interval. */
+                const bool bml_fire_now = lvdc_hsl_bml_step(
+                    &g_hsl,
+                    model->time,
+                    V_mag,
+                    g_igm.T_3i_sec,
+                    g_params.T_HSL_sec,
+                    g_params.V_GRD_mps,
+                    g_params.BN_1_sec,
+                    g_params.target_V_T_mps,
+                    g_params.DeltaV_b_mps);
+                if (bml_fire_now) {
+                    g_hsl_cutoff_edge_pending = true;
+                    lvdc_igm_cutoff(&g_igm);
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(saturn_ib_stack_cgen C)
-set(LVDC_SNAP "${CMAKE_CURRENT_SOURCE_DIR}/../../native-snapshots/lvda-lvdc")
+set(LVDC_SNAP "${CMAKE_CURRENT_SOURCE_DIR}/../../native-snapshots/lvda-lvdc-legacy")
 add_library(saturn_ib_stack STATIC
   saturn_ib_stack.c
   ${LVDC_SNAP}/LVDA_LVDC.c

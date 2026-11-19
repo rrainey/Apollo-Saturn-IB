@@ -1,9 +1,13 @@
 # LVDC rewrite plan
 
-**Branch:** `lvdc-rewrite` (local only; do not push to origin)
-**Target:** replace the hand-edited obliq-2 native snapshot at
-`lib_SaturnIBObliq/native-snapshots/lvda-lvdc/LVDA_LVDC.{c,h}` with an
-EDD-anchored C implementation.
+**Branch:** `lvdc-rewrite`
+**Status:** landed. The rewrite under
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-rewrite/` is the default
+LVDC implementation (`LVDC_USE_REWRITE=ON`). The legacy hand-edited
+golden is retained under
+`lib_SaturnIBObliq/native-snapshots/lvda-lvdc-legacy/` for A/B
+comparison; link it with `-DLVDC_USE_REWRITE=OFF`. See
+`docs/LVDC_PHASE_D_CLOSURE.md` for the validation record.
 **Authoritative references:**
 - Saturn IU LVDC Equation Defining Document (EDD), Rev A, 11 Apr 1972
   (`reference/LVDC-EDD/` — scans in seven PDFs, Chandra and Marker OCR
