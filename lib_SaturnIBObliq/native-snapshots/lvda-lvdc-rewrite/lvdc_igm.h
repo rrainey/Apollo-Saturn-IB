@@ -69,6 +69,11 @@ typedef struct {
     double T_1i_initial_sec;
     double T_3i_initial_sec;
 
+    /* Phase-2 preset mass/mass-flow ratio (s). EDD §4.4.2.2 opening
+     * lists tau_3 as a preset. Used as tau_3 throughout Phase 1 and
+     * as the seed for the artificial-tau blend (Eq. 4.4.14) at EMRC. */
+    double tau_3_initial_sec;
+
     /* Phase-1 tau values latched at EMRC (s). Eqs. 4.4.10-11. */
     double tau_10_sec;    /* tau_1 at EMRC */
     double T_10_sec;      /* T_1 at EMRC */
@@ -80,6 +85,11 @@ typedef struct {
 
     /* Artificial-tau transition cutover (s). Eqs. 4.4.13-14. */
     double P_CMR_sec;
+
+    /* EDD §4.4.2.4 ¶1 — T_3i threshold at which Ẋ-steering
+     * commences: K_1, K_2, K_3, K_4 are forced to zero in
+     * Eqs. 4.4.81-82. TMX Table 3B: 25 s on AS-205. */
+    double eps_2_sec;
 
     /* Terminal constraints. Eqs. 4.4.34-40. */
     double R_T_m;

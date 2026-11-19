@@ -62,7 +62,8 @@ static void make_presets(lvdc_igm_presets_t *p) {
     p->V_ex1_mps = 4151.0;
     p->V_ex3_mps = 4233.2;
     p->T_1i_initial_sec = 150.0;
-    p->T_3i_initial_sec = 350.0;
+    p->T_3i_initial_sec = 150.0;   /* must stay < tau_3 for ln */
+    p->tau_3_initial_sec = 326.5;
     p->tau_10_sec = 300.0;
     p->T_10_sec   = 150.0;
     p->M_GR_kg    = 120000.0;

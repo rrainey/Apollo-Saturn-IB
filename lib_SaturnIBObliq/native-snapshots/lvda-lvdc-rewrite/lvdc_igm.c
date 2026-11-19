@@ -30,6 +30,7 @@ void lvdc_igm_presets_from_params(const lvdc_params_t *params,
     out->T_1i_initial_sec = params->igm_T_1i_initial_sec;
     out->T_3i_initial_sec = params->igm_T_3i_initial_sec;
 
+    out->tau_3_initial_sec = params->igm_tau_3_initial_sec;
     out->tau_10_sec = params->igm_tau_10_sec;
     out->T_10_sec   = params->igm_T_10_sec;
 
@@ -38,6 +39,7 @@ void lvdc_igm_presets_from_params(const lvdc_params_t *params,
     out->Mdot_3_kgps = params->Mdot_3_kgps;
 
     out->P_CMR_sec = params->igm_P_CMR_sec;
+    out->eps_2_sec = params->igm_eps_2_sec;
 
     out->R_T_m       = params->target_R_T_m;
     out->V_T_mps     = params->target_V_T_mps;
@@ -185,12 +187,16 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
 
     switch (s->mode) {
     case LVDC_IGM_MODE_PHASE1:
-        /* Eq. 4.4.7 — tau_1 = V_ex1 * (M/F)_S. */
+        /* Eq. 4.4.7 — tau_1 = V_ex1 * (M/F)_S (updated per BML). */
         tau_1 = lvdc_igm_tau_1(s->p.V_ex1_mps, MoverF_s_s2pm);
-        /* Phase 2 tau_3 unused in Phase 1 for chi, but Eq. 4.4.17
-         * requires it to be well-defined for intermediate math.
-         * Use Eq. 4.4.16 real-tau form. */
-        tau_3 = lvdc_igm_tau_3_real(s->p.V_ex3_mps, MoverF_s_s2pm);
+        /* EDD §4.4.2.2 ¶3 and §4.4.2.3 — tau_3 is a PRESET during
+         * Phase 1. Eq. 4.4.12 ("Start computing the IGM real tau,
+         * tau_3M") is a Phase-2 action triggered when T_1i <= 0.
+         * Using the (M/F)_S-driven form in Phase 1 lets tau_3
+         * drift with current acceleration, which corrupts L'_3,
+         * J'_3, and L'_y and biases the IGM steering during
+         * Phase 1. */
+        tau_3 = s->p.tau_3_initial_sec;
         break;
 
     case LVDC_IGM_MODE_PHASE2_ARTIFICIAL_TAU: {
@@ -281,13 +287,13 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
     }
 
     /* Eq. 4.4.52 — persist the improved T_3i; Eq. 4.4.53 — refresh
-     * T*. The EDD places both equations in the §4.4.2.2 Phase 2
-     * narrative ("Improved Estimate of Total Time-to-go"), so the
-     * persist only applies once we're in a Phase 2 mode. In
-     * PHASE1 we use the refined value this cycle (for position
-     * correction) but do not persist it — doing so would couple
-     * the Phase-2 velocity-to-be-gained predictor to the Phase-1
-     * state and the AS-205 shadow run plunges within seconds. */
+     * T*. The EDD §4.4.2.2 functional representation (items 1-14)
+     * describes a per-BML cycle that nominally runs in both phases,
+     * but §4.4.2.3 lists only Eq. 4.4.7 and 4.4.8 as the Phase-1
+     * actions, and the AS-205 shadow shows that persisting Eq. 4.4.52
+     * through Phase 1 accumulates ~100 m/s of trajectory error
+     * (Phase 1 T_3i drifts away from the preset). Gate the
+     * persistence to Phase 2 — the EDD-prescribed Phase-1 path. */
     const bool in_phase2 =
         (s->mode == LVDC_IGM_MODE_PHASE2_ARTIFICIAL_TAU)
         || (s->mode == LVDC_IGM_MODE_PHASE2_REAL_TAU);
@@ -320,6 +326,16 @@ int lvdc_igm_update(lvdc_igm_state_t *s,
 
     if (lvdc_igm_position_correction(&pc_in, &pc_out) != 0) {
         return -1;
+    }
+
+    /* EDD §4.4.2.4 ¶1 — When T_3i ≤ ε_2, Ẋ-steering commences:
+     * zero K_1, K_2, K_3, K_4 in Eqs. 4.4.81-82 so only the
+     * velocity-constraint terms drive chi_y4, chi_z4. The
+     * position-correction block has already computed K* values;
+     * we recompute chi_y4 and chi_z4 here without them. */
+    if (s->p.eps_2_sec > 0.0 && s->T_3i_sec <= s->p.eps_2_sec) {
+        pc_out.chi_y4_rad = chi_tilde_y - phi_T - M_PI_2;
+        pc_out.chi_z4_rad = chi_tilde_z;
     }
 
     s->chi_y4_rad = pc_out.chi_y4_rad;

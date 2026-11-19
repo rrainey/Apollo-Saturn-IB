@@ -160,6 +160,7 @@ typedef struct {
     double igm_tau_10_sec;        /* tau_1 at EMRC (Eq. 4.4.10) */
     double igm_T_10_sec;          /* T_1 at EMRC (Eqs. 4.4.10-11) */
     double igm_P_CMR_sec;         /* artificial-tau cutover (Eq. 4.4.14) */
+    double igm_eps_2_sec;         /* T_3i to start Ẋ-steering (§4.4.2.4 ¶1) */
     double igm_M_GR_kg;           /* mass remaining at EMRC (Eq. 4.4.11) */
     double igm_Mdot_2_kgps;       /* S-IVB first-phase mass flow */
     double igm_SMCG;              /* SMC gain (Eqs. 4.4.83-84) */

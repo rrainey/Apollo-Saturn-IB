@@ -86,10 +86,11 @@
 #define AS205_IGM_TAU_10_SEC            536.0
 #define AS205_IGM_T_10_SEC              286.3
 #define AS205_IGM_P_CMR_SEC             35.0          /* TMX "CO" row */
+#define AS205_IGM_EPS_2_SEC             25.0          /* TMX Table 3B, §4.4.2.4 */
 #define AS205_IGM_M_GR_KG               129761.6      /* TMX "M03" row in artificial-tau group */
 #define AS205_IGM_MDOT_2_KGPS           239.7877      /* TMX "MI" row in artificial-tau group */
 #define AS205_IGM_SMCG                  0.0           /* TODO: TMX full presettings scan */
-#define AS205_IGM_ROV                   0.0           /* TODO: TMX full presettings scan */
+#define AS205_IGM_ROV                   1.8           /* TMX Table 3B "TR1" */
 
 /* --- IGM frame constants (TM-X-62831 Table 3B cont'd) -------------- */
 #define AS205_IGM_LAMBDA_N_DEG          119.0         /* TMX phi_N */
@@ -203,6 +204,7 @@ lvdc_params_t lvdc_params_as205(void) {
     p.igm_tau_10_sec        = AS205_IGM_TAU_10_SEC;
     p.igm_T_10_sec          = AS205_IGM_T_10_SEC;
     p.igm_P_CMR_sec         = AS205_IGM_P_CMR_SEC;
+    p.igm_eps_2_sec         = AS205_IGM_EPS_2_SEC;
     p.igm_M_GR_kg           = AS205_IGM_M_GR_KG;
     p.igm_Mdot_2_kgps       = AS205_IGM_MDOT_2_KGPS;
     p.igm_SMCG              = AS205_IGM_SMCG;
