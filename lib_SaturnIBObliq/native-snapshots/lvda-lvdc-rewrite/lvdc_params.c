@@ -104,8 +104,8 @@
 
 /* --- HSL cutoff (EDD §4.4.2.4; Part II) ---------------------------- */
 #define AS205_DELTAV_B_MPS              7.2381        /* EDD Part II Table 1-3 */
-#define AS205_V_GRD_MPS                 0.0           /* TODO: Part II */
-#define AS205_T_HSL_SEC                 0.0           /* TODO: Part II */
+#define AS205_V_GRD_MPS                 150.0         /* legacy PARAM, Part II */
+#define AS205_T_HSL_SEC                 5.0           /* legacy PARAM, Part II */
 
 /* --- Chi time-tilt — TMX Appendix B unbiased pitch poly ------------ */
 #define AS205_P_FINAL_RAD              (-1.0352499)   /* ~-59.3 deg */

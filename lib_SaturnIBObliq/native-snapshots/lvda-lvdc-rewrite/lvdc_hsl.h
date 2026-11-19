@@ -2,27 +2,26 @@
  * lvdc_hsl.h — High-Speed Loop for S-IVB cutoff timing
  * (EDD §4.4.2.4 Eqs. 4.4.88 through 4.4.94).
  *
- * Near S-IVB cutoff the LVDC switches from the 1.6 s BML cadence
- * to a faster sampling loop. The HSL:
- *   1. Captures three successive V samples (|V_S|) at the HSL
- *      rate.
- *   2. Fits a quadratic in time to extract A' (velocity rate) and
- *      A'' (quadratic coefficient).
- *   3. Predicts the remaining time to cutoff via the implicit
- *      Eq. 4.4.93 solve.
- *   4. Fires a cutoff edge when the prediction crosses zero.
+ * The EDD narrative (§4.4.2.4) prescribes a two-rate structure:
  *
- * Entry condition (TMX Table 3B):
- *   T_3i <= eps_prime (= 5 s on AS-205)
+ *   1. V-history accumulation and Eqs. 4.4.88-94 run at BML
+ *      rate once the predicted T_3i drops below BN_1.
+ *   2. HSL entry latches when predicted T_3i < (T_HSL + ΔT_b)
+ *      AND the velocity-to-be-gained (V_T - |V_S|) is less than
+ *      the velocity guard V_GRD.
+ *   3. After entry, T_3i is decremented and tested every 40 ms
+ *      (minor-loop rate). Cutoff fires when T_3i < 60 ms.
  *
- * On the first HSL cycle Eq. 4.4.88 applies a one-shot ΔT_b
- * correction to T_3i; subsequent cycles decrement T_3i by ΔT
- * (Eq. 4.4.90) and refine with Eq. 4.4.93.
+ * Call lvdc_hsl_bml_step once per BML — it maintains the
+ * 3-sample V history, computes ΔT_b (Eq. 4.4.88), checks entry,
+ * applies the first-pass Eq. 4.4.89 bias, and refines T_3i via
+ * Eqs. 4.4.91-93.
  *
- * This implementation runs at BML rate (1.6 s). The real LVDC
- * samples HSL faster (~10 Hz is typical), which gives better
- * cutoff timing resolution. Call-site rate is a follow-on
- * refinement.
+ * Call lvdc_hsl_minor_step once per minor loop (nominally every
+ * 40 ms). Once HSL is active, it decrements T_3i_hsl_sec by
+ * `dt_sec` and returns true when T_3i_hsl_sec < 60 ms — the
+ * caller consumes this as the one-shot cutoff edge for the
+ * time-base state machine.
  */
 
 #ifndef LVDC_HSL_H
@@ -35,51 +34,59 @@ extern "C" {
 #endif
 
 typedef struct {
-    bool   active;          /* true once entry latched */
-    bool   bias_applied;    /* Eq. 4.4.88 one-shot done */
+    bool   accumulating;     /* V-history accumulation started */
+    bool   active;           /* HSL entry latched */
+    bool   bias_applied;     /* Eq. 4.4.89 one-shot done */
 
-    /* V sample ring, newest at [0]. */
+    /* V sample ring at BML rate, newest at [0]. */
     double V[3];
-    double t[3];            /* model->time at each sample */
-    int    n_samples;       /* 0..3 */
+    double t[3];
+    int    n_samples;
 
-    /* Running T_3i prediction. Decremented each HSL cycle and
-     * refined via Eq. 4.4.93 once we have three samples. */
+    /* Last ΔT_b from Eq. 4.4.88. */
+    double delta_T_b_sec;
+
+    /* Running HSL prediction of T_3i. BML pass refines via
+     * Eqs. 4.4.91-93; minor-loop pass decrements by dt. */
     double T_3i_hsl_sec;
-
-    /* Latched cutoff edge — set true once the prediction crosses
-     * zero. The dispatcher consumes this and clears to false the
-     * same cycle (edge semantics). */
-    bool   cutoff_edge;
 } lvdc_hsl_state_t;
 
 /* Reset state at init. */
 void lvdc_hsl_reset(lvdc_hsl_state_t *s);
 
-/* Run one HSL step.
+/* BML-rate step. Runs the §4.4.2.4 equations:
  *
- *   now_sec        : model->time at this call.
- *   V_mps          : current |V_S| magnitude.
- *   T_3i_igm_sec   : T_3i from the IGM mode machine (used only
- *                    on first entry to decide whether we should
- *                    be in HSL and to seed the HSL T_3i).
- *   eps_prime_sec  : entry threshold (TMX AS-205: 5.0 s).
- *   V_T_mps        : target terminal velocity.
- *   dV_b_mps       : velocity-bias constant (TMX Part II: 7.2381).
- *
- * Returns true if HSL fired a cutoff edge on this call (edge
- * semantics — caller latches the persistent flag). */
-bool lvdc_hsl_step(lvdc_hsl_state_t *s,
-                   double now_sec,
-                   double V_mps,
-                   double T_3i_igm_sec,
-                   double eps_prime_sec,
-                   double V_T_mps,
-                   double dV_b_mps);
+ *   now_sec       : model->time at this BML.
+ *   V_mps         : current |V_S| magnitude (Eq. 4.3.5.1).
+ *   T_3i_igm_sec  : T_3i from the IGM mode machine. Drives both
+ *                   accumulation (T_3i <= BN_1) and entry
+ *                   (T_3i < T_HSL + ΔT_b) tests.
+ *   T_HSL_sec     : preset entry window (TMX: 5 s).
+ *   V_GRD_mps     : velocity-guard for entry (TMX: 150 m/s).
+ *   BN_1_sec      : accumulation threshold (TMX: 14.4 s).
+ *   V_T_mps       : target terminal velocity.
+ *   dV_b_mps      : ΔV_b bias (TMX Part II Table 1-3: 7.2381 m/s).
+ */
+void lvdc_hsl_bml_step(lvdc_hsl_state_t *s,
+                       double now_sec,
+                       double V_mps,
+                       double T_3i_igm_sec,
+                       double T_HSL_sec,
+                       double V_GRD_mps,
+                       double BN_1_sec,
+                       double V_T_mps,
+                       double dV_b_mps);
 
-/* Read helpers for logging / trace. */
+/* Minor-loop-rate step (nominally 40 ms per EDD §4.4.2.4). While
+ * HSL is active, decrement T_3i_hsl_sec by dt_sec and return
+ * true when T_3i_hsl_sec < 60 ms — the dispatcher latches that
+ * as the S-IVB cutoff edge. No-op when HSL is not yet active. */
+bool lvdc_hsl_minor_step(lvdc_hsl_state_t *s, double dt_sec);
+
+/* Read helpers. */
 double lvdc_hsl_T_3i(const lvdc_hsl_state_t *s);
 bool   lvdc_hsl_active(const lvdc_hsl_state_t *s);
+bool   lvdc_hsl_accumulating(const lvdc_hsl_state_t *s);
 
 #ifdef __cplusplus
 }

@@ -378,21 +378,20 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                  * chi rather than zeroing. The next BML will
                  * retry with fresh state. */
 
-                /* HSL step (EDD §4.4.2.4). Runs once per BML while
-                 * IGM is active. Entry is gated on T_3i <= eps_prime.
-                 * When the cutoff edge fires, latch it for the next
-                 * tick's timebase step. */
-                if (lvdc_hsl_step(&g_hsl,
+                /* HSL BML pass (EDD §4.4.2.4). Runs Eqs. 4.4.88-94
+                 * once per BML to maintain the 3-sample V history,
+                 * compute ΔT_b, check entry, and refine the
+                 * predicted T_3i. The actual cutoff edge is
+                 * detected in the minor-loop pass below. */
+                lvdc_hsl_bml_step(&g_hsl,
                                   model->time,
                                   V_mag,
                                   g_igm.T_3i_sec,
-                                  /*eps_prime*/ 5.0,
+                                  g_params.T_HSL_sec,
+                                  g_params.V_GRD_mps,
+                                  g_params.BN_1_sec,
                                   g_params.target_V_T_mps,
-                                  g_params.DeltaV_b_mps)) {
-                    g_hsl_cutoff_edge_pending = true;
-                    /* Tell the IGM mode machine we've cut off. */
-                    lvdc_igm_cutoff(&g_igm);
-                }
+                                  g_params.DeltaV_b_mps);
             }
         }
 
@@ -407,6 +406,14 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
         if (at_minor) {
             const double dt_minor = (double)minor_ticks * model->dt;
             step_attitude_pipeline(model, dt_minor);
+
+            /* HSL minor-loop pass (EDD §4.4.2.4 ¶7). Decrement
+             * T_3i_hsl by 40 ms and fire cutoff when it drops
+             * below 60 ms. */
+            if (lvdc_hsl_minor_step(&g_hsl, dt_minor)) {
+                g_hsl_cutoff_edge_pending = true;
+                lvdc_igm_cutoff(&g_igm);
+            }
         }
     }
 
