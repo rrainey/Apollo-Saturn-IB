@@ -32,6 +32,7 @@
 #include "lvdc_nav.h"
 #include "lvdc_params.h"
 #include "lvdc_preigm.h"
+#include "lvdc_timebase.h"
 
 #include <math.h>
 #include <string.h>
@@ -65,6 +66,10 @@ static lvdc_igm_presets_t       g_igm_presets;
 static lvdc_moverf_state_t      g_moverf;
 static bool                     g_igm_enabled;
 static double                   g_chi_igm_rad[2];  /* [0]=pitch, [1]=yaw */
+
+/* Time-base + event-discrete state. Advanced every tick inside
+ * compute_outputs; read by publish_outputs. */
+static lvdc_timebase_state_t    g_timebase;
 
 /* Latch state for the liftoff edge. Lives outside g_lvdc because
  * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
@@ -149,18 +154,22 @@ static void publish_outputs(LVDA_LVDC_t *model) {
      * consumers. */
     model->outputs.T1_sec = g_lvdc.tb1.T1_sec;
 
-    /* Phase C.3+ discrete outputs. Zero until lvdc_igm and
-     * lvdc_scheduler land. */
-    model->outputs.bSIVEngineStart     = false;
-    model->outputs.bSIVCutoff          = false;
-    model->outputs.bIECO               = false;
-    model->outputs.bOECO               = false;
-    model->outputs.bSimulinkSIVBEnable = false;
-    model->outputs.bUllageMotorStart   = false;
-    model->outputs.bSIVBurn            = false;
-    model->outputs.bSIVCoast           = false;
-    model->outputs.bSwitchpoin5        = false;
-    model->outputs.bSIBStageSep        = false;
+    /* Stage-event discretes derived from the time-base state
+     * machine (Phase D.1-D.2). See lvdc_timebase.h for the
+     * thresholds. Refined post-cutoff behaviour arrives with
+     * HSL (Eqs. 4.4.88-94) in Phase D.5. */
+    lvdc_timebase_discretes_t disc;
+    lvdc_timebase_discretes(&g_timebase, model->time, &disc);
+    model->outputs.bSIVEngineStart     = disc.bSIVEngineStart;
+    model->outputs.bSIVCutoff          = disc.bSIVCutoff;
+    model->outputs.bIECO               = disc.bIECO;
+    model->outputs.bOECO               = disc.bOECO;
+    model->outputs.bSimulinkSIVBEnable = disc.bSimulinkSIVBEnable;
+    model->outputs.bUllageMotorStart   = disc.bUllageMotorStart;
+    model->outputs.bSIVBurn            = disc.bSIVBurn;
+    model->outputs.bSIVCoast           = disc.bSIVCoast;
+    model->outputs.bSwitchpoin5        = disc.bSwitchpoin5;
+    model->outputs.bSIBStageSep        = disc.bSIBStageSep;
 }
 
 /* Run the attitude-command pipeline once. See lvdc_preigm,
@@ -232,6 +241,8 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     g_igm_enabled = false;
     g_chi_igm_rad[0] = 0.0;
     g_chi_igm_rad[1] = 0.0;
+
+    lvdc_timebase_reset(&g_timebase);
 }
 
 void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
@@ -261,6 +272,18 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             g_lvdc.tb1.t_liftoff_sec = model->time;
         }
         s_prev_bLiftoff = model->inputs.bLiftoff;
+
+        /* --- Time-base state machine (EDD §4.1) -----------------
+         * T1..T4 latched from plant discretes and earlier events.
+         * siv_cutoff_edge is driven by the IGM mode machine; HSL
+         * (Eqs. 4.4.88-94) will refine this later. For now, no
+         * explicit cutoff edge — the SIV cutoff flag stays false
+         * until a later phase wires it up. */
+        lvdc_timebase_step(&g_timebase,
+                           model->time,
+                           model->inputs.bLiftoff,
+                           model->inputs.bSIBPropellantSensorDry,
+                           /*siv_cutoff_edge*/ false);
 
         /* Update T1_sec (time since liftoff). Stays at zero before
          * the liftoff edge. */

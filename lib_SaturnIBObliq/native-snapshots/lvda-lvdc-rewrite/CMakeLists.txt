@@ -23,6 +23,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_igm_output.c
     lvdc_igm.c
     lvdc_moverf.c
+    lvdc_timebase.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -157,3 +158,11 @@ target_compile_options(test_moverf_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_moverf_smoke
          COMMAND test_moverf_smoke)
+
+add_executable(test_timebase_smoke tests/test_timebase_smoke.c)
+target_link_libraries(test_timebase_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_timebase_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_timebase_smoke
+         COMMAND test_timebase_smoke)
