@@ -67,7 +67,7 @@
 #define AS205_TARGET_V_T_MPS            7780.67
 #define AS205_TARGET_R_T_M              6600405.0
 #define AS205_TARGET_THETA_T_DEG        0.0           /* X_dot_VT = 0, Z_dot_VT = V_T */
-#define AS205_TARGET_XDDOT_VGT_MPS2    (-9.15)        /* TMX Table 3B; task #9 defers to -9.10 */
+#define AS205_TARGET_XDDOT_VGT_MPS2    (-9.15)        /* TMX Table 3B "XVG" (EDD Part II shows -9.35 for other profiles) */
 
 /* --- Stage performance (TM-X-62831 Table 3B) ----------------------- */
 #define AS205_V_EX1_MPS                 4151.0        /* S-IVB phase 1 avg exhaust */
@@ -89,7 +89,7 @@
 #define AS205_IGM_EPS_2_SEC             25.0          /* TMX Table 3B, §4.4.2.4 */
 #define AS205_IGM_M_GR_KG               129761.6      /* TMX "M03" row in artificial-tau group */
 #define AS205_IGM_MDOT_2_KGPS           239.7877      /* TMX "MI" row in artificial-tau group */
-#define AS205_IGM_SMCG                  0.0           /* TODO: TMX full presettings scan */
+#define AS205_IGM_SMCG                  0.03          /* EDD Part II Table 1-3 (rad/sec) */
 #define AS205_IGM_ROV                   1.8           /* TMX Table 3B "TR1" */
 
 /* --- IGM frame constants (TM-X-62831 Table 3B cont'd) -------------- */
