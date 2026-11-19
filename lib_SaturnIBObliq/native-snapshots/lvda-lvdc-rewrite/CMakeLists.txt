@@ -22,6 +22,7 @@ add_library(lvdc_rewrite STATIC
     lvdc_igm_position_correction.c
     lvdc_igm_output.c
     lvdc_igm.c
+    lvdc_moverf.c
 )
 
 target_include_directories(lvdc_rewrite
@@ -148,3 +149,11 @@ target_compile_options(test_igm_presets_smoke PRIVATE
 )
 add_test(NAME lvdc_rewrite_igm_presets_smoke
          COMMAND test_igm_presets_smoke)
+
+add_executable(test_moverf_smoke tests/test_moverf_smoke.c)
+target_link_libraries(test_moverf_smoke PRIVATE lvdc_rewrite)
+target_compile_options(test_moverf_smoke PRIVATE
+    -Wall -Wextra -Wpedantic -Wshadow -Wmissing-prototypes
+)
+add_test(NAME lvdc_rewrite_moverf_smoke
+         COMMAND test_moverf_smoke)

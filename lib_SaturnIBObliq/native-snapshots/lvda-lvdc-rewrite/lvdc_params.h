@@ -105,7 +105,7 @@ typedef struct {
     /* Initial smoothed reciprocal acceleration (M/F)_0, s^2/m. EDD
      * §4.2.5 says this is from the Presetting Table of Part II.
      * Seeds the four historical values of M/F and (M/F)_s at or
-     * before T3+0. */
+     * before T3+0. TMX Table 1-3: 0.135 s^2/m. */
     double MoverF_0_s2pm;
 
     /* Smoothed M/F magnitude limit, s^2/m. EDD §4.2.5: 0.25 s^2/m. */
@@ -114,6 +114,17 @@ typedef struct {
     /* Smoothed M/F rate-of-change limit, (s^2/m) per BML.
      * EDD §4.2.5: 0.005 s^2/m per BML. */
     double MoverF_s_rate_limit_per_BML;
+
+    /* (M/F)_S filter coefficients for S-IVB stage (EDD Eq. 4.2.11,
+     * TMX Table 1-3). The LVDC uses an 8-tap IIR filter on the
+     * four most recent instantaneous (M/F)_i and four most recent
+     * smoothed (M/F)_Si samples:
+     *   (M/F)_S = MFK[0](M/F)_1 + MFK[1](M/F)_2
+     *           + MFK[2](M/F)_3 + MFK[3](M/F)_4
+     *           + MFK[4](M/F)_S1 + MFK[5](M/F)_S2
+     *           + MFK[6](M/F)_S3 + MFK[7](M/F)_S4
+     */
+    double MFK[8];
 
     /* -----------------------------------------------------------------
      * Guidance (EDD §4.4; TM-X-62831 Table 3B)

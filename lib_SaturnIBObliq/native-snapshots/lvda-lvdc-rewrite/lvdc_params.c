@@ -46,10 +46,20 @@
 #define AS205_BN_1_SEC                  14.4
 #define AS205_T3_FM_SEC                 5.0
 
-/* --- M/F smoothing (EDD §4.2.5-6) ---------------------------------- */
-#define AS205_MOVERF_0_S2PM             0.0           /* TODO: TMX Part II preset */
+/* --- M/F smoothing (EDD §4.2.5-6, Eq. 4.2.11; TMX Table 1-3) ------- */
+#define AS205_MOVERF_0_S2PM             0.135         /* TMX Table 1-3 (M/F)_0 */
 #define AS205_MOVERF_S_LIMIT_S2PM       0.25          /* EDD §4.2.5 */
 #define AS205_MOVERF_S_RATE_LIMIT       0.005         /* EDD §4.2.5 per BML */
+
+/* (M/F)_S filter coefficients — S-IVB stage. TMX Table 1-3. */
+#define AS205_MFK1                      0.0120948
+#define AS205_MFK2                      0.0213339
+#define AS205_MFK3                     (-0.0261577)
+#define AS205_MFK4                     (-0.00526684)
+#define AS205_MFK5                      2.80483
+#define AS205_MFK6                     (-2.85880)
+#define AS205_MFK7                      1.24933
+#define AS205_MFK8                     (-0.197360)
 
 /* --- Target orbit (TM-X-62831 Table 3B) ---------------------------- */
 #define AS205_TARGET_I_DEG              31.605
@@ -159,6 +169,14 @@ lvdc_params_t lvdc_params_as205(void) {
     p.MoverF_0_s2pm               = AS205_MOVERF_0_S2PM;
     p.MoverF_s_limit_s2pm         = AS205_MOVERF_S_LIMIT_S2PM;
     p.MoverF_s_rate_limit_per_BML = AS205_MOVERF_S_RATE_LIMIT;
+    p.MFK[0] = AS205_MFK1;
+    p.MFK[1] = AS205_MFK2;
+    p.MFK[2] = AS205_MFK3;
+    p.MFK[3] = AS205_MFK4;
+    p.MFK[4] = AS205_MFK5;
+    p.MFK[5] = AS205_MFK6;
+    p.MFK[6] = AS205_MFK7;
+    p.MFK[7] = AS205_MFK8;
 
     /* Target orbit. */
     p.target_i_deg            = AS205_TARGET_I_DEG;
