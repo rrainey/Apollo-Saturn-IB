@@ -180,17 +180,21 @@ int main(void) {
     const double K_2 = K_p * K_1;
     CHECK_CLOSE(out.K_2, K_2, 1e-15, "Eq. 4.4.80 K_2");
 
-    /* chi_y4 and chi_z4 — the full-chain outputs. */
+    /* chi_y4 and chi_z4 — the full-chain outputs. See the
+     * ANGLE-UNIT CONVENTION note: EDD half-rev literals /pi and
+     * 1/2 are converted to radians at transcription time, so:
+     *   chi_y4 = chi_tilde_y - (K_1 - K_2 dT_N) - phi_T - pi/2
+     *   chi_z4 = chi_tilde_z - (K_3 - K_4 dT_N) */
     const double chi_y4 = in.chi_tilde_y_rad
-                        - (K_1 - K_2 * in.dT_N_sec) / M_PI
+                        - (K_1 - K_2 * in.dT_N_sec)
                         - in.phi_T_rad
-                        - 0.5;
+                        - M_PI_2;
     const double chi_z4 = in.chi_tilde_z_rad
-                        - (K_3 - K_4 * in.dT_N_sec) / M_PI;
+                        - (K_3 - K_4 * in.dT_N_sec);
     CHECK_CLOSE(out.chi_y4_rad, chi_y4, 1e-12,
-                "Eq. 4.4.81 chi_y4 verbatim");
+                "Eq. 4.4.81 chi_y4 (radian form)");
     CHECK_CLOSE(out.chi_z4_rad, chi_z4, 1e-12,
-                "Eq. 4.4.82 chi_z4 verbatim");
+                "Eq. 4.4.82 chi_z4 (radian form)");
 
     /* --------------------------------------------------------------
      * Degenerate guards: NULL pointer, cos(chi_tilde)=0.

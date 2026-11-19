@@ -29,21 +29,28 @@
  * -----------------------------------------------------------------
  * ANGLE-UNIT CONVENTION
  * -----------------------------------------------------------------
- * The EDD mixes two angle conventions in §4.4.2.2:
- *   - Arctan / cos / sin ops produce or consume radians.
- *   - Several equations contain a `/ pi` divisor (Eqs. 4.4.32,
- *     4.4.81, 4.4.82) or a `1/2` literal (Eq. 4.4.81). These are
- *     half-revolution scalings the LVDC used for its fixed-point
- *     word format (angles are stored as fractions of pi radians,
- *     so pi = 1.0 unit).
+ * The EDD writes §4.4.2.2 in LVDC half-revolution angle units
+ * (one half-rev = pi radians). Three signatures of that:
+ *   - `/ pi` divisors on Eqs. 4.4.32, 4.4.81, 4.4.82 — these
+ *     convert radian quantities (atan outputs, arc-length/radius,
+ *     linearised K corrections) into half-revs.
+ *   - `1/2` literal in Eq. 4.4.81 — half-rev form of pi/2 rad
+ *     (90 deg). This is the fixed offset that shifts the
+ *     preliminary V-system pitch (measured from +X_V) into the
+ *     4-system attitude convention (where chi_y4 = 0 gives
+ *     thrust along +X_4 radial, chi_y4 = -pi/2 gives thrust
+ *     along +Z_4 downrange).
  *
- * This implementation transcribes every equation VERBATIM: literal
- * `/ M_PI` where the EDD has `/pi`, and literal `0.5` where the
- * EDD has `1/2`. If angles are ever added or subtracted that come
- * from different conventions, the result mirrors whatever the
- * LVDC computed. The shadow replay layer is the source of truth
- * for whether the LVDC's /pi or 1/2 constants need any
- * reinterpretation.
+ * This implementation stays in radians internally. The EDD's
+ * half-rev literals are converted at transcription time:
+ *   - Every `/ pi` conversion is DROPPED (the quantity is
+ *     already radians in our pipeline; no scaling needed).
+ *   - Every `1/2` half-rev literal becomes `M_PI_2` radians.
+ *
+ * Shadow replay on 2026-11-18 confirmed the radian interpretation:
+ * the literal-0.5 build locked the DAC at its 15.3 deg magnitude
+ * limit for the full S-IVB burn; the M_PI_2 build produces a
+ * varying chi_y profile consistent with IGM physics.
  */
 
 #ifndef LVDC_IGM_POSITION_CORRECTION_H

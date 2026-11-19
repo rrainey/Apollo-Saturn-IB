@@ -49,11 +49,15 @@ double lvdc_igm_delta_2(double V_mps,
 
 double lvdc_igm_phi_iT(double R_T_m, double S_1, double delta_2,
                        double Theta_T_rad) {
-    /* Eq. 4.4.32. The `/ M_PI` matches the EDD half-revolution
-     * scaling verbatim. */
+    /* Eq. 4.4.32 — the EDD form is
+     *   phi_iT = (S_1 + delta_2) cos(Theta_T) / (R_T * pi)
+     * where the `/ pi` converts the arc-length-over-radius
+     * radian quantity to the LVDC's half-revolution angle unit.
+     * We stay in radians everywhere, so the `/ pi` is dropped.
+     * See lvdc_igm_position_correction.h ANGLE-UNIT CONVENTION. */
     if (R_T_m == 0.0) return 0.0;
     const double num = (S_1 + delta_2) * cos(Theta_T_rad);
-    return num / (R_T_m * M_PI);
+    return num / R_T_m;
 }
 
 double lvdc_igm_phi_T(double phi_i_rad, double phi_iT_rad) {

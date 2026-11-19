@@ -130,18 +130,26 @@ int lvdc_igm_position_correction(const lvdc_igm_pc_inputs_t *in,
 
     /* --------------------------------------------------------------
      * Corrected Guidance Commands in 4-System (EDD page 40).
-     * Equations transcribed verbatim, including /pi and -1/2 literals.
+     *
+     * The EDD writes these equations in LVDC half-revolution angle
+     * units (angle / pi radians). The `/ pi` divisors on the K-
+     * correction terms and the trailing `1/2` in Eq. 4.4.81 are
+     * half-rev literals. Converted to radians (our internal unit):
+     *   `/ pi` is dropped on each K correction term.
+     *   `1/2` becomes `pi/2` (= M_PI_2).
+     * The physics is unchanged — see the ANGLE-UNIT CONVENTION
+     * note in lvdc_igm_position_correction.h.
      * ------------------------------------------------------------ */
 
-    /* Eq. 4.4.81 — χ_y4 = χ̃_y - (K_1 - K_2 ΔT_N)/π - φ_T - 1/2. */
+    /* Eq. 4.4.81 — χ_y4 = χ̃_y - (K_1 - K_2 ΔT_N) - φ_T - π/2. */
     const double chi_y4 = in->chi_tilde_y_rad
-                        - (K_1 - K_2 * dT_N) / M_PI
+                        - (K_1 - K_2 * dT_N)
                         - in->phi_T_rad
-                        - 0.5;
+                        - M_PI_2;
 
-    /* Eq. 4.4.82 — χ_z4 = χ̃_z - (K_3 - K_4 ΔT_N)/π. */
+    /* Eq. 4.4.82 — χ_z4 = χ̃_z - (K_3 - K_4 ΔT_N). */
     const double chi_z4 = in->chi_tilde_z_rad
-                        - (K_3 - K_4 * dT_N) / M_PI;
+                        - (K_3 - K_4 * dT_N);
 
     /* Write outputs. */
     out->J_3 = J_3;

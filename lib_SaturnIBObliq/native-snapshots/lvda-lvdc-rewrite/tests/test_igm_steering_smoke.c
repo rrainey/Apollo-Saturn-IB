@@ -86,16 +86,17 @@ int main(void) {
     }
 
     /* --------------------------------------------------------------
-     * 4. phi_iT inverse scaling with R_T.
+     * 4. phi_iT inverse scaling with R_T (radian form; EDD /pi is
+     *    an LVDC half-rev conversion that we drop in the radian
+     *    pipeline).
      * ------------------------------------------------------------ */
     {
         const double R_T = 6.571e6, S_1 = 1.0e5, d2 = 5.0e4;
         const double Theta_T = 0.03;
         const double got = lvdc_igm_phi_iT(R_T, S_1, d2, Theta_T);
-        const double expected = (S_1 + d2) * cos(Theta_T)
-                              / (R_T * M_PI);
+        const double expected = (S_1 + d2) * cos(Theta_T) / R_T;
         CHECK_CLOSE(got, expected, 1e-12,
-                    "Eq. 4.4.32 phi_iT formula");
+                    "Eq. 4.4.32 phi_iT formula (radians)");
         CHECK_CLOSE(lvdc_igm_phi_iT(0.0, S_1, d2, Theta_T),
                     0.0, 1e-15,
                     "Eq. 4.4.32 R_T=0 guard");
