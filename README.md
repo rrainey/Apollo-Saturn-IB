@@ -65,12 +65,12 @@ The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mo
 
 | Event | Flight time | TM \|V\| | Sim \|V\| | Residual | Alt residual |
 |---|---|---|---|---|---|
-| Max Q | 75.0 s | 742.13 m/s | 738.31 m/s | −3.82 m/s | — |
-| IECO | 140.11 s | 2267.77 m/s | 2248.38 m/s | −19.39 m/s | — |
-| OECO | 143.11 s | 2325.01 m/s | 2315.23 m/s | −9.78 m/s | — |
-| IGM initiation | 168.25 s | 2377.35 m/s | 2360.38 m/s | −16.97 m/s | — |
+| Max Q | 75.0 s | 742.13 m/s | 738.31 m/s | −3.82 m/s | +0.91 km |
+| IECO | 140.11 s | 2267.77 m/s | 2248.38 m/s | −19.39 m/s | +1.66 km |
+| OECO | 143.11 s | 2325.01 m/s | 2315.23 m/s | −9.78 m/s | +1.72 km |
+| IGM initiation | 168.25 s | 2377.53 m/s | 2360.38 m/s | −17.15 m/s | +2.32 km |
 
-The altitude residual column is left empty pending a TMX Table 5 altitude re-measurement under the current build. The sim altitudes at the interpolated event times are 13.23 km (Max Q), 59.07 km (IECO), 62.27 km (OECO), 87.32 km (IGM init).
+Altitude columns (sim and TMX) use Fischer geocentric-radial altitude. TMX Table 5 provides IECO/OECO/Max Q rows directly (ALT column, metres); the IGM initiation row is linearly interpolated between TMX Table 7 rows 163.11 s and 170.00 s because 168.25 s is not an explicit row. Altitude residuals grow monotonically through boost (~+1 km at Max Q to ~+2.3 km at IGM init) — the plant runs ~1% high on the thrust/drag balance during S-IB.
 
 The current mid-flight shape reflects:
 
