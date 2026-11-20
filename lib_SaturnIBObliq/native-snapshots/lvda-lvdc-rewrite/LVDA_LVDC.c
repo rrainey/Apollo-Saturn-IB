@@ -196,7 +196,9 @@ static void publish_outputs(LVDA_LVDC_t *model) {
  * EDD §8.1 during boost). `dt_minor_sec` is the elapsed time since
  * the previous invocation, in seconds. */
 static void step_attitude_pipeline(const LVDA_LVDC_t *model,
-                                   double dt_minor_sec) {
+                                   double dt_minor_sec,
+                                   bool fresh_mls,
+                                   int minors_per_mls) {
     double chi_cmd_rad[3];
     double chi_prime_rad[3];
     double theta_prime_rad[3];
@@ -218,9 +220,11 @@ static void step_attitude_pipeline(const LVDA_LVDC_t *model,
         chi_cmd_rad[2] = g_chi_igm_rad[1];  /* yaw   */
     }
 
-    /* Minor-loop rate-limit ramp (EDD §8.3.1). */
+    /* Minor-loop command update (EDD §8.3.1 Eq. 8.3.1). On the MLS
+     * edge recompute Δχ' = (χ − χ') / N; apply Δχ' each minor loop. */
     lvdc_minor_loop_step(&g_minor_loop, &g_params,
-                         chi_cmd_rad, dt_minor_sec, chi_prime_rad);
+                         chi_cmd_rad, fresh_mls, minors_per_mls,
+                         dt_minor_sec, chi_prime_rad);
 
     /* Gimbal-to-body transform (EDD §8.3.2 + Eq. 8.2.2). */
     deg_to_rad_vec(model->inputs.Theta_deg, theta_prime_rad);
@@ -518,7 +522,16 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             && ((model->sample_tick % minor_ticks) == 0ULL);
         if (at_minor) {
             const double dt_minor = (double)minor_ticks * model->dt;
-            step_attitude_pipeline(model, dt_minor);
+            /* N (EDD §8.3.1): minor loops per MLS cycle. The MLS
+             * runs on BML ticks (see at_BML gate above); every BML
+             * tick is also a minor tick because minor_ticks divides
+             * ticks_per_BML. */
+            const int minors_per_mls = (minor_ticks != 0ULL)
+                ? (int)(ticks_per_BML / minor_ticks)
+                : 0;
+            step_attitude_pipeline(model, dt_minor,
+                                   /*fresh_mls=*/at_BML,
+                                   minors_per_mls);
 
             /* HSL minor-loop pass (EDD §4.4.2.4 ¶7). Decrement
              * T_3i_hsl by 40 ms and fire cutoff when it drops

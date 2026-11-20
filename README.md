@@ -53,11 +53,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7772.99 m/s | −7.68 m/s |
+| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7773.17 m/s | −7.50 m/s |
 | Altitude (Fischer geocentric-radial) | 227.94 km | 234.36 km | +6.42 km |
 | HSL cutoff fire (sim time; flight time) | n/a | 914.10 s / 614.10 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.68 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment (7763.05) sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.50 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
 
 ### Mid-flight fit
 
@@ -65,10 +65,12 @@ The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mo
 
 | Event | Flight time | TM \|V\| | Sim \|V\| | Residual | Alt residual |
 |---|---|---|---|---|---|
-| Max Q | 75.0 s | 742.13 m/s | 745.98 m/s | +3.9 m/s | +0.85 km |
-| IECO | 140.11 s | 2267.77 m/s | 2261.06 m/s | −6.7 m/s | +0.83 km |
-| OECO | 143.11 s | 2325.01 m/s | 2328.24 m/s | +3.2 m/s | +0.83 km |
-| IGM initiation | 168.25 s | 2377.35 m/s | 2374.79 m/s | −2.6 m/s | +0.69 km |
+| Max Q | 75.0 s | 742.13 m/s | 738.31 m/s | −3.82 m/s | — |
+| IECO | 140.11 s | 2267.77 m/s | 2248.38 m/s | −19.39 m/s | — |
+| OECO | 143.11 s | 2325.01 m/s | 2315.23 m/s | −9.78 m/s | — |
+| IGM initiation | 168.25 s | 2377.35 m/s | 2360.38 m/s | −16.97 m/s | — |
+
+The altitude residual column is left empty pending a TMX Table 5 altitude re-measurement under the current build. The sim altitudes at the interpolated event times are 13.23 km (Max Q), 59.07 km (IECO), 62.27 km (OECO), 87.32 km (IGM init).
 
 The current mid-flight shape reflects:
 
@@ -76,7 +78,8 @@ The current mid-flight shape reflects:
 - Per-engine H-1 thrust gains in `model/saturn_ib_stack.json` are composed as `(TM-X-62831 Table 11 measured per-engine SL thrust ÷ Reference-2 curve t=0 value) × 1.004 × 0.99`, where the ×1.004 is the TM-X-62831 §V.A systematic flight-vs-ground bias and the ×0.99 is an empirical ~−1% de-rate to center the mid-flight residuals (the Reference-2 curve bakes altitude boost into the time axis; applying the per-engine measured-SL ratio uniformly over-boosts the altitude-dependent component). A proper structural fix would split thrust into `F_vac(t) × chamber_scale_i − P_amb(h_actual) × A_exit` (A_exit ≈ 1.4 m² back-solved from the curve). See `memory/project_h1_thrust_gain_provenance.md`.
 - J-2 engine Isp transition from 423.28 s (high thrust) to 431.67 s (low thrust) per TM-X-62831 Table 11.
 - `(M/F)_S` FIR filter history and `Rate_Limiter_0_005` state are seeded to the current raw 1/|a| sample on IGM enable rising edge. EDD §4.2.11 is a pure FIR with no slew cap; the modeled rate limiter is an obliq-2 model artifact whose cold-start lag (~5 BMLs to catch up from the S-IB→S-IVB staging coast step) was producing an 8° Chi-Y pitch-up transient on the first IGM BMLs. Seeding on IGM enable removes that transient.
-- **HSL EDD-fidelity fixes (2026-11-19).** Two EDD §4.4.2.4 transcription corrections in `lvdc_hsl.c`: (1) Eq. 4.4.91 computes A'' as `[(V−V')·ΔT' − (V'−V'')·ΔT] / [ΔT·ΔT'·(ΔT+ΔT')]` — both OCR renderings of the EDD typeset form garble the denominator; derive from Eq. 4.4.92 (`A' = A''·ΔT + (V−V')/ΔT`), which both OCRs agree on. (2) Fire logic now honors ¶520 ("fire when real_clock ≥ T_CO" → T_3i_hsl ≤ 0 in minor loop) and ¶528 (BML's refined T_3i < 20 ms fires immediately), replacing the previous "fire at T_3i < 60 ms" shortcut. Moved cutoff \|V_e\| peak from 7770.96 → 7772.99 (−2 m/s residual improvement) and shifted fire time 914.00 → 914.10 s. The PASCs 13 Table 4 and mid-flight fit rows above were last measured against the pre-rewrite legacy build; they have not been re-run since the rewrite promotion and will differ by the same ~2 m/s at cutoff.
+- **HSL EDD-fidelity fixes (2026-11-19).** Two EDD §4.4.2.4 transcription corrections in `lvdc_hsl.c`: (1) Eq. 4.4.91 computes A'' as `[(V−V')·ΔT' − (V'−V'')·ΔT] / [ΔT·ΔT'·(ΔT+ΔT')]` — both OCR renderings of the EDD typeset form garble the denominator; derive from Eq. 4.4.92 (`A' = A''·ΔT + (V−V')/ΔT`), which both OCRs agree on. (2) Fire logic now honors ¶520 ("fire when real_clock ≥ T_CO" → T_3i_hsl ≤ 0 in minor loop) and ¶528 (BML's refined T_3i < 20 ms fires immediately), replacing the previous "fire at T_3i < 60 ms" shortcut.
+- **Minor-loop /N interpolation (2026-11-20).** `lvdc_minor_loop.c` now applies the EDD §8.3.1 authoritative form Δχ' = (χ − χ') / N, where N = minors per MLS cycle (40). The prior build applied a rate-saturation shortcut that made χ' a zero-order hold of χ between BMLs; the plant chased a 1.6 s staircase, which produced a BML-locked Psi_pitch_deg oscillation of ~0.17 deg peak-to-peak during IGM. Post-fix the Psi_pitch_deg residual collapses to ±1 D/A LSB (±0.0575 deg) with no BML-period signature. Both rewrite and the legacy hand-edited MDL carried the same shortcut; the MDL side is unchanged. The tm-x-62831 cutoff \|V_e\| peak moved from 7772.99 → 7773.17 (−0.18 m/s residual improvement). The PASCs 13 Table 4 row above was last measured against the pre-rewrite legacy build and has not been re-run since.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 

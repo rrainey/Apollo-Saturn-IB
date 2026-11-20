@@ -41,23 +41,30 @@ int main(void) {
     const double deg2rad = M_PI / 180.0;
 
     /* ============================================================
-     * Section A: minor-loop rate limit (EDD §8.3.1)
+     * Section A: minor-loop Δχ' interpolation (EDD §8.3.1)
      * ========================================================== */
     lvdc_minor_loop_state_t ml;
     lvdc_minor_loop_reset(&ml);
 
-    /* A1. Zero input stays zero. */
+    /* N = minors per MLS cycle. Nominal AS-205 boost value: 40
+     * (40 ms minor loop / 1.6 s BML). Tests use the same N so the
+     * arithmetic lines up. */
+    const int N = 40;
+
+    /* A1. Zero input stays zero even with a fresh MLS tick. */
     {
         double chi_cmd[3] = {0.0, 0.0, 0.0};
         double chi_pr[3];
-        lvdc_minor_loop_step(&ml, &p, chi_cmd, dt, chi_pr);
+        lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                             /*fresh_mls=*/true, N, dt, chi_pr);
         for (int i = 0; i < 3; i++) {
             CHECK_CLOSE(chi_pr[i], 0.0, 1e-15, "minor-loop zero in = zero out");
         }
     }
 
-    /* A2. Step input: large chi_cmd should move chi' by at most
-     * rate_limit · dt per step. */
+    /* A2. Large step input saturates Δχ' at ±rate_limit·dt. The /N
+     * form first produces Δχ' = (10 deg)/N = 0.25 deg, which is
+     * well above the 0.005 deg per-step limit, so the clamp fires. */
     {
         lvdc_minor_loop_reset(&ml);
         double chi_cmd[3] = {
@@ -66,7 +73,8 @@ int main(void) {
               5.0 * deg2rad
         };
         double chi_pr[3];
-        lvdc_minor_loop_step(&ml, &p, chi_cmd, dt, chi_pr);
+        lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                             /*fresh_mls=*/true, N, dt, chi_pr);
 
         const double max_step = p.chi_rate_limit_radps[0] * dt;  /* 1 deg/sec · 0.005 s */
         CHECK_CLOSE(chi_pr[0],  max_step, 1e-15, "chi_pr[0] clamped to +rate·dt");
@@ -74,30 +82,55 @@ int main(void) {
         CHECK_CLOSE(chi_pr[2],  max_step, 1e-15, "chi_pr[2] clamped to +rate·dt");
     }
 
-    /* A3. After enough steps, chi' reaches chi_cmd. Target = 0.1 deg,
-     * rate = 1 deg/sec, dt = 0.005 s → needs 20 steps. */
+    /* A3. With the EDD /N interpolation, N minor loops land chi'
+     * exactly on chi_cmd when the per-minor increment is below the
+     * rate limit. Target = 0.1 deg, N = 40 → Δχ' = 0.0025 deg per
+     * minor, below the 0.005 deg per-step limit. */
     {
         lvdc_minor_loop_reset(&ml);
         double chi_cmd[3] = {0.1 * deg2rad, 0.0, 0.0};
         double chi_pr[3];
-        for (int i = 0; i < 25; i++) {
-            lvdc_minor_loop_step(&ml, &p, chi_cmd, dt, chi_pr);
+        /* First call captures the MLS sample; subsequent calls
+         * reuse the cached Δχ'. */
+        lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                             /*fresh_mls=*/true, N, dt, chi_pr);
+        for (int i = 1; i < N; i++) {
+            lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                                 /*fresh_mls=*/false, N, dt, chi_pr);
         }
         CHECK_CLOSE(chi_pr[0], chi_cmd[0], 1e-15,
-                    "chi_pr reaches chi_cmd after enough steps");
+                    "chi_pr lands on chi_cmd after exactly N minor loops");
     }
 
     /* A4. Settled state: small chi_cmd below the per-step limit
-     * follows without truncation. */
+     * follows without truncation after one full MLS cycle. */
     {
         lvdc_minor_loop_reset(&ml);
         double chi_cmd[3] = {1e-6, -2e-6, 3e-6};
         double chi_pr[3];
-        lvdc_minor_loop_step(&ml, &p, chi_cmd, dt, chi_pr);
+        lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                             /*fresh_mls=*/true, N, dt, chi_pr);
+        for (int i = 1; i < N; i++) {
+            lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                                 /*fresh_mls=*/false, N, dt, chi_pr);
+        }
         CHECK_CLOSE(chi_pr[0], chi_cmd[0], 1e-18,
-                    "small chi_cmd passes through on first step");
+                    "small chi_cmd[0] reached after N minors");
         CHECK_CLOSE(chi_pr[1], chi_cmd[1], 1e-18,
-                    "small chi_cmd[1] passes through");
+                    "small chi_cmd[1] reached after N minors");
+    }
+
+    /* A5. Legacy fallback: minors_per_mls <= 0 reverts to the
+     * rate-saturation-only form the tests originally covered. */
+    {
+        lvdc_minor_loop_reset(&ml);
+        double chi_cmd[3] = {10.0 * deg2rad, 0.0, 0.0};
+        double chi_pr[3];
+        lvdc_minor_loop_step(&ml, &p, chi_cmd,
+                             /*fresh_mls=*/true, /*N=*/0, dt, chi_pr);
+        const double max_step = p.chi_rate_limit_radps[0] * dt;
+        CHECK_CLOSE(chi_pr[0], max_step, 1e-15,
+                    "legacy fallback still clamps at rate·dt");
     }
 
     /* ============================================================
