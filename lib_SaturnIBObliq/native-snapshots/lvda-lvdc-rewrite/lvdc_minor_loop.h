@@ -3,29 +3,34 @@
  * (EDD §8.3.1 Eq. 8.3.1).
  *
  * The LVDC produces the "chi prime" (`chi'`) minor-loop attitude
- * command at 25 Hz (40 ms minor loop) during boost by ramping toward
- * the guidance command `chi` at a limited rate. The ramp prevents
- * actuator slew from exceeding vehicle control authority when the
- * guidance command jumps between BMLs.
+ * command at 25 Hz (40 ms minor loop) during boost. Minor loop
+ * support (MLS) runs at the BML rate (1.6 s) and resamples the
+ * guidance command `chi`. Between MLS cycles each minor loop adds
+ * a fixed increment:
  *
- * Authoritative form (EDD §8.3.1 Eq. 8.3.1):
+ *   On the MLS edge (fresh guidance sample):
+ *     Delta_chi'_i = (chi_i - chi'_i_prev) / N
+ *     Delta_chi'_i = sat(Delta_chi'_i, Delta_chi'_i_max)
+ *   On each minor loop (including the MLS edge):
+ *     chi'_i_new = chi'_i_prev + Delta_chi'_i
  *
- *   Delta_chi'_i = (chi_i - chi'_i_prev) / N
- *   Delta_chi'_i = sat(Delta_chi'_i, Delta_chi'_i_max)
- *   chi'_i_new   = chi'_i_prev + Delta_chi'_i
+ * `N` is the number of minor loops per MLS cycle (nominally 40 at
+ * a 40 ms minor loop and a 1.6 s BML). The magnitude limit on
+ * Delta_chi' provides rate limiting; the /N divisor interpolates
+ * the staircase guidance command into a smooth ramp between BMLs.
+ * Without the divisor chi' is a ZOH of chi and the plant chases a
+ * 1.6 s staircase, which produces a BML-rate residual in Psi
+ * (EDD §8.3.1 last paragraph).
  *
- * where `N` is the number of minor loops between minor-loop-support
- * cycles (nominally 40 at a 40 ms minor loop and a 1.6 s BML).
- *
- * The current hand-edited body uses a simpler continuous-rate
- * limiter at the fundamental step. For AS-205 the two forms converge
- * to the same steady-state value and differ only in the first-tick
- * transient after a BML update. The rewrite follows the simpler
- * continuous-rate form (see Rev B note in lvdc_minor_loop.c).
+ * The caller passes `fresh_mls=true` on the tick at which the
+ * guidance command has just been updated (BML). On other ticks
+ * the cached increment is reused.
  */
 
 #ifndef LVDC_MINOR_LOOP_H
 #define LVDC_MINOR_LOOP_H
+
+#include <stdbool.h>
 
 #include "lvdc_internal.h"
 #include "lvdc_params.h"
@@ -35,23 +40,33 @@ extern "C" {
 #endif
 
 typedef struct {
-    double chi_prime_rad[3]; /* previous minor-loop attitude command */
+    double chi_prime_rad[3];       /* previous minor-loop attitude command */
+    double dchi_per_minor_rad[3];  /* cached Delta_chi' from the latest MLS */
+    bool   mag_limited[3];         /* true if the cached Delta_chi' hit the rate limit (EDD §8.3.1 SMC inhibit) */
 } lvdc_minor_loop_state_t;
 
 /* Clear the minor-loop state to zero. */
 void lvdc_minor_loop_reset(lvdc_minor_loop_state_t *s);
 
-/* Advance `chi'` toward `chi_cmd_rad` with per-axis rate limiting.
+/* Advance `chi'` toward `chi_cmd_rad`.
  *
- *   s              minor-loop state (chi' from the previous call).
+ *   s              minor-loop state (chi' + cached Delta_chi').
  *   p              mission preset parameters (reads chi_rate_limit_radps).
  *   chi_cmd_rad    current guidance command vector.
+ *   fresh_mls      true on the minor tick that coincides with an MLS
+ *                  (BML) cycle. On that tick Delta_chi' is recomputed
+ *                  from (chi - chi') / minors_per_mls and clamped.
+ *   minors_per_mls number of minor loops per MLS cycle (N in EDD
+ *                  Eq. 8.3.1). Nominally 40. If <=0 the step acts as
+ *                  a plain rate limiter (legacy behavior).
  *   dt_sec         time since the previous call in seconds.
  *   chi_prime_out  output: new chi' values. May alias chi_cmd_rad.
  */
 void lvdc_minor_loop_step(lvdc_minor_loop_state_t *s,
                           const lvdc_params_t *p,
                           const double chi_cmd_rad[3],
+                          bool fresh_mls,
+                          int minors_per_mls,
                           double dt_sec,
                           double chi_prime_out[3]);
 
