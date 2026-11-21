@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-19T03:59:49.149Z
+ * Generated on: 2026-11-21T02:56:00.898Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -3258,8 +3258,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IB_Stage_Earth_Gravity_Model_Trigonometric_Function (from S_IB_Stage > Earth_Gravity_Model) */
     if (model->enable_states.S_IB_Stage_enabled) {
-            // Trig block: S_IB_Stage_Earth_Gravity_Model_Trigonometric_Function (asin)
-            model->signals.S_IB_Stage_Earth_Gravity_Model_Trigonometric_Function = asin(model->signals.S_IB_Stage_Earth_Gravity_Model_Divide1);
+            // Square (x^2) block: S_IB_Stage_Earth_Gravity_Model_Trigonometric_Function
+            model->signals.S_IB_Stage_Earth_Gravity_Model_Trigonometric_Function = (model->signals.S_IB_Stage_Earth_Gravity_Model_Divide1) * (model->signals.S_IB_Stage_Earth_Gravity_Model_Divide1);
     }
 
     /* S_IB_Stage_Earth_Gravity_Model_Gain (from S_IB_Stage > Earth_Gravity_Model) */
@@ -6662,8 +6662,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->signals.On_Pad_Earth_Gravity_Model_Divide1 = (model->signals.On_Pad_Earth_Gravity_Model_Demux_2) / (model->signals.On_Pad_Earth_Gravity_Model_Math_Function3);
 
     /* On_Pad_Earth_Gravity_Model_Trigonometric_Function (from On_Pad > Earth_Gravity_Model) */
-    // Trig block: On_Pad_Earth_Gravity_Model_Trigonometric_Function (asin)
-    model->signals.On_Pad_Earth_Gravity_Model_Trigonometric_Function = asin(model->signals.On_Pad_Earth_Gravity_Model_Divide1);
+    // Square (x^2) block: On_Pad_Earth_Gravity_Model_Trigonometric_Function
+    model->signals.On_Pad_Earth_Gravity_Model_Trigonometric_Function = (model->signals.On_Pad_Earth_Gravity_Model_Divide1) * (model->signals.On_Pad_Earth_Gravity_Model_Divide1);
 
     /* On_Pad_Earth_Gravity_Model_Gain (from On_Pad > Earth_Gravity_Model) */
     // Scale block: On_Pad_Earth_Gravity_Model_Gain (gain = 5)
@@ -6867,8 +6867,8 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
 
     /* S_IVB_Stage_Earth_Gravity_Model_Trigonometric_Function (from S_IVB_Stage > Earth_Gravity_Model) */
     if (model->enable_states.S_IVB_Stage_enabled) {
-            // Trig block: S_IVB_Stage_Earth_Gravity_Model_Trigonometric_Function (asin)
-            model->signals.S_IVB_Stage_Earth_Gravity_Model_Trigonometric_Function = asin(model->signals.S_IVB_Stage_Earth_Gravity_Model_Divide1);
+            // Square (x^2) block: S_IVB_Stage_Earth_Gravity_Model_Trigonometric_Function
+            model->signals.S_IVB_Stage_Earth_Gravity_Model_Trigonometric_Function = (model->signals.S_IVB_Stage_Earth_Gravity_Model_Divide1) * (model->signals.S_IVB_Stage_Earth_Gravity_Model_Divide1);
     }
 
     /* S_IVB_Stage_Earth_Gravity_Model_Gain (from S_IVB_Stage > Earth_Gravity_Model) */
