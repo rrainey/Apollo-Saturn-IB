@@ -11858,15 +11858,13 @@
                               },
                               {
                                 "id": "trig_979",
-                                "type": "trig",
+                                "type": "square",
                                 "name": "Trigonometric_Function",
                                 "position": {
                                   "x": 1029,
                                   "y": 470
                                 },
-                                "parameters": {
-                                  "function": "asin",
-                                  "showName": false
+                                "parameters": {                                  "showName": false
                                 }
                               },
                               {
@@ -22642,15 +22640,13 @@
                               },
                               {
                                 "id": "trig_1841",
-                                "type": "trig",
+                                "type": "square",
                                 "name": "Trigonometric_Function",
                                 "position": {
                                   "x": 1029,
                                   "y": 470
                                 },
-                                "parameters": {
-                                  "function": "asin",
-                                  "showName": false
+                                "parameters": {                                  "showName": false
                                 }
                               },
                               {
@@ -45689,15 +45685,13 @@
                               },
                               {
                                 "id": "trig_3706",
-                                "type": "trig",
+                                "type": "square",
                                 "name": "Trigonometric_Function",
                                 "position": {
                                   "x": 1029,
                                   "y": 470
                                 },
-                                "parameters": {
-                                  "function": "asin",
-                                  "showName": false
+                                "parameters": {                                  "showName": false
                                 }
                               },
                               {

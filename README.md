@@ -39,15 +39,15 @@ The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,259,984 m | +1,706 m |
-| Y_S | 144,698 m | 144,398 m | −300 m |
-| Z_S | 2,092,098 m | 2,087,135 m | −4,963 m |
-| DX | −2,472.80 m/s | −2,466.20 m/s | +6.60 m/s |
+| X_S | 6,258,278 m | 6,260,070 m | +1,792 m |
+| Y_S | 144,698 m | 144,383 m | −315 m |
+| Z_S | 2,092,098 m | 2,086,876 m | −5,222 m |
+| DX | −2,472.80 m/s | −2,465.74 m/s | +7.06 m/s |
 | DY | 412.48 m/s | 412.40 m/s | −0.08 m/s |
-| DZ | 7,365.73 m/s | 7,367.03 m/s | +1.30 m/s |
-| \|V\| | 7,780.67 m/s | 7,779.81 m/s | −0.86 m/s |
+| DZ | 7,365.73 m/s | 7,366.52 m/s | +0.79 m/s |
+| \|V\| | 7,780.67 m/s | 7,779.17 m/s | −1.50 m/s |
 
-The LVDC's own \|V_S\| magnitude is within 1 m/s of TMX — the scalar residual of −7.71 m/s in the plant \|V_e\| summary below comes from plant-side tailoff modeling, not LVDC guidance.
+The LVDC's own \|V_S\| magnitude is within 1.5 m/s of TMX — the scalar residual of −5.53 m/s in the plant \|V_e\| summary below comes from plant-side tailoff modeling, not LVDC guidance.
 
 ### Scalar cutoff summary
 
@@ -55,11 +55,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7772.96 m/s | −7.71 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 234.35 km | +6.41 km |
-| HSL cutoff fire (sim time; flight time) | n/a | 914.10 s / 614.10 s | — |
+| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7775.14 m/s | −5.53 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 230.30 km | +2.36 km |
+| HSL cutoff fire (sim time; flight time) | n/a | 914.04 s / 614.04 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −7.71 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −5.53 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
 
 ### Mid-flight fit
 
@@ -67,12 +67,12 @@ The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mo
 
 | Event | Flight time | TM \|V\| | Sim \|V\| | Residual | Alt residual |
 |---|---|---|---|---|---|
-| Max Q | 75.0 s | 742.13 m/s | 746.38 m/s | +4.25 m/s | +0.85 km |
-| IECO | 140.11 s | 2267.77 m/s | 2261.69 m/s | −6.08 m/s | +0.78 km |
-| OECO | 143.11 s | 2325.01 m/s | 2328.77 m/s | +3.76 m/s | +0.79 km |
-| IGM initiation | 168.25 s | 2377.53 m/s | 2376.41 m/s | −1.12 m/s | +0.86 km |
+| Max Q | 75.0 s | 742.13 m/s | 745.68 m/s | +3.55 m/s | +0.79 km |
+| IECO | 140.11 s | 2267.77 m/s | 2259.93 m/s | −7.84 m/s | +0.57 km |
+| OECO | 143.11 s | 2325.01 m/s | 2327.00 m/s | +1.99 m/s | +0.57 km |
+| IGM initiation | 168.25 s | 2377.53 m/s | 2374.68 m/s | −2.85 m/s | +0.55 km |
 
-Altitude columns (sim and TMX) use Fischer geocentric-radial altitude. TMX Table 5 provides IECO/OECO/Max Q rows directly (ALT column, metres); the IGM initiation row is linearly interpolated between TMX Table 7 rows 163.11 s and 170.00 s because 168.25 s is not an explicit row. Altitude residuals sit at ~+0.8 km through S-IB — the remaining bias is the H-1 thrust/altitude coupling described in `memory/project_sib_altitude_bias.md`. The pitch command polynomial itself matches TMX Appendix B Table 2B within 0.005° at every 2 s sample.
+Altitude columns (sim and TMX) use Fischer geocentric-radial altitude. TMX Table 5 provides IECO/OECO/Max Q rows directly (ALT column, metres); the IGM initiation row is linearly interpolated between TMX Table 7 rows 163.11 s and 170.00 s because 168.25 s is not an explicit row. Altitude residuals sit at ~+0.6 km through S-IB — the remaining bias is the H-1 thrust/altitude coupling described in `memory/project_sib_altitude_bias.md`. The pitch command polynomial itself matches TMX Appendix B Table 2B within 0.005° at every 2 s sample.
 
 The current mid-flight shape reflects:
 
@@ -82,6 +82,7 @@ The current mid-flight shape reflects:
 - `(M/F)_S` FIR filter history and `Rate_Limiter_0_005` state are seeded to the current raw 1/|a| sample on IGM enable rising edge. EDD §4.2.11 is a pure FIR with no slew cap; the modeled rate limiter is an obliq-2 model artifact whose cold-start lag (~5 BMLs to catch up from the S-IB→S-IVB staging coast step) was producing an 8° Chi-Y pitch-up transient on the first IGM BMLs. Seeding on IGM enable removes that transient.
 - **HSL EDD-fidelity fixes (2026-11-19).** Two EDD §4.4.2.4 transcription corrections in `lvdc_hsl.c`: (1) Eq. 4.4.91 computes A'' as `[(V−V')·ΔT' − (V'−V'')·ΔT] / [ΔT·ΔT'·(ΔT+ΔT')]` — both OCR renderings of the EDD typeset form garble the denominator; derive from Eq. 4.4.92 (`A' = A''·ΔT + (V−V')/ΔT`), which both OCRs agree on. (2) Fire logic now honors ¶520 ("fire when real_clock ≥ T_CO" → T_3i_hsl ≤ 0 in minor loop) and ¶528 (BML's refined T_3i < 20 ms fires immediately), replacing the previous "fire at T_3i < 60 ms" shortcut.
 - **Minor-loop phase-dependent /N interpolation (2026-11-20).** `lvdc_minor_loop.c` applies the EDD §8.3.1 authoritative form Δχ' = (χ − χ') / N. The caller passes N = 40 (EDD §15 MS25DT) with fresh_mls = at_BML during IGM, where χ only refreshes at MLS cadence — this removes the 1.6 s BML-locked Psi_pitch_deg oscillation (post-fix pp = ±1 D/A LSB). During pre-IGM time tilt the caller passes N = 1 with fresh_mls = true every minor loop, because the χ_y polynomial re-evaluates each minor and EDD §4.4.1.2 requires χ' to stay within ±0.1° of the polynomial (the /40 lag would violate that spec by ~10× at AS-205 pitch rates). The magnitude clamp (1 deg/s per axis) remains in both phases. Both rewrite and the legacy hand-edited MDL previously used a rate-saturation shortcut; the MDL side is unchanged.
+- **Plant J2 gravity term fix (2026-11-20).** The `Earth_Gravity_Model` subsystem in `model/saturn_ib_stack.json` (replicated across `On_Pad`, `S_IB_Stage`, `S_IVB_Stage`) passed `z/r = sin(lat_geocentric)` into a `trig/asin` block, yielding `5·lat_radians` in the oblate factor instead of the physically correct `5·sin²(lat)`. Replaced each `trig/asin` block with a `square` block and regenerated via `OBLIQ_ROOT=~/src/obliq-2 lib_SaturnIBObliq/scripts/regen-fullstack.sh`. Effect: mid-S-IB altitude bias dropped from ~+0.85 km to ~+0.57 km, SECO altitude residual +6.41 km → +2.36 km, cutoff \|V_e\| residual −7.71 → −5.53 m/s. The second residual bug — `Bias2` collapsing the J2 vector correction to a scalar via `Product3[0] + 1` instead of a vector add — is tracked separately in `memory/project_plant_gravity_model.md` and is not addressed here.
 
 The guidance loop runs on the Equation Defining Document cadences: the Boost Major Loop (BML) at 1.6 s and the HSL minor loop at 40 ms. The HSL cutoff decision uses the Eq. 4.4.91-94 velocity polynomial with a 3-sample V-history refreshed on BML boundaries; the ΔV_b = 7.2381 m/s and V_T = 7780.67 m/s presettings come from EDD Part II Table 1-3.
 
