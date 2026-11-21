@@ -411,14 +411,24 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
 
             /* IGM compute (once per BML when enabled). Output
              * chi_y, chi_z are latched into g_chi_igm_rad for the
-             * minor loop. */
-            if (g_igm_enabled) {
-                double V_S[3];
-                lvdc_nav_compute_V_S(&g_lvdc, V_S);
-                const double V_mag = lvdc_nav_compute_V_S_magnitude(&g_lvdc);
-
+             * minor loop.
+             *
+             * EDD §4.4.2.4 (Rev-C addition, mirrored in the Rev-K
+             * Event Sequence Timeline Table 1-1 THSL+ΔT_b row):
+             * "On the first pass through the HSL, IGM guidance
+             * commands must be frozen to their last computed
+             * values". Gate the IGM update on `!lvdc_hsl_active` so
+             * g_chi_igm_rad holds the last pre-HSL chi throughout
+             * the HSL window. See memory/project_hsl_igm_freeze_
+             * missing.md. The BML-rate V_mag sample is still
+             * computed below for the HSL velocity polynomial. */
+            double V_S[3];
+            lvdc_nav_compute_V_S(&g_lvdc, V_S);
+            const double V_mag = lvdc_nav_compute_V_S_magnitude(&g_lvdc);
+            int rc = 0;
+            if (g_igm_enabled && !lvdc_hsl_active(&g_hsl)) {
                 double chi_y = 0.0, chi_z = 0.0;
-                const int rc = lvdc_igm_update(
+                rc = lvdc_igm_update(
                     &g_igm,
                     g_lvdc.sensor.dT_BML_sec,
                     V_mag,
@@ -439,6 +449,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                  * falls back to preigm until g_igm_valid latches.
                  * Once valid, we hold the last good chi on any
                  * subsequent transient error. */
+            }
+            if (g_igm_enabled) {
 
                 /* Publish the running time-to-go-to-cutoff and refined
                  * |V_S| for --igm-trace. Once HSL is active, its own
