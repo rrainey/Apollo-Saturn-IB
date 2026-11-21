@@ -14,17 +14,22 @@
  *   On each minor loop (including the MLS edge):
  *     chi'_i_new = chi'_i_prev + Delta_chi'_i
  *
- * `N` is the number of minor loops per MLS cycle (nominally 40 at
- * a 40 ms minor loop and a 1.6 s BML). The magnitude limit on
- * Delta_chi' provides rate limiting; the /N divisor interpolates
- * the staircase guidance command into a smooth ramp between BMLs.
- * Without the divisor chi' is a ZOH of chi and the plant chases a
- * 1.6 s staircase, which produces a BML-rate residual in Psi
- * (EDD §8.3.1 last paragraph).
+ * `N` is the number of minor loops per MLS cycle. EDD §15 MS25DT
+ * defines N = 40 during boost (40 ms minor loop, 1.6 s BML). The
+ * magnitude limit on Delta_chi' provides rate limiting; the /N
+ * divisor interpolates the staircase guidance command into a smooth
+ * ramp between BMLs. Without the divisor chi' is a ZOH of chi and
+ * the plant chases a 1.6 s staircase, which produces a BML-rate
+ * residual in Psi (EDD §8.3.1 last paragraph).
  *
- * The caller passes `fresh_mls=true` on the tick at which the
- * guidance command has just been updated (BML). On other ticks
- * the cached increment is reused.
+ * Phase-dependent N: IGM only updates chi at MLS cadence so the
+ * caller passes N = 40 and fresh_mls = at_BML. Pre-IGM time tilt
+ * re-evaluates the chi_y polynomial every minor loop and EDD
+ * §4.4.1.2 requires chi' to stay within ±0.1° of the polynomial;
+ * the /40 lag violates that spec at AS-205 pitch rates. The caller
+ * passes N = 1 with fresh_mls = true every minor during pre-IGM so
+ * chi' catches up each minor, clamped by the 1 deg/s magnitude
+ * limit.
  */
 
 #ifndef LVDC_MINOR_LOOP_H
