@@ -35,17 +35,19 @@ The simulation is validated against the pre-flight operational trajectory in NAS
 
 ### Dominant-signal fidelity: PASCs 13 state vector at S-IVB cutoff
 
-The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/velocity columns, which pin direction as well as magnitude. Sample taken at the first BML boundary after Table 4's flight time (614.63 s): the probe fires at sim time 915.20 s (flight time 615.20 s), i.e. 0.57 s past the reference instant — most of the residual below is pure dead-reckoning at ~7.4 km/s over that interval.
+The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/velocity columns, which pin direction as well as magnitude. Table 4 is defined at "S-IVB Stage End Conditions of Flight" — post-tailoff. The sim's HSL fires cutoff at flight time 614.10 s (0.53 s ahead of TMX's 614.63 s GCS reference); the LVDC's own \|V_S\| then rises through tailoff and peaks at the next BML past engine-shutoff. The sample below is taken at that post-tailoff BML (sim time 916.80 s, flight time 616.80 s, 2.17 s past the TMX reference instant). Most of the X_S / Z_S residuals are pure dead-reckoning at ~7.4 km/s over that interval.
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,260,317 m | +2,039 m |
-| Y_S | 144,698 m | 144,386 m | −312 m |
-| Z_S | 2,092,098 m | 2,086,435 m | −5,663 m |
-| DX | −2,472.80 m/s | −2,463.73 m/s | +9.07 m/s |
-| DY | 412.48 m/s | 412.53 m/s | +0.05 m/s |
-| DZ | 7,365.73 m/s | 7,367.71 m/s | +1.98 m/s |
-| \|V\| | 7,780.67 m/s | 7,779.67 m/s | −1.00 m/s |
+| X_S | 6,258,278 m | 6,259,984 m | +1,706 m |
+| Y_S | 144,698 m | 144,398 m | −300 m |
+| Z_S | 2,092,098 m | 2,087,135 m | −4,963 m |
+| DX | −2,472.80 m/s | −2,466.20 m/s | +6.60 m/s |
+| DY | 412.48 m/s | 412.40 m/s | −0.08 m/s |
+| DZ | 7,365.73 m/s | 7,367.03 m/s | +1.30 m/s |
+| \|V\| | 7,780.67 m/s | 7,779.81 m/s | −0.86 m/s |
+
+The LVDC's own \|V_S\| magnitude is within 1 m/s of TMX — the scalar residual of −7.71 m/s in the plant \|V_e\| summary below comes from plant-side tailoff modeling, not LVDC guidance.
 
 ### Scalar cutoff summary
 
