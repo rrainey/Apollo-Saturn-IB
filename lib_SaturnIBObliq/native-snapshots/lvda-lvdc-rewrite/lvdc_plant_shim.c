@@ -41,3 +41,21 @@ double s_V_S_mag_mps    = 0.0;   /* |V_S| from EDD Eq. 4.3.5.1 */
 double s_T_HSL_bias_sec = 0.0;   /* HSL entry threshold T_HSL + dT_b */
 double s_XS[3]          = { 0.0, 0.0, 0.0 };  /* g_lvdc.nav.X_S */
 double s_VS[3]          = { 0.0, 0.0, 0.0 };  /* V_S from Eq. 4.3.5 */
+
+/* Sensor-path isolation (EDD §4.3.1 Eq. 4.3.5 decomposition).
+ * V_S = V_m + V_S_init + V_Sg:
+ *   V_m       — PIPA-integrated velocity in S-frame, post-GRR,
+ *               non-gravitational component only.
+ *   V_S_init  — Eq. 3.4.4 earth-rotation seed (constant after GRR).
+ *   V_Sg      — gravity-integrated velocity (already in s_V_Sg).
+ *
+ * The dispatcher mirrors g_lvdc.sensor.V_m_mps and V_S_init into
+ * these globals each BML so the --igm-trace emission in
+ * SaturnIBPlantObliq.c can publish them for LVDC-vs-plant drift
+ * audits. */
+double s_V_m[3]      = { 0.0, 0.0, 0.0 };
+double s_V_S_init[3] = { 0.0, 0.0, 0.0 };
+
+/* MES DCM (E-frame → S-frame) exposed for off-line frame-rotation
+ * checks. Published once per BML from the plant input. */
+double s_MES_DCM[3][3] = {{1,0,0},{0,1,0},{0,0,1}};

@@ -77,6 +77,19 @@ typedef struct IgmTraceSample_tag {
   double G_S_prev_y;
   double G_S_prev_z;
 
+  /* Diagnostic: EDD §4.3.1 Eq. 4.3.5 decomposition V_S = V_m + V_S_init + V_Sg.
+   * V_m is the sensor-path-only (PIPA-integrated) velocity in the S-frame,
+   * post-GRR. V_S_init is the Eq. 3.4.4 earth-rotation seed (constant
+   * once liftoff latches). V_Sg (above) is the gravity-integrated term.
+   * Used to isolate sensor-path drift vs gravity-integration drift when
+   * auditing the LVDC-vs-plant velocity gap. */
+  double V_m_x;
+  double V_m_y;
+  double V_m_z;
+  double V_S_init_x;
+  double V_S_init_y;
+  double V_S_init_z;
+
   /* Diagnostic: HSL polynomial state (does it activate?) */
   double hsl_V_samples;
   double hsl_V_curr;

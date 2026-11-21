@@ -357,6 +357,8 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             extern double s_V_Sg[3];
             extern double s_G_S_prev[3];
             extern double s_XS[3], s_VS[3], s_V_S_mag_mps;
+            extern double s_V_m[3], s_V_S_init[3];
+            extern double s_MES_DCM[3][3];
             double V_S_trace[3];
             lvdc_nav_compute_V_S(&g_lvdc, V_S_trace);
             const double V_S_mag_trace =
@@ -366,6 +368,28 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                 s_G_S_prev[i] = g_lvdc.nav.G_S_prev[i];
                 s_XS[i]       = g_lvdc.nav.X_S[i];
                 s_VS[i]       = V_S_trace[i];
+                s_V_m[i]      = g_lvdc.sensor.V_m_mps[i];
+                s_V_S_init[i] = g_lvdc.sensor.V_S_init[i];
+                for (int k = 0; k < 3; k++) {
+                    s_MES_DCM[i][k] = model->inputs.MES_DCM[i][k];
+                }
+            }
+            /* One-shot MES_DCM dump on first BML with liftoff
+             * latched — supports the off-line frame-rotation check. */
+            {
+                static bool s_mes_dumped = false;
+                const char *mes_path = getenv("LVDC_MES_DCM_DUMP");
+                if (!s_mes_dumped && mes_path && *mes_path) {
+                    FILE *mf = fopen(mes_path, "w");
+                    if (mf) {
+                        fprintf(mf, "%.17g,%.17g,%.17g\n%.17g,%.17g,%.17g\n%.17g,%.17g,%.17g\n",
+                            s_MES_DCM[0][0], s_MES_DCM[0][1], s_MES_DCM[0][2],
+                            s_MES_DCM[1][0], s_MES_DCM[1][1], s_MES_DCM[1][2],
+                            s_MES_DCM[2][0], s_MES_DCM[2][1], s_MES_DCM[2][2]);
+                        fclose(mf);
+                        s_mes_dumped = true;
+                    }
+                }
             }
             s_V_S_mag_mps = V_S_mag_trace;
 

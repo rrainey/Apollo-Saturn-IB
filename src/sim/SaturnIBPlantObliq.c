@@ -150,6 +150,17 @@ int SaturnIBPlantObliq_fill_igm_trace(
     out->G_S_prev_x = s_G_S_prev[0]; out->G_S_prev_y = s_G_S_prev[1]; out->G_S_prev_z = s_G_S_prev[2];
   }
 
+#if defined(LVDC_USE_REWRITE)
+  {
+    /* Sensor-path isolation (EDD §4.3.1 Eq. 4.3.5). */
+    extern double s_V_m[3], s_V_S_init[3];
+    out->V_m_x = s_V_m[0]; out->V_m_y = s_V_m[1]; out->V_m_z = s_V_m[2];
+    out->V_S_init_x = s_V_S_init[0];
+    out->V_S_init_y = s_V_S_init[1];
+    out->V_S_init_z = s_V_S_init[2];
+  }
+#endif
+
   out->PAD_Ve_x = lv->inputs.PAD_Ve_mps[0];
   out->PAD_Ve_y = lv->inputs.PAD_Ve_mps[1];
   out->PAD_Ve_z = lv->inputs.PAD_Ve_mps[2];
