@@ -522,16 +522,34 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
             && ((model->sample_tick % minor_ticks) == 0ULL);
         if (at_minor) {
             const double dt_minor = (double)minor_ticks * model->dt;
-            /* N (EDD §8.3.1): minor loops per MLS cycle. The MLS
-             * runs on BML ticks (see at_BML gate above); every BML
-             * tick is also a minor tick because minor_ticks divides
-             * ticks_per_BML. */
-            const int minors_per_mls = (minor_ticks != 0ULL)
+            /* N (EDD §8.3.1) depends on how often χ is refreshed:
+             *   - IGM: χ is computed once per BML; MS25DT = 40 minors
+             *     per MLS cycle. The /N interpolation spreads the new
+             *     χ across the following 40 minor loops, removing the
+             *     1.6 s BML-locked oscillation (see merge commit
+             *     7ad47cf).
+             *   - Pre-IGM time-tilt: χ_y is a cubic polynomial that
+             *     can be re-evaluated every minor loop, so χ already
+             *     evolves smoothly at 40 ms cadence. EDD §4.4.1.2
+             *     requires χ' to lie within ±0.1° of the polynomial,
+             *     which the /40 form violates (steady-state lag at
+             *     0.65°/s pitch rate ≈ 1°). Use N=1 in pre-IGM so
+             *     each minor loop applies the full Δχ' = χ − χ'_prev
+             *     and χ' tracks the polynomial within one minor.
+             *     Magnitude clamp (1 deg/s) still protects large
+             *     transients. */
+            const int minors_per_mls_boost = (minor_ticks != 0ULL)
                 ? (int)(ticks_per_BML / minor_ticks)
                 : 0;
+            const bool igm_active = (g_igm_enabled && g_igm_valid);
+            const int  minors_per_mls =
+                igm_active ? minors_per_mls_boost : 1;
+            /* In pre-IGM the "MLS" effectively fires every minor
+             * loop (the polynomial is cheap and re-evaluates at
+             * minor cadence); in IGM it fires at BML. */
+            const bool fresh_mls = igm_active ? at_BML : true;
             step_attitude_pipeline(model, dt_minor,
-                                   /*fresh_mls=*/at_BML,
-                                   minors_per_mls);
+                                   fresh_mls, minors_per_mls);
 
             /* HSL minor-loop pass (EDD §4.4.2.4 ¶7). Decrement
              * T_3i_hsl by 40 ms and fire cutoff when it drops
