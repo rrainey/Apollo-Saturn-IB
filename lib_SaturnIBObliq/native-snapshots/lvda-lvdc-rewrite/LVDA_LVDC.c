@@ -93,15 +93,14 @@ static bool                     g_hsl_cutoff_edge_pending;
  *
  * Note on GRR vs. liftoff: on a real Saturn IB, the PIPA zero-reset
  * (EDD §4.2.3) and the X_0/V_0 seed (EDD §3.4) fire at Guidance
- * Reference Release — an LVDC-internal event scheduled by the
- * countdown program, nominally 17 s before liftoff. The obliq-2
- * parent model does not provide a separate GRR discrete, so the
- * rewrite latches on the bLiftoff rising edge instead, matching
- * the current hand-edited snapshot. The ~17 s of pad-held PIPA
- * integration is lost from V_m, but the matching integral of G_S
- * is also absent, so Eq. 4.3.5 still yields the correct inertial
- * velocity from liftoff onward. See lvdc_internal.h for the
- * balance derivation and the Phase D deferred action. */
+ * Reference Release — nominally 5 s before liftoff per TM-X-62831.
+ * The plant exposes a bGRR discrete at that instant (saturn_ib_stack.json
+ * evaluate_8000); migrating the LVDC's latch to that edge requires the
+ * trap-integration startup to handle the 5-s pad-hold with PIPA (+1g)
+ * and gravity (-1g) integrals cancelling cleanly.  Deferred — the
+ * current rewrite still latches on bLiftoff edge, which drops BOTH
+ * pad integrals together so Eq. 4.3.5 is self-consistent from liftoff
+ * onward.  See project_lvdc_plant_frame_offset.md "Remaining work". */
 static bool s_prev_bLiftoff;
 
 /* ---------------------------------------------------------------------
@@ -301,8 +300,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
         g_lvdc.last_compute_tick = model->sample_tick;
 
         /* --- Liftoff latch (EDD §3.4, §4.2.3 — see note above) ---
-         * Fire on the rising edge of bLiftoff. The current snapshot
-         * does the same at L1378. */
+         * Fire on the rising edge of bLiftoff. The plant now also publishes
+         * a bGRR discrete (fires 5 s earlier per TMX); migrating the latch
+         * to that edge requires reworking the trap-integration startup so
+         * the 5 s pad-hold's PIPA (+1g) and gravity (-1g) integrals cancel
+         * exactly.  See project_lvdc_plant_frame_offset.md "Remaining work". */
         if (!s_prev_bLiftoff && model->inputs.bLiftoff
                 && !g_lvdc.sensor.liftoff_latched) {
             double X_0[3], V_0[3];
