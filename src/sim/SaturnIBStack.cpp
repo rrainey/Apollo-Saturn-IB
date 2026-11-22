@@ -193,7 +193,7 @@ SaturnIBStack::SaturnIBStack(const BatchConfig & config)
     if (std::isnan(config.q_ECItoSM[0])) {
         sim::Quaternion q( 0.0, 0.0, 0.0 );
         for( int i=0; i<4; ++i )
-            pModelInputs->q_ECItoSM[0] = q.GetE( i );
+            pModelInputs->q_ECItoSM[i] = q.GetE( i );
     } else {
         for (int i = 0; i < 4; ++i)
             pModelInputs->q_ECItoSM[i] = config.q_ECItoSM[i];
