@@ -12,7 +12,8 @@
   "model": {
     "A_z_deg": 72.0,
     "CG_LLA_deg_m": [28.521963, -80.561141, 34.7],
-    "T_L_prime_sec": 300.0
+    "T_L_prime_sec": 300.0,
+    "GRR_offset_sec": -5.0
   },
   "agc": {
     "rom_path": "Colossus249.bin",

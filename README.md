@@ -31,23 +31,23 @@ The project is a curiosity mostly.  But it does demonstrate the excellent level 
 
 ## Simulation Fidelity
 
-The simulation is validated against the pre-flight operational trajectory in NASA TM-X-62831, *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision 1*. The LVDC guidance implementation integrates sensor data (ST-124M stabilized platform PIPAs) per EDD §4.3.1 Eqs. 4.3.1-5; no plant state vectors are read directly by the LVDC side. The plumbline navigation frame (PASCs 13 per NASA MSC MA-1461) is anchored at nominal Guidance Reference Release (T_L' − 17 s) and the LVDC X_0 / V_0 initial state is constructed from EDD Eqs. 3.4.3 / 3.4.4 directly, so the frame is consistent through the plant's state integrator, the ST-124M platform, and the LVDC's S-frame integration.
+The simulation is validated against the pre-flight operational trajectory in NASA TM-X-62831, *AS-205/CSM-101 Launch Vehicle Operational Trajectory, Revision 1*. The LVDC guidance implementation integrates sensor data (ST-124M stabilized platform PIPAs) per EDD §4.3.1 Eqs. 4.3.1-5; no plant state vectors are read directly by the LVDC side. The plumbline navigation frame (PASCs 13 per NASA MSC MA-1461) is anchored at nominal Guidance Reference Release — now a configurable scenario input `GRR_offset_sec` (AS-205 default −5.0 s per TM-X-62831), feeding both the top-level `MES_Transform` and `Initial_Conditions` subsystems — and the LVDC X_0 / V_0 initial state is constructed from EDD Eqs. 3.4.3 / 3.4.4 directly, so the frame is consistent through the plant's state integrator, the ST-124M platform, and the LVDC's S-frame integration.
 
 ### Dominant-signal fidelity: PASCs 13 state vector at S-IVB cutoff
 
-The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/velocity columns, which pin direction as well as magnitude. Table 4 is defined at "S-IVB Stage End Conditions of Flight" — post-tailoff. The sim's HSL fires cutoff at flight time 614.10 s (0.53 s ahead of TMX's 614.63 s GCS reference); the LVDC's own \|V_S\| then rises through tailoff and peaks at the next BML past engine-shutoff. The sample below is taken at that post-tailoff BML (sim time 916.80 s, flight time 616.80 s, 2.17 s past the TMX reference instant). Most of the X_S / Z_S residuals are pure dead-reckoning at ~7.4 km/s over that interval.
+The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/velocity columns, which pin direction as well as magnitude. Table 4 is defined at "S-IVB Stage End Conditions of Flight" — post-tailoff. The sim's HSL fires cutoff at flight time 615.20 s (0.57 s after TMX's 614.63 s GCS reference); the LVDC's own \|V_S\| then rises through tailoff and peaks at the next BML past engine-shutoff. The sample below is taken at that post-tailoff BML (sim time 916.80 s, flight time 616.80 s, 2.17 s past the TMX reference instant). Most of the X_S / Z_S residuals are pure dead-reckoning at ~7.4 km/s over that interval.
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,260,070 m | +1,792 m |
-| Y_S | 144,698 m | 144,383 m | −315 m |
-| Z_S | 2,092,098 m | 2,086,876 m | −5,222 m |
-| DX | −2,472.80 m/s | −2,465.74 m/s | +7.06 m/s |
-| DY | 412.48 m/s | 412.40 m/s | −0.08 m/s |
-| DZ | 7,365.73 m/s | 7,366.52 m/s | +0.79 m/s |
-| \|V\| | 7,780.67 m/s | 7,779.17 m/s | −1.50 m/s |
+| X_S | 6,258,278 m | 6,260,106 m | +1,828 m |
+| Y_S | 144,698 m | 144,376 m | −322 m |
+| Z_S | 2,092,098 m | 2,086,768 m | −5,330 m |
+| DX | −2,472.80 m/s | −2,466.01 m/s | +6.79 m/s |
+| DY | 412.48 m/s | 412.22 m/s | −0.26 m/s |
+| DZ | 7,365.73 m/s | 7,367.20 m/s | +1.47 m/s |
+| \|V\| | 7,780.67 m/s | 7,779.89 m/s | −0.78 m/s |
 
-The LVDC's own \|V_S\| magnitude is within 1.5 m/s of TMX — the scalar residual of −5.53 m/s in the plant \|V_e\| summary below comes from plant-side tailoff modeling, not LVDC guidance.
+The LVDC's own \|V_S\| magnitude is within 0.8 m/s of TMX. The plant \|V_e\| residual (below) closed from −5.53 m/s to −1.22 m/s after the GRR anchor was moved from T−17 s to T−5 s (TMX reference), which shifts the MES anchor instant by 12 s of Earth rotation (~0.05°) and redirects powered-flight thrust integration in the plant frame.
 
 ### Scalar cutoff summary
 
@@ -55,11 +55,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\| peak) | 7780.67 m/s | 7775.14 m/s | −5.53 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 230.30 km | +2.36 km |
-| HSL cutoff fire (sim time; flight time) | n/a | 914.04 s / 614.04 s | — |
+| Space-fixed velocity (plant \|V_e\| at sim_t=916.80) | 7780.67 m/s | 7779.45 m/s | −1.22 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 229.16 km | +1.22 km |
+| HSL cutoff fire (sim time; flight time) | n/a | 915.20 s / 615.20 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −5.53 m/s plant \|V_e\| peak residual is just outside that envelope. The LVDC's own \|V_S\| at the fire moment sits below V_T − ΔV_b = 7773.43 by ~10 m/s; thrust tailoff then adds ~15 m/s rather than the EDD-preset ΔV_b = 7.2381. The split between HSL firing fidelity and plant-side tailoff physics is tracked as a separate investigation (see `memory/project_sivb_cutoff_tailoff_gap.md`). The HSL side itself was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −1.22 m/s plant \|V_e\| residual sits comfortably inside that envelope. This closed from −5.53 m/s after the GRR anchor correction landed 2026-11-23 (`GRR_offset_sec = −5.0`, replacing a hardcoded −17 s shift in the MES GMST path). The LVDC's own \|V_S\| and plant \|V_e\| now agree to within 0.44 m/s at the post-tailoff BML; the previously-tracked ~5 m/s plant-vs-LVDC magnitude gap (memory `project_lvdc_plant_integration_drift.md`) was coupled to the frame anchor and effectively collapsed. The HSL side was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
 
 ### Mid-flight fit
 
@@ -67,10 +67,10 @@ The cutoff residuals are closed-loop (driven to V_T by the Iterative Guidance Mo
 
 | Event | Flight time | TM \|V\| | Sim \|V\| | Residual | Alt residual |
 |---|---|---|---|---|---|
-| Max Q | 75.0 s | 742.13 m/s | 745.68 m/s | +3.55 m/s | +0.79 km |
-| IECO | 140.11 s | 2267.77 m/s | 2259.93 m/s | −7.84 m/s | +0.57 km |
-| OECO | 143.11 s | 2325.01 m/s | 2327.00 m/s | +1.99 m/s | +0.57 km |
-| IGM initiation | 168.25 s | 2377.53 m/s | 2374.68 m/s | −2.85 m/s | +0.55 km |
+| Max Q | 75.0 s | 742.13 m/s | 746.21 m/s | +4.08 m/s | +0.78 km |
+| IECO | 140.11 s | 2267.77 m/s | 2256.85 m/s | −10.92 m/s | +0.56 km |
+| OECO | 143.11 s | 2325.01 m/s | 2326.22 m/s | +1.21 m/s | +0.55 km |
+| IGM initiation | 168.25 s | 2377.53 m/s | 2374.68 m/s | −2.85 m/s | +0.53 km |
 
 Altitude columns (sim and TMX) use Fischer geocentric-radial altitude. TMX Table 5 provides IECO/OECO/Max Q rows directly (ALT column, metres); the IGM initiation row is linearly interpolated between TMX Table 7 rows 163.11 s and 170.00 s because 168.25 s is not an explicit row. Altitude residuals sit at ~+0.6 km through S-IB — the remaining bias is the H-1 thrust/altitude coupling described in `memory/project_sib_altitude_bias.md`. The pitch command polynomial itself matches TMX Appendix B Table 2B within 0.005° at every 2 s sample.
 
@@ -88,7 +88,7 @@ The guidance loop runs on the Equation Defining Document cadences: the Boost Maj
 
 **Altitude convention.** The altitude rows above use Fischer-1960 geocentric-radial altitude (from the `s2_h_fischer_m` CSV column), matching TM-X-62831's own altitude definition. Native `OUT11[2]`, `OUT12[2]`, `OUT22[2]` continue to carry WGS-84 geodetic altitude for the GUI and other consumers. Fischer and WGS-84 differ by ~30 m on orbit; the +6 km altitude residual above is overwhelmingly real trajectory error, not ellipsoid-model choice. See [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md).
 
-**Frame-anchor history.** Prior to the Issue #4 resolution the plant's `MES_Transform` was anchored at the scenario sim-epoch (= liftoff − `T_L_prime_sec`) rather than at nominal GRR. That produced a 1.25° orthogonal rotation (ω_E · T_L' at R≈6,600 km → ≈115 km) in the PASCs 13 state vector, which went undetected by the scalar `|V|` cutoff summary because rotating a velocity vector preserves its magnitude. See [`docs/FRAME_ANCHOR_AUDIT.md`](docs/FRAME_ANCHOR_AUDIT.md) and [`docs/FRAME_ANCHOR_BRANCH_NOTES.md`](docs/FRAME_ANCHOR_BRANCH_NOTES.md) for the investigation trace.
+**Frame-anchor history.** Prior to the Issue #4 resolution the plant's `MES_Transform` was anchored at the scenario sim-epoch (= liftoff − `T_L_prime_sec`) rather than at nominal GRR. That produced a 1.25° orthogonal rotation (ω_E · T_L' at R≈6,600 km → ≈115 km) in the PASCs 13 state vector, which went undetected by the scalar `|V|` cutoff summary because rotating a velocity vector preserves its magnitude. The initial Issue #4 fix hardcoded a 17-second shift back from liftoff; on 2026-11-23 that literal was parameterized as a scenario-driven `GRR_offset_sec` top-level input (default −5.0 s for AS-205 per TM-X-62831) feeding both the top-level `MES_Transform` and `Initial_Conditions` subsystems. The 12-second anchor correction (T−17 → T−5) closed the plant \|V_e\| residual from −5.53 to −1.22 m/s and the liftoff V_S_init-vs-MES·PAD_Ve direction error from 0.081° to 0.031°. See [`docs/FRAME_ANCHOR_AUDIT.md`](docs/FRAME_ANCHOR_AUDIT.md) and [`docs/FRAME_ANCHOR_BRANCH_NOTES.md`](docs/FRAME_ANCHOR_BRANCH_NOTES.md) for the investigation trace.
 
 ## Build
 

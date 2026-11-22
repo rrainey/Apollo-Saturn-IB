@@ -114,6 +114,21 @@
             }
           },
           {
+            "id": "input_port_7777",
+            "type": "input_port",
+            "name": "GRR_offset_sec",
+            "position": {
+              "x": 194,
+              "y": -50
+            },
+            "parameters": {
+              "portName": "GRR_offset_sec",
+              "dataType": "double",
+              "defaultValue": 0,
+              "showName": false
+            }
+          },
+          {
             "id": "subsystem_6",
             "type": "subsystem",
             "name": "Body_to_ECI",
@@ -87192,8 +87207,8 @@
               "y": 900
             },
             "parameters": {
-              "numInputs": 2,
-              "expression": "in(0) + (in(1) - 17.0) * 0.00417807463889",
+              "numInputs": 3,
+              "expression": "in(0) + (in(1) + in(2)) * 0.00417807463889",
               "outputType": "double",
               "showName": false
             }
@@ -89683,6 +89698,13 @@
             "sourcePortIndex": 0,
             "targetBlockId": "evaluate_7400",
             "targetPortIndex": 1
+          },
+          {
+            "id": "wire_7703",
+            "sourceBlockId": "input_port_7777",
+            "sourcePortIndex": 0,
+            "targetBlockId": "evaluate_7400",
+            "targetPortIndex": 2
           },
           {
             "id": "wire_7701",

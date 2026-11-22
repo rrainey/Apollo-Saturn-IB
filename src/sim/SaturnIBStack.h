@@ -75,6 +75,7 @@ public:
         double      A_z_deg;               // NaN = 72.0 (TM-X-62831 launch azimuth)
         double      CG_LLA_deg_m[3];       // {NaN,NaN,NaN} = KSC LC-34
         double      T_L_prime_sec;         // <0 = 300.0
+        double      GRR_offset_sec;        // NaN = -5.0 (AS-205 per TM-X-62831)
         double      q_ECItoSM[4];          // {NaN,...} = historical default
 
         BatchConfig();

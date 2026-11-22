@@ -155,6 +155,7 @@ typedef struct {
     double CG_LLA_deg_m[3]; /* Input port: CG_LLA_deg_m */
     double q_ECItoSM[4][1]; /* Input port: q_ECItoSM */
     double T_L_prime_sec; /* Input port: T_L_prime_sec */
+    double GRR_offset_sec; /* Input port: GRR_offset_sec */
 } saturn_ib_stack_inputs_t;
 
 /* Model output signals */
@@ -190,6 +191,7 @@ typedef struct {
     double CG_LLA_deg_m[3]; /* Signal from input port: CG_LLA_deg_m */
     double q_ECItoSM[4][1]; /* Signal from input port: q_ECItoSM */
     double T_L_prime_sec; /* Signal from input port: T_L_prime_sec */
+    double GRR_offset_sec; /* Signal from input port: GRR_offset_sec */
     double Body_to_ECI_Math_Function[3][3];
     double Body_to_ECI_Product[3];
     double Body_to_ECI_Sum[3];

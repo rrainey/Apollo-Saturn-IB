@@ -171,6 +171,7 @@ RunConfig load_config(const std::string &path) {
         const auto &m = j["model"];
         cfg.sat.A_z_deg        = get_dbl(m, "A_z_deg",       cfg.sat.A_z_deg);
         cfg.sat.T_L_prime_sec  = get_dbl(m, "T_L_prime_sec", cfg.sat.T_L_prime_sec);
+        cfg.sat.GRR_offset_sec = get_dbl(m, "GRR_offset_sec", cfg.sat.GRR_offset_sec);
         parse_array_3(m, "CG_LLA_deg_m", cfg.sat.CG_LLA_deg_m);
         parse_array_4(m, "q_ECItoSM",    cfg.sat.q_ECItoSM);
     }
@@ -405,6 +406,9 @@ int main(int argc, char **argv) {
         cfg.run_time_sec, cfg.time_step_sec, cfg.run_time_sec / cfg.time_step_sec);
     std::fprintf(stderr, "  launch date: %04d-%02d-%02d %02d:%02d:%06.3f\n",
         cfg.year, cfg.month, cfg.day, cfg.hour, cfg.minute, cfg.second);
+    std::fprintf(stderr, "  T_L_prime=%.3f sec, GRR_offset=%.3f sec\n",
+        cfg.sat.T_L_prime_sec < 0 ? 300.0 : cfg.sat.T_L_prime_sec,
+        std::isnan(cfg.sat.GRR_offset_sec) ? -5.0 : cfg.sat.GRR_offset_sec);
 
     CsvWriter csv(cfg.csv_path);
     // Emit row 0 (initial state).

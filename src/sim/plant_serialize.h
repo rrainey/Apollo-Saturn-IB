@@ -33,7 +33,7 @@ typedef struct SaturnIBPlantObliq_tag SaturnIBPlantObliq;
 
 namespace dskymatic {
 
-constexpr uint32_t kPlantFormatVersion = 1;
+constexpr uint32_t kPlantFormatVersion = 2;
 
 // Serialize the plant's persistent state.
 void plant_serialize  (BinaryWriter &w, const SaturnIBPlantObliq *plant);

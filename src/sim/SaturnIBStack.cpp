@@ -72,7 +72,8 @@ static NullAgcBridge g_NullAgcBridge;
 SaturnIBStack::BatchConfig::BatchConfig()
     : pad_load_start_sec(-1.0),
       A_z_deg(std::numeric_limits<double>::quiet_NaN()),
-      T_L_prime_sec(-1.0)
+      T_L_prime_sec(-1.0),
+      GRR_offset_sec(std::numeric_limits<double>::quiet_NaN())
 {
     for (int i = 0; i < 3; ++i)
         CG_LLA_deg_m[i] = std::numeric_limits<double>::quiet_NaN();
@@ -199,6 +200,7 @@ SaturnIBStack::SaturnIBStack(const BatchConfig & config)
     }
 
     pModelInputs->T_L_prime_sec = (config.T_L_prime_sec < 0) ? 300.0 : config.T_L_prime_sec;
+    pModelInputs->GRR_offset_sec = std::isnan(config.GRR_offset_sec) ? -5.0 : config.GRR_offset_sec;
 
     m_dFDAI_Roll_deg = 0.0;
     m_dFDAI_Pitch_deg = 0.0;

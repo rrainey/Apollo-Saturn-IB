@@ -61,6 +61,7 @@ void saturn_ib_stack_apply_external_inputs(
   for (int i = 0; i < 3; i++) model->inputs.CG_LLA_deg_m[i] = in->CG_LLA_deg_m[i];
   for (int i = 0; i < 4; i++) model->inputs.q_ECItoSM[i][0] = in->q_ECItoSM[i];
   model->inputs.T_L_prime_sec = in->T_L_prime_sec;
+  model->inputs.GRR_offset_sec = in->GRR_offset_sec;
 
   /* One-time IC reseed after inputs are live (not every step). */
   if (!saturn_ib_stack_ics_seeded) {

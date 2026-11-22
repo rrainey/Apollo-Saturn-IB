@@ -549,6 +549,7 @@ void plant_serialize(BinaryWriter &w, const SaturnIBPlantObliq *plant) {
     for (int i = 0; i < 3; ++i) w.write_f64(m.inputs.CG_LLA_deg_m[i]);
     for (int i = 0; i < 4; ++i) w.write_f64(m.inputs.q_ECItoSM[i][0]);
     w.write_f64(m.inputs.T_L_prime_sec);
+    w.write_f64(m.inputs.GRR_offset_sec);
 
     // Signals + outputs (both top-level and LVDC).  These are the
     // ~1600-field intermediate signal structs; a clean portable
@@ -639,6 +640,7 @@ bool plant_deserialize(BinaryReader &r, SaturnIBPlantObliq *plant) {
     for (int i = 0; i < 3; ++i) m.inputs.CG_LLA_deg_m[i] = r.read_f64();
     for (int i = 0; i < 4; ++i) m.inputs.q_ECItoSM[i][0] = r.read_f64();
     m.inputs.T_L_prime_sec = r.read_f64();
+    m.inputs.GRR_offset_sec = r.read_f64();
 
     // Signals + outputs (raw bytes, see write side comment).  The
     // size prefix is a sanity check against ABI drift / wrong plant

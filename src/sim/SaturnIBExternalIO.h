@@ -24,6 +24,10 @@ typedef struct _ExternalInputs_saturn_ib_stack_tag {
   real_T CG_LLA_deg_m[3];
   real_T q_ECItoSM[4];
   real_T T_L_prime_sec;
+  /* GRR instant relative to liftoff.  AS-205 per TM-X-62831 is -5.0 (GRR
+   * occurs 5 s before liftoff).  Earth-rotation shift applied to MES is
+   * (T_L_prime_sec + GRR_offset_sec) * omega_E_deg_per_sec. */
+  real_T GRR_offset_sec;
 } ExternalInputs_saturn_ib_stack;
 
 typedef struct _ExternalOutputs_saturn_ib_stack_tag {
