@@ -86934,6 +86934,49 @@
             }
           },
           {
+            "id": "evaluate_8000",
+            "type": "evaluate",
+            "name": "bGRR_latch",
+            "position": {
+              "x": 920,
+              "y": -40
+            },
+            "parameters": {
+              "numInputs": 3,
+              "expression": "in(0) >= (in(1) + in(2))",
+              "outputType": "bool",
+              "showName": false
+            }
+          },
+          {
+            "id": "sheet_label_sink_8001",
+            "type": "sheet_label_sink",
+            "name": "bGRR_Goto",
+            "position": {
+              "x": 1080,
+              "y": -40
+            },
+            "parameters": {
+              "signalName": "bGRR",
+              "tagVisibility": "global",
+              "showName": false
+            }
+          },
+          {
+            "id": "output_port_8002",
+            "type": "output_port",
+            "name": "bGRR",
+            "position": {
+              "x": 4565,
+              "y": -30
+            },
+            "parameters": {
+              "portName": "bGRR",
+              "dataType": "double",
+              "showName": false
+            }
+          },
+          {
             "id": "evaluate_7134",
             "type": "evaluate",
             "name": "S_IVB_Stage_enable_bool",
@@ -88605,6 +88648,41 @@
             "sourceBlockId": "clock_7045",
             "sourcePortIndex": 0,
             "targetBlockId": "evaluate_7044",
+            "targetPortIndex": 0
+          },
+          {
+            "id": "wire_8003",
+            "sourceBlockId": "clock_7045",
+            "sourcePortIndex": 0,
+            "targetBlockId": "evaluate_8000",
+            "targetPortIndex": 0
+          },
+          {
+            "id": "wire_8004",
+            "sourceBlockId": "input_port_5",
+            "sourcePortIndex": 0,
+            "targetBlockId": "evaluate_8000",
+            "targetPortIndex": 1
+          },
+          {
+            "id": "wire_8005",
+            "sourceBlockId": "input_port_7777",
+            "sourcePortIndex": 0,
+            "targetBlockId": "evaluate_8000",
+            "targetPortIndex": 2
+          },
+          {
+            "id": "wire_8006",
+            "sourceBlockId": "evaluate_8000",
+            "sourcePortIndex": 0,
+            "targetBlockId": "sheet_label_sink_8001",
+            "targetPortIndex": 0
+          },
+          {
+            "id": "wire_8007",
+            "sourceBlockId": "evaluate_8000",
+            "sourcePortIndex": 0,
+            "targetBlockId": "output_port_8002",
             "targetPortIndex": 0
           },
           {

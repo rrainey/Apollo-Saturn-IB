@@ -204,6 +204,7 @@ json snapshot_outputs(const ExternalOutputs_saturn_ib_stack *o,
     j["CM_IMU_MGA_Rad"]       = o->CM_IMU_MGA_Rad;
     j["CM_IMU_OGA_rad"]       = o->CM_IMU_OGA_rad;
     j["bLiftoff"]             = static_cast<bool>(o->bLiftoff);
+    j["bGRR"]                 = static_cast<bool>(o->bGRR);
     j["bStageSep"]            = static_cast<bool>(o->bStageSep);
     j["bIECO"]                = static_cast<bool>(o->bIECO);
     j["bOECO"]                = static_cast<bool>(o->bOECO);
@@ -260,6 +261,7 @@ public:
         emit(o->CM_IMU_IGA_rad);
         emit(o->CM_IMU_MGA_Rad);
         emit(int(o->bLiftoff));
+        emit(int(o->bGRR));
         emit(int(o->bStageSep));
         emit(int(o->bIECO));
         emit(int(o->bOECO));
@@ -288,7 +290,7 @@ private:
               "FDAI_RollDot_dps,FDAI_PitchDot_dps,FDAI_YawDot_dps,"
               "CM_IMU_PIPA_x,CM_IMU_PIPA_y,CM_IMU_PIPA_z,"
               "CM_IMU_OGA_rad,CM_IMU_IGA_rad,CM_IMU_MGA_rad,"
-              "bLiftoff,bStageSep,bIECO,bOECO,bS_IVB_EngineStart,"
+              "bLiftoff,bGRR,bStageSep,bIECO,bOECO,bS_IVB_EngineStart,"
               "veh_q_ECI_q0,veh_q_ECI_q1,veh_q_ECI_q2,veh_q_ECI_q3,"
               "BodyToSM_Phi_deg,BodyToSM_Theta_deg,BodyToSM_Psi_deg";
         for (const auto &fld : OUT22_FIELDS) f_ << ",pad_" << fld.suffix;

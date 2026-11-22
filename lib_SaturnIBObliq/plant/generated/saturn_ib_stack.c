@@ -1,6 +1,6 @@
 /*
  * saturn_ib_stack - Generated C code
- * Generated on: 2026-11-22T14:59:11.154Z
+ * Generated on: 2026-11-22T15:21:08.348Z
  * 
  * This code was automatically generated from a visual model.
  * Manual modifications may be overwritten on regeneration.
@@ -12921,6 +12921,15 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     // Evaluate condition: input >= 140.0
     model->signals.Saturn_Instrument_Unit_IU_Switchpoint_3 = (model->Saturn_Instrument_Unit_IU_LVDA_LVDC_LVDA_LVDC.outputs.T1_sec >= 140.0);
 
+    /* bGRR_latch */
+    // Evaluate block: bGRR_latch
+    // Expression: in(0) >= (in(1) + in(2))
+    // Input variables
+    double _eval_bGRR_latch_in0 = model->signals.Time_sec3;
+    double _eval_bGRR_latch_in1 = model->signals.T_L_prime_sec;
+    double _eval_bGRR_latch_in2 = model->signals.GRR_offset_sec;
+    model->signals.bGRR_latch = (_eval_bGRR_latch_in0 >= (_eval_bGRR_latch_in1 + _eval_bGRR_latch_in2));
+
     /* Out22_Xe_demux */
     // Demux block: Out22_Xe_demux
     // Demux vector input
@@ -12970,6 +12979,7 @@ void saturn_ib_stack_evaluate_algebraic(saturn_ib_stack_t* model) {
     model->outputs.BodyToSM_Phi_deg = model->signals.CM_ISS_Angle_Conversion6;
     model->outputs.BodyToSM_Theta_deg = model->signals.CM_ISS_Angle_Conversion4;
     model->outputs.BodyToSM_Psi_deg = model->signals.CM_ISS_Angle_Conversion5;
+    model->outputs.bGRR = model->signals.bGRR_latch;
     memcpy(&model->outputs.Out22, &model->signals.Out22_pack, sizeof(model->outputs.Out22));
 
 }

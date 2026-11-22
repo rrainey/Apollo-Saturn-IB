@@ -181,6 +181,7 @@ typedef struct {
     double BodyToSM_Phi_deg; /* Output port: BodyToSM_Phi_deg */
     double BodyToSM_Theta_deg; /* Output port: BodyToSM_Theta_deg */
     double BodyToSM_Psi_deg; /* Output port: BodyToSM_Psi_deg */
+    bool bGRR; /* Output port: bGRR */
     double Out22[9]; /* Output port: Out22 */
 } saturn_ib_stack_outputs_t;
 
@@ -1640,6 +1641,7 @@ typedef struct {
     bool T_L_prime;
     double Time_sec3;
     bool Ullage_Jettison;
+    bool bGRR_latch;
     bool S_IVB_Stage_enable_bool;
     double Mux_expand_3_demux_900000_0;
     double Mux_expand_3_demux_900000_1;

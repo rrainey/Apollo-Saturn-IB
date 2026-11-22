@@ -3,7 +3,7 @@
   "displayName": "saturn_ib_stack",
   "profile": "saturn-ib-stack",
   "sourceJson": "/home/riley/src/Apollo-Saturn-IB/model/saturn_ib_stack.json",
-  "generatedAt": "2026-11-22T14:59:11.272Z",
+  "generatedAt": "2026-11-22T15:21:08.454Z",
   "generator": {
     "name": "obliq-2",
     "version": "3.8.5",
@@ -73,8 +73,8 @@
     "ERROR: Lookup table 'Saturn_Instrument_Unit_IU_Flight_Control_Computer_a1_roll' input values must be strictly increasing (LOOKUP_NOT_MONOTONIC)"
   ],
   "stats": {
-    "blocksProcessed": 1383,
-    "connectionsProcessed": 2026,
+    "blocksProcessed": 1385,
+    "connectionsProcessed": 2030,
     "subsystemsFlattened": 119,
     "statesGenerated": 71,
     "enabledSubsystems": 15,
@@ -232,6 +232,11 @@
     {
       "name": "BodyToSM_Psi_deg",
       "cType": "double",
+      "dims": []
+    },
+    {
+      "name": "bGRR",
+      "cType": "bool",
       "dims": []
     },
     {

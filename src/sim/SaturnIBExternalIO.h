@@ -64,6 +64,9 @@ typedef struct _ExternalOutputs_saturn_ib_stack_tag {
   boolean_T bS_IVB_EngineStart;
   real_T veh_q_ECI[4];
   boolean_T bLiftoff;
+  /* Nominal Guidance Reference Release.  Rising edge fires at
+   * sim_t = T_L_prime_sec + GRR_offset_sec (= 295 s for AS-205). */
+  boolean_T bGRR;
   real_T BodyToSM_Phi_deg;
   real_T BodyToSM_Theta_deg;
   real_T BodyToSM_Psi_deg;

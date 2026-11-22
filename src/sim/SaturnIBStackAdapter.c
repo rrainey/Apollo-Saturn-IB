@@ -95,6 +95,7 @@ void saturn_ib_stack_collect_external_outputs(
   out->bOECO = model->outputs.bOECO ? 1 : 0;
   out->bS_IVB_EngineStart = model->outputs.bS_IVB_EngineStart ? 1 : 0;
   out->bLiftoff = (model->outputs.bLiftoff != 0.0) ? 1 : 0;
+  out->bGRR = model->outputs.bGRR ? 1 : 0;
   out->BodyToSM_Phi_deg = model->outputs.BodyToSM_Phi_deg;
   out->BodyToSM_Theta_deg = model->outputs.BodyToSM_Theta_deg;
   out->BodyToSM_Psi_deg = model->outputs.BodyToSM_Psi_deg;
