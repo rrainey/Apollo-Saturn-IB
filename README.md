@@ -39,15 +39,15 @@ The sharpest fidelity check against TM-X-62831 is the Table 4 PASCs 13 position/
 
 | Component (PASCs 13) | TM-X-62831 Table 4 | Simulation | Residual |
 |---|---:|---:|---:|
-| X_S | 6,258,278 m | 6,260,106 m | +1,828 m |
-| Y_S | 144,698 m | 144,376 m | −322 m |
-| Z_S | 2,092,098 m | 2,086,768 m | −5,330 m |
-| DX | −2,472.80 m/s | −2,466.01 m/s | +6.79 m/s |
-| DY | 412.48 m/s | 412.22 m/s | −0.26 m/s |
-| DZ | 7,365.73 m/s | 7,367.20 m/s | +1.47 m/s |
-| \|V\| | 7,780.67 m/s | 7,779.89 m/s | −0.78 m/s |
+| X_S | 6,258,278 m | 6,259,586 m | +1,308 m |
+| Y_S | 144,698 m | 144,464 m | −234 m |
+| Z_S | 2,092,098 m | 2,088,322 m | −3,776 m |
+| DX | −2,472.80 m/s | −2,467.70 m/s | +5.10 m/s |
+| DY | 412.48 m/s | 412.15 m/s | −0.33 m/s |
+| DZ | 7,365.73 m/s | 7,365.94 m/s | +0.21 m/s |
+| \|V\| | 7,780.67 m/s | 7,779.23 m/s | −1.44 m/s |
 
-The LVDC's own \|V_S\| magnitude is within 0.8 m/s of TMX. The plant \|V_e\| residual (below) closed from −5.53 m/s to −1.22 m/s after the GRR anchor was moved from T−17 s to T−5 s (TMX reference), which shifts the MES anchor instant by 12 s of Earth rotation (~0.05°) and redirects powered-flight thrust integration in the plant frame.
+The LVDC's own \|V_S\| magnitude is within 1.44 m/s of TMX. The plant \|V_e\| residual (below) closed from −5.53 m/s to −0.36 m/s across two landed changes: (1) the GRR anchor move from T−17 s to T−5 s per TMX (commit c3e3ac8); (2) the LVDC GRR latch migrated from the `bLiftoff` rising edge to the `bGRR` discrete at T−5 s, with trap-integration startup fixes so the 5 s pad-hold's V_m (+1g) and V_Sg (−1g) integrals cancel cleanly.
 
 ### Scalar cutoff summary
 
@@ -55,11 +55,11 @@ The scalar cutoff magnitude row is useful at a glance but does not detect frame 
 
 | Metric at S-IVB cutoff | TM-X-62831 target | Simulation | Residual |
 |---|---|---|---|
-| Space-fixed velocity (plant \|V_e\| at sim_t=916.80) | 7780.67 m/s | 7779.45 m/s | −1.22 m/s |
-| Altitude (Fischer geocentric-radial) | 227.94 km | 229.16 km | +1.22 km |
+| Space-fixed velocity (plant \|V_e\| at sim_t=916.80) | 7780.67 m/s | 7780.31 m/s | −0.36 m/s |
+| Altitude (Fischer geocentric-radial) | 227.94 km | 228.48 km | +0.54 km |
 | HSL cutoff fire (sim time; flight time) | n/a | 915.20 s / 615.20 s | — |
 
-For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −1.22 m/s plant \|V_e\| residual sits comfortably inside that envelope. This closed from −5.53 m/s after the GRR anchor correction landed 2026-11-23 (`GRR_offset_sec = −5.0`, replacing a hardcoded −17 s shift in the MES GMST path). The LVDC's own \|V_S\| and plant \|V_e\| now agree to within 0.44 m/s at the post-tailoff BML; the previously-tracked ~5 m/s plant-vs-LVDC magnitude gap (memory `project_lvdc_plant_integration_drift.md`) was coupled to the frame anchor and effectively collapsed. The HSL side was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
+For context, the operational Saturn IB program expected a nominal ±3σ cutoff velocity dispersion on the order of a few m/s. The −0.36 m/s plant \|V_e\| residual sits comfortably inside that envelope. This closed from −5.53 m/s across two landed changes: (1) the GRR anchor move from T−17 s to T−5 s per TMX (`GRR_offset_sec = −5.0`, 2026-11-23); (2) the LVDC GRR latch migrated to the `bGRR` discrete with trap-startup fixes (`t_latch_sec`, seeded G_S_prev). The LVDC \|V_S\| and plant \|V_e\| now agree to within 1.1 m/s at the post-tailoff BML; the previously-tracked ~5 m/s plant-vs-LVDC magnitude gap (memory `project_lvdc_plant_integration_drift.md`) was coupled to the frame anchor and effectively collapsed. The HSL side was re-audited against EDD §4.4.2.4 on 2026-11-19 — see the "HSL EDD-fidelity fixes" note under *Mid-flight fit* below.
 
 ### Mid-flight fit
 
@@ -88,7 +88,7 @@ The guidance loop runs on the Equation Defining Document cadences: the Boost Maj
 
 **Altitude convention.** The altitude rows above use Fischer-1960 geocentric-radial altitude (from the `s2_h_fischer_m` CSV column), matching TM-X-62831's own altitude definition. Native `OUT11[2]`, `OUT12[2]`, `OUT22[2]` continue to carry WGS-84 geodetic altitude for the GUI and other consumers. Fischer and WGS-84 differ by ~30 m on orbit; the +6 km altitude residual above is overwhelmingly real trajectory error, not ellipsoid-model choice. See [`docs/ALTITUDE_CONVENTIONS.md`](docs/ALTITUDE_CONVENTIONS.md).
 
-**Frame-anchor history.** Prior to the Issue #4 resolution the plant's `MES_Transform` was anchored at the scenario sim-epoch (= liftoff − `T_L_prime_sec`) rather than at nominal GRR. That produced a 1.25° orthogonal rotation (ω_E · T_L' at R≈6,600 km → ≈115 km) in the PASCs 13 state vector, which went undetected by the scalar `|V|` cutoff summary because rotating a velocity vector preserves its magnitude. The initial Issue #4 fix hardcoded a 17-second shift back from liftoff; on 2026-11-23 that literal was parameterized as a scenario-driven `GRR_offset_sec` top-level input (default −5.0 s for AS-205 per TM-X-62831) feeding both the top-level `MES_Transform` and `Initial_Conditions` subsystems. The 12-second anchor correction (T−17 → T−5) closed the plant \|V_e\| residual from −5.53 to −1.22 m/s and the liftoff V_S_init-vs-MES·PAD_Ve direction error from 0.081° to 0.031°. See [`docs/FRAME_ANCHOR_AUDIT.md`](docs/FRAME_ANCHOR_AUDIT.md) and [`docs/FRAME_ANCHOR_BRANCH_NOTES.md`](docs/FRAME_ANCHOR_BRANCH_NOTES.md) for the investigation trace.
+**Frame-anchor history.** Prior to the Issue #4 resolution the plant's `MES_Transform` was anchored at the scenario sim-epoch (= liftoff − `T_L_prime_sec`) rather than at nominal GRR. That produced a 1.25° orthogonal rotation (ω_E · T_L' at R≈6,600 km → ≈115 km) in the PASCs 13 state vector, which went undetected by the scalar `|V|` cutoff summary because rotating a velocity vector preserves its magnitude. The initial Issue #4 fix hardcoded a 17-second shift back from liftoff; on 2026-11-23 that literal was parameterized as a scenario-driven `GRR_offset_sec` top-level input (default −5.0 s for AS-205 per TM-X-62831) feeding both the top-level `MES_Transform` and `Initial_Conditions` subsystems. Later the same day the LVDC's GRR latch migrated from the `bLiftoff` rising edge to a new `bGRR` plant discrete (fires at `sim_t = T_L' + GRR_offset_sec`), with first-BML trap-startup fixes in `lvdc_nav` (`t_latch_sec` for actual elapsed-time dT, and `G_S_prev` seeded to gravity at X_0) so the 5 s pad-hold's V_m and V_Sg integrals cancel exactly. Together these changes closed the plant \|V_e\| residual from −5.53 to −0.36 m/s and the PASCs 13 Z_S position residual from −5,222 m to −3,776 m. See [`docs/FRAME_ANCHOR_AUDIT.md`](docs/FRAME_ANCHOR_AUDIT.md) and [`docs/FRAME_ANCHOR_BRANCH_NOTES.md`](docs/FRAME_ANCHOR_BRANCH_NOTES.md) for the investigation trace.
 
 ## Build
 

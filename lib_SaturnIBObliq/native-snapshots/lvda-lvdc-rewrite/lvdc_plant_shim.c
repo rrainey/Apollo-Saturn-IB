@@ -59,3 +59,11 @@ double s_V_S_init[3] = { 0.0, 0.0, 0.0 };
 /* MES DCM (E-frame → S-frame) exposed for off-line frame-rotation
  * checks. Published once per BML from the plant input. */
 double s_MES_DCM[3][3] = {{1,0,0},{0,1,0},{0,0,1}};
+
+/* Plant-level bGRR discrete.  Fires at sim_t = T_L_prime_sec +
+ * GRR_offset_sec (= 295 s for AS-205 per TMX).  The host adapter mirrors
+ * model->signals.bGRR_latch here after each plant step; the rewrite's
+ * LVDA_LVDC.c reads it for the GRR rising-edge latch.  Shim global
+ * (not a formal LVDA_LVDC input port) because the generated LVDA_LVDC.h
+ * takes precedence over the rewrite's for same-directory includes. */
+int s_bGRR = 0;

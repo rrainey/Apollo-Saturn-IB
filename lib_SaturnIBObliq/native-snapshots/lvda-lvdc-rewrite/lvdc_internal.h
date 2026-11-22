@@ -51,7 +51,15 @@ typedef struct {
 
     /* Timing: previous BML timestamp, used to compute ΔT between reads.
      * EDD §4.2.4 requires ΔT from the actual read interval, not a
-     * nominal 1.6 s. */
+     * nominal 1.6 s.
+     *
+     * t_latch_sec captures the latch instant so the FIRST BML after latch
+     * uses the actual elapsed time (latch to first BML) rather than the
+     * nominal 1.6 s.  Without this, the pre-liftoff (pad-hold) integration
+     * of V_m (sensor-interval-accurate pulse delta) and V_Sg
+     * (dT-weighted trap of gravity) go out of sync and leave a 1-2 m/s
+     * residual per BML that compounds through the burn. */
+    double  t_latch_sec;
     double  t_prev_BML_sec;
     double  dT_BML_sec;
 

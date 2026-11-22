@@ -25,6 +25,11 @@
 #include <stdio.h>
 #include <string.h>
 
+/* bGRR shim global (lvdc_plant_shim.c). The plant adapter drives this
+ * from model->signals.bGRR_latch in production; this unit test must drive
+ * it directly to exercise the GRR-edge latch. */
+extern int s_bGRR;
+
 static int g_fail_count = 0;
 
 #define CHECK(cond, label) do {                                       \
@@ -92,16 +97,19 @@ int main(void) {
     CHECK(!model.outputs.bSIVEngineStart, "pre-GRR bSIVEngineStart false");
 
     /* ------------------------------------------------------------
-     * Scenario 2: bLiftoff rising edge fires the liftoff latch.
-     * The internal nav.X_S is set to X_0 (Eq. 3.4.3) on the latch
-     * tick, but R_S_bar_m is BML-gated and only commits at BML
-     * boundaries. So on the latch tick itself (not a BML), the
-     * R_S_bar_m output stays at its init value (zero).
+     * Scenario 2: bGRR rising edge fires the GRR latch (EDD §3.4.3-4,
+     * §4.2.3).  bLiftoff is a separate edge that only drives the T1
+     * timebase; GRR (T-5 s for AS-205) is the latch trigger.
      *
-     * Important: verify output is stable across all four RK4
-     * stages of this step — all four compute_outputs calls must
-     * return the same R_S_bar_m.
+     * The internal nav.X_S is set to X_0 on the latch tick, but
+     * R_S_bar_m is BML-gated and only commits at BML boundaries.  So
+     * on the latch tick itself (not a BML), R_S_bar_m stays at zero.
+     *
+     * Important: verify output is stable across all four RK4 stages
+     * of this step — all four compute_outputs calls must return the
+     * same R_S_bar_m.
      * ---------------------------------------------------------- */
+    s_bGRR = 1;
     model.inputs.bLiftoff = true;
 
     /* Four compute calls at the liftoff tick. Collect R_S_bar_m from
@@ -208,17 +216,19 @@ int main(void) {
     /* ------------------------------------------------------------
      * Scenario 5: re-init resets statics. Call init again,
      * check all outputs return to zero and GRR is unlatched
-     * (next bLiftoff edge should re-latch).
+     * (next bGRR edge should re-latch).
      * ---------------------------------------------------------- */
     LVDA_LVDC_init(&model);
     model.dt = dt;
     model.inputs.bLiftoff = false;
+    s_bGRR = 0;
     drive_major_step(&model, dt);
     CHECK(model.outputs.R_S_bar_m[0] == 0.0
        && model.outputs.R_S_bar_m[1] == 0.0
        && model.outputs.R_S_bar_m[2] == 0.0,
           "re-init restores R_S_bar_m to zero");
 
+    s_bGRR = 1;
     model.inputs.bLiftoff = true;
     /* Drive enough steps to pass at least one BML (320 ticks @ 0.005 s). */
     for (int i = 0; i < 400; i++) {

@@ -29,16 +29,26 @@ void lvdc_nav_reset(lvdc_state_t *s);
 /* Initialize the PIPA zero-reset and plumbline-frame position /
  * velocity seed per EDD §3.4 and §4.2.3.
  *
- * On a real Saturn IB, this fires at Guidance Reference Release
- * (GRR), which the LVDC schedules internally (nominally T_0 − 17 s).
- * The Phase B rewrite calls this on the bLiftoff rising edge
- * because the obliq-2 parent model does not expose a GRR discrete;
- * see lvdc_internal.h for why the numerics still balance out.
+ * On a real Saturn IB, this fires at Guidance Reference Release (GRR)
+ * — nominally T-5 s per TM-X-62831 for AS-205.  The plant now exposes
+ * a bGRR discrete at that instant; the caller may fire latch on either
+ * bGRR edge or bLiftoff edge.  Firing at GRR requires the first-BML
+ * trap-startup fixes below (t_latch_sec + gravity seed) so the pad-hold
+ * integration of V_m (+1g normal force) and V_Sg (-1g gravity) cancels
+ * cleanly.
  *
- * X_0_eq343 and V_0_eq344 are the 3-vectors computed from the preset
- * launch-site parameters (R_L, A_z, phi_L, phi_L') by the caller.
- * See lvdc_nav_compute_initial_conditions. */
+ * p         : mission preset parameters, used to compute G_S_prev at X_0
+ *             so Eq. 4.3.4 trap has a correct initial condition.
+ * t_latch_sec: simulation time at the latch instant.  Stored in sensor
+ *             state so the first bml_step can compute dT = t_now - t_latch
+ *             instead of the nominal 1.6 s.
+ * V_m_bar_mps_now: current platform-velocity accumulator value.
+ * X_0_eq343, V_0_eq344: 3-vectors from EDD Eqs. 3.4.3-4
+ *             (see lvdc_nav_compute_initial_conditions).
+ */
 void lvdc_nav_liftoff_latch(lvdc_state_t *s,
+                            const lvdc_params_t *p,
+                            double t_latch_sec,
                             const double V_m_bar_mps_now[3],
                             const double X_0_eq343[3],
                             const double V_0_eq344[3]);

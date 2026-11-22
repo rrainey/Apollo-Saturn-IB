@@ -87,20 +87,20 @@ static lvdc_timebase_state_t    g_timebase;
 static lvdc_hsl_state_t         g_hsl;
 static bool                     g_hsl_cutoff_edge_pending;
 
-/* Latch state for the liftoff edge. Lives outside g_lvdc because
- * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag;
- * this tracks the previous tick's input for rising-edge detection.
+/* Latch state for the GRR and liftoff edges.  Live outside g_lvdc because
+ * g_lvdc.sensor.liftoff_latched is the "has it ever fired" flag; these
+ * track the previous tick's input for rising-edge detection.
  *
- * Note on GRR vs. liftoff: on a real Saturn IB, the PIPA zero-reset
- * (EDD §4.2.3) and the X_0/V_0 seed (EDD §3.4) fire at Guidance
- * Reference Release — nominally 5 s before liftoff per TM-X-62831.
- * The plant exposes a bGRR discrete at that instant (saturn_ib_stack.json
- * evaluate_8000); migrating the LVDC's latch to that edge requires the
- * trap-integration startup to handle the 5-s pad-hold with PIPA (+1g)
- * and gravity (-1g) integrals cancelling cleanly.  Deferred — the
- * current rewrite still latches on bLiftoff edge, which drops BOTH
- * pad integrals together so Eq. 4.3.5 is self-consistent from liftoff
- * onward.  See project_lvdc_plant_frame_offset.md "Remaining work". */
+ * GRR (Guidance Reference Release) is the nominal pad event that
+ * zero-resets the PIPAs (EDD §4.2.3) and seeds X_0/V_0 (EDD §3.4).
+ * The plant publishes bGRR at sim_t = T_L_prime_sec + GRR_offset_sec
+ * (AS-205: 295 s per TM-X-62831).  The rewrite now latches on bGRR
+ * rising edge; lvdc_nav_liftoff_latch seeds G_S_prev with gravity at
+ * X_0 and records t_latch_sec so the first bml_step uses the actual
+ * elapsed time rather than a nominal 1.6 s.  Together these keep the
+ * 5 s pad-hold's V_m (+1g) and V_Sg (-1g) integrals cancelling clean,
+ * so Eq. 4.3.5 stays at V_S_init through pad hold. */
+static bool s_prev_bGRR;
 static bool s_prev_bLiftoff;
 
 /* ---------------------------------------------------------------------
@@ -247,6 +247,7 @@ void LVDA_LVDC_init(LVDA_LVDC_t* model) {
     lvdc_minor_loop_reset(&g_minor_loop);
     lvdc_dac_reset(&g_dac);
     g_params = lvdc_params_as205();
+    s_prev_bGRR = false;
     s_prev_bLiftoff = false;
 
     /* IGM: build presets from params and init with those. The
@@ -299,19 +300,26 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
     if (first_call_this_step) {
         g_lvdc.last_compute_tick = model->sample_tick;
 
-        /* --- Liftoff latch (EDD §3.4, §4.2.3 — see note above) ---
-         * Fire on the rising edge of bLiftoff. The plant now also publishes
-         * a bGRR discrete (fires 5 s earlier per TMX); migrating the latch
-         * to that edge requires reworking the trap-integration startup so
-         * the 5 s pad-hold's PIPA (+1g) and gravity (-1g) integrals cancel
-         * exactly.  See project_lvdc_plant_frame_offset.md "Remaining work". */
-        if (!s_prev_bLiftoff && model->inputs.bLiftoff
+        /* --- GRR latch (EDD §3.4.3-4, §4.2.3) ---
+         * Fire the X_0/V_0 seed, PIPA zero-reset, and G_S_prev seed on
+         * the rising edge of the plant's bGRR discrete (sim_t = T_L' +
+         * GRR_offset_sec; AS-205: T-5 s per TMX).  bGRR is mirrored into
+         * s_bGRR by the plant adapter each step; see lvdc_plant_shim.c. */
+        extern int s_bGRR;
+        const bool bGRR_now = (s_bGRR != 0);
+        if (!s_prev_bGRR && bGRR_now
                 && !g_lvdc.sensor.liftoff_latched) {
             double X_0[3], V_0[3];
             lvdc_nav_compute_initial_conditions(&g_params, X_0, V_0);
-            lvdc_nav_liftoff_latch(&g_lvdc,
+            lvdc_nav_liftoff_latch(&g_lvdc, &g_params, model->time,
                                    model->inputs.V_m_bar_mps,
                                    X_0, V_0);
+        }
+        s_prev_bGRR = bGRR_now;
+
+        /* --- Liftoff edge: record first-motion time for T1 base.
+         * T1 start remains on bLiftoff rising edge per EDD §4.1. */
+        if (!s_prev_bLiftoff && model->inputs.bLiftoff) {
             g_lvdc.tb1.t_liftoff_sec = model->time;
         }
         s_prev_bLiftoff = model->inputs.bLiftoff;
@@ -329,9 +337,11 @@ void LVDA_LVDC_compute_outputs(LVDA_LVDC_t* model) {
                            model->inputs.bSIBPropellantSensorDry,
                            cutoff_edge_this_tick);
 
-        /* Update T1_sec (time since liftoff). Stays at zero before
-         * the liftoff edge. */
-        if (g_lvdc.sensor.liftoff_latched) {
+        /* Update T1_sec (time since liftoff). Stays at zero until the
+         * bLiftoff edge fires. The GRR latch (bGRR edge) sets
+         * sensor.liftoff_latched but does not start T1 — T1 is strictly
+         * time-since-first-motion per EDD §4.1. */
+        if (g_lvdc.tb1.t_liftoff_sec > 0.0) {
             g_lvdc.tb1.T1_sec = model->time - g_lvdc.tb1.t_liftoff_sec;
             if (g_lvdc.tb1.T1_sec < 0.0) g_lvdc.tb1.T1_sec = 0.0;
         } else {

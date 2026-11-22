@@ -143,6 +143,12 @@ void saturn_ib_stack_io_step(
 ) {
   saturn_ib_stack_apply_external_inputs(model, in);
   saturn_ib_stack_step(model);
+  /* Mirror plant-level bGRR_latch into the shim global so the LVDC
+   * rewrite can latch its GRR-seeded state on the plant's GRR edge
+   * (sim_t = T_L_prime_sec + GRR_offset_sec; AS-205: 295 s).
+   * See lvdc_plant_shim.c. */
+  extern int s_bGRR;
+  s_bGRR = model->signals.bGRR_latch ? 1 : 0;
   saturn_ib_stack_collect_external_outputs(model, out);
 }
 

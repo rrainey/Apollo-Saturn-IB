@@ -118,14 +118,19 @@ void lvdc_nav_compute_initial_conditions(const lvdc_params_t *p,
 }
 
 void lvdc_nav_liftoff_latch(lvdc_state_t *s,
+                            const lvdc_params_t *p,
+                            double t_latch_sec,
                             const double V_m_bar_mps_now[3],
                             const double X_0_eq343[3],
                             const double V_0_eq344[3]) {
-    /* EDD §4.2.3 — accumulator is zeroed at GRR, which the LVDC
-     * schedules internally (nominally T_0 − 17 s). The Phase B
-     * rewrite fires on the bLiftoff edge because the obliq-2
-     * parent model does not expose a GRR discrete; see the header
-     * and lvdc_internal.h for the numerical balance analysis. */
+    /* EDD §4.2.3 — accumulator is zeroed at GRR.  Seed BOTH the sensor
+     * offset and the gravity-integrator initial condition so the first
+     * BML's trap step doesn't start half-weighted (G_S_prev=0 would give
+     * V_Sg = 0.5·G·dT on BML 1, which fails to cancel the V_m pulse delta
+     * of 1g·dT_actual).  See lvdc_internal.h sensor_state_t for details. */
+    double G_S_at_latch[3];
+    lvdc_nav_compute_gravity(X_0_eq343, p, /*boost_mode=*/true, G_S_at_latch);
+
     for (int i = 0; i < 3; i++) {
         s->sensor.V_m_mps_offset[i] = V_m_bar_mps_now[i];
         s->sensor.V_m_mps_prev[i]   = 0.0;
@@ -135,8 +140,8 @@ void lvdc_nav_liftoff_latch(lvdc_state_t *s,
 
         s->nav.X_S[i]           = X_0_eq343[i];
         s->nav.V_Sg[i]          = 0.0;
-        s->nav.G_S[i]           = 0.0;
-        s->nav.G_S_prev[i]      = 0.0;
+        s->nav.G_S[i]           = G_S_at_latch[i];
+        s->nav.G_S_prev[i]      = G_S_at_latch[i];
         s->nav.V_m_mps_past[i]  = 0.0;
 
         s->sensor.X_S_init[i] = X_0_eq343[i];
@@ -144,6 +149,7 @@ void lvdc_nav_liftoff_latch(lvdc_state_t *s,
     }
     s->sensor.FoverM          = 0.0;
     s->sensor.MoverF_s        = 0.0;
+    s->sensor.t_latch_sec     = t_latch_sec;
     s->sensor.t_prev_BML_sec  = 0.0;
     s->sensor.dT_BML_sec      = 0.0;
 
@@ -278,11 +284,19 @@ void lvdc_nav_bml_step(lvdc_state_t *s,
     }
 
     /* Measured BML interval. EDD §4.2.4 uses the actual measured
-     * ΔT, not a nominal 1.6 s. On the first BML after GRR, fall
-     * back to the preset nominal. */
-    double dT = (s->sensor.t_prev_BML_sec > 0.0)
-                    ? (t_now_sec - s->sensor.t_prev_BML_sec)
-                    : p->delta_T_sec;
+     * ΔT, not a nominal 1.6 s.  On the first BML after latch, use
+     * the latch→first-BML elapsed time (typically < 1.6 s), so the
+     * trap integration matches the pulse-delta V_m accumulated over
+     * the same interval. */
+    double dT;
+    if (s->sensor.t_prev_BML_sec > 0.0) {
+        dT = t_now_sec - s->sensor.t_prev_BML_sec;
+    } else if (s->sensor.t_latch_sec > 0.0
+               && t_now_sec > s->sensor.t_latch_sec) {
+        dT = t_now_sec - s->sensor.t_latch_sec;
+    } else {
+        dT = p->delta_T_sec;
+    }
     if (dT <= 0.0) {
         dT = p->delta_T_sec;
     }

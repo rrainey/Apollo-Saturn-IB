@@ -87,7 +87,7 @@ int main(void) {
 
     /* Perform the liftoff latch. */
     const double V_m_at_latch[3] = {7.1234, -2.5, 0.123};
-    lvdc_nav_liftoff_latch(&s, V_m_at_latch, X_0, V_0);
+    lvdc_nav_liftoff_latch(&s, &p, /*t_latch=*/0.0, V_m_at_latch, X_0, V_0);
     CHECK(s.sensor.liftoff_latched, "liftoff latched flag set");
     CHECK_CLOSE(s.nav.X_S[0], X_0[0], 1e-9, "X_S seeded from Eq. 3.4.3 [0]");
     CHECK_CLOSE(s.nav.X_S[1], X_0[1], 1e-9, "X_S seeded from Eq. 3.4.3 [1]");
