@@ -10,6 +10,12 @@ SaturnStartupHelper::~SaturnStartupHelper()
     delete m_pLogger;
 }
 
+void SaturnStartupHelper::SetBatchConfig(const SaturnIBStack::BatchConfig &cfg)
+{
+    m_cfg = cfg;
+    m_cfg_set = true;
+}
+
 SaturnIBAgcBridge *SaturnStartupHelper::GetLaunchVehicle()
 {
     if (!m_pVehicle) Initialize();
@@ -27,6 +33,7 @@ void SaturnStartupHelper::Initialize()
     m_pClock->SetCurrentSimulationTime( dtStart_utc );
     m_pClock->Thaw();
 
-    m_pVehicle = new SaturnIBAgcBridge();
+    m_pVehicle = m_cfg_set ? new SaturnIBAgcBridge(m_cfg)
+                           : new SaturnIBAgcBridge();
     m_pClock->Register( m_pVehicle );
 }
