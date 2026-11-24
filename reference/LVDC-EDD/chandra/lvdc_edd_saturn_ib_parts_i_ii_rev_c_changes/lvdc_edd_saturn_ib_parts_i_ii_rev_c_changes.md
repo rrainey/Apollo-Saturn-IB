@@ -1,0 +1,11187 @@
+# IBM
+
+B.G. OXLEY  
+22-184  
+**Saturn Instrument Unit**
+
+LVDC Equation Defining Document (EDD)  
+for the Saturn IB Flight Program  
+Parts I and II
+
+Revision C
+
+22 January 1973
+
+CONTRACT NO. NAS8-14000
+
+MSFC-DRL-008A
+
+Line Item 083
+
+IBM No. 70-207-0001
+
+![A large, circular Saturn Instrument Unit (SIU) is shown from an elevated perspective. The unit is a massive, white, cylindrical structure with a dark, multi-layered outer ring. It is supported by several black, tripod-style stands. Inside the unit, several people in white lab coats and hard hats are visible, working on the internal components. The unit has various panels, ports, and structural elements visible on its exterior surface.](f609ee82dee71f878f23affb4ff2a6a7_10_img.webp)
+
+loop, navigation data are required for the second (active) stage guidance and navigation calculations must begin at GRR and continue throughout the boost mission phase.
+
+Since variations in acceleration are large during boost, the computation rate for navigation must be higher than during orbit. In determining position and velocity relative to the desired reference frame, gravitational effects are computed as part of the navigation scheme since the sensors cannot measure gravitational acceleration. A mathematical model of the earth's gravitational field, which was empirically derived from satellite measurements, has been selected for use in the gravitational computations. Position and velocity in the desired reference frame are obtained by differencing the integrated measured and gravitational accelerations. A computation rate, or integration interval, as low as once per two seconds is adequate for the boost phase. With this rate, and the smoothed acceleration function, a simple trapezoidal integration routine yields sufficient accuracy. A single navigation scheme is adequate throughout the boost phase.
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+### 3.3.2.2 Repositioning
+
+Repositioning of the ST-124M is accomplished by the RCA-110A azimuth laying fine positioning program executed in the Mobile Launch Computer (MLC). This program is called into execution at approximately T-10 minutes by the RCA-110A PTL test. The fine positioning program ensures positioning of the platform according to the latest computed position. The program continuously monitors GMT and countdown time for any change in  $T'_L$  until GRRRA.
+
+The predicted liftoff time ( $T'_L$ ) is loaded into the LVDC from the RCA-110A after the LVDC has been commanded to Prepare to Launch. The LVDC PTL routine computes the difference between the predicted time of GRR and the nominal time of GRR ( $T_{GRR0}$ ) using Eq. 3.2.1. The resulting time differential ( $T_D$ ) is used in Eq. 3.2.2 to compute  $\lambda$ , the longitude of the descending node measured from the launch meridian. The longitude of the descending node and the inclination are used in Eq. 3.2.3 to compute the platform azimuth ( $A_z$ ). The computed platform azimuth is transmitted back to the RCA-110A in true form and complemented form where it is used to align the platform.
+
+Any holds greater than 5 seconds, occurring between the beginning of Prepare to Launch and 187 seconds prior to liftoff, require that a revised predicted liftoff time ( $T'_L$ ) be transmitted to the LVDC. In response to the new value of  $T'_L$ , the LVDC will calculate a new platform azimuth and transmit this to the RCA-110A for platform realignment. If it is necessary to recycle to the beginning of Prepare to Launch Mode, a new  $T'_L$  must be loaded into the LVDC and the sequence started again.
+
+The platform may be realigned at times other than when  $T'_L$  changes. The capability to monitor platform gimbal angles exists at the MLC until GRR. Any drift of the azimuth encoder
+
+greater than two binary bits (10 arcseconds) will be corrected automatically by executing the Azimuth Laying Fine Positioning program. Corrections will be made up until 152 seconds before liftoff. Any encoder drift after this time will result only in an error message indicating that repositioning is required.
+
+### 3.3.3 Variable Data Tape
+
+The flight program must provide the capability to accept a data load from a variable data tape. The use of this tape assures optimum launch date dependent and performance dependent data if late changes in the launch date or time becomes necessary. The day of launch in days past January 1 (where January 1 is day zero) must be included on the tape when defined. In addition, the following parameters must be provided; (1) constant acceleration bias terms for X, Y, and Z axes ( $B_{X0}$ ,  $B_{Y0}$ ,  $B_{Z0}$ ); (2) performance factor biases along  $X_B$ ,  $Y_B$ ,  $Z_B$  axes, for backup acceleration computations ( $P_{bx}$ ,  $P_{by}$ ,  $P_{bz}$ ); (3) times to begin using thrust misalignment angles (vectors) 1 through 4 ( $T_{TMA1}$  -  $T_{TMA4}$ ); (4) X component of thrust misalignment vector ( $C\alpha 1$  -  $C\alpha 4$ ); (5) Y component of thrust misalignment vector ( $S\alpha C\beta 1$  -  $S\alpha C\beta 4$ ); and (6) Z component of thrust misalignment vector ( $S\alpha S\beta 1$  -  $S\alpha S\beta 4$ ). The above parameters are utilized for the backup accelerometer scheme. The day of launch parameter is utilized in the M415 experiment calculations for SA-206 only.
+
+Refer to Table 3-1 (Variable Data Tape Items) for LVDC locations and scaling of the parameters and to Part II Table 1-7, Data Required On Variable Data Tape, for the nominal presetting values.
+
+The description, format, and absolute LVDC address assignments for the parameters required for the variable data tape are given in the Variable Data Tape Items, Table 3-1. This data must be supplied in the card format specified in Table 3-2 with the card deck sequenced in ascending order according to the LVDC address. The flight program must be capable of accessing these quantities
+
+from the locations and with the units and scaling specified in Table 3-2. A launch day header card and launch day end card are required for each launch date on the Variable Data Tape and an end of deck card is required. The contents of these cards are not transferred to LVDC memory but are used to control the ground processing of the data cards. Their description is included here for completeness.
+
+- • The format of the launch day header card must be as follows:
+
+<table><thead><tr><th>CARD COLUMN</th><th>CONTENTS</th></tr></thead><tbody><tr><td>1 - 6</td><td>VEHICLE NUMBER (e.g., SA-206)</td></tr><tr><td>11 &amp; 12</td><td>DAY OF MONTH (right-justified)</td></tr><tr><td>14, 15, 16</td><td>MONTH (first three letters of name, e.g., MAY)</td></tr><tr><td>18 &amp; 19</td><td>YEAR (e.g. 73)</td></tr><tr><td>25 - 27</td><td>DAY OF YEAR (number of days past January 1, right-justified)</td></tr></tbody></table>
+
+The day of the year must also appear on the data card for location 0,16,300, scaled 10.
+
+- • The format of the launch day end card must be as follows:
+
+<table><thead><tr><th>CARD COLUMN</th><th>CONTENTS</th></tr></thead><tbody><tr><td>1 - 3</td><td>END</td></tr></tbody></table>
+
+- • The end of an entire input deck (one or more launch days) must be signified by an end-of-deck card immediately following the END card of the last launch day unit. The format of the card shall consist of EØD in card columns 1-3.
+
+TABLE 3-1 VARIABLE DATA TAPE ITEMS
+
+\*
+
+<table border="1">
+<thead>
+<tr>
+<th>Variable Data<br/>Tape Item Description</th>
+<th>EDD<br/>Symbol</th>
+<th>Tape<br/>Symbol</th>
+<th>LVDC<br/>Location</th>
+<th>LVDC<br/>Scaling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Days past January 1<br/>(where Jan. 1 is<br/>day zero)<br/>referenced to GMT</td>
+<td>T<sub>DAY</sub></td>
+<td>TDAY</td>
+<td>0,16,300</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Constant accelera-<br/>tion bias terms for<br/>X, Y, and Z axis<br/>(m/sec<sup>2</sup>)</td>
+<td>B<sub>X0</sub><br/>B<sub>Y0</sub><br/>B<sub>Z0</sub></td>
+<td>BX0<br/>BY0<br/>BZ0</td>
+<td>0,16,301<br/>0,16,302<br/>0,16,303</td>
+<td>0<br/>0<br/>0</td>
+</tr>
+<tr>
+<td>Performance factor<br/>biases along X<sub>B</sub>,<br/>Y<sub>B</sub>, and Z<sub>B</sub> axes<br/>for backup accelera-<br/>tion computations</td>
+<td>P<sub>bx</sub><br/>P<sub>by</sub><br/>P<sub>bz</sub></td>
+<td>PBX<br/>PBY<br/>PBZ</td>
+<td>0,16,304<br/>0,16,305<br/>0,16,306</td>
+<td>1<br/>1<br/>1</td>
+</tr>
+<tr>
+<td>Times to begin using<br/>thrust misalignment<br/>angles (vectors)<br/>1 through 4<br/>(seconds)</td>
+<td>T<sub>TMA1</sub><br/>T<sub>TMA2</sub><br/>T<sub>TMA3</sub><br/>T<sub>TMA4</sub></td>
+<td>TTMA1<br/>TTMA2<br/>TTMA3<br/>TTMA4</td>
+<td>0,16,307<br/>0,16,310<br/>0,16,311<br/>0,16,312</td>
+<td>15<br/>15<br/>15<br/>15</td>
+</tr>
+<tr>
+<td>X component of<br/>thrust misalign-<br/>ment vector</td>
+<td>Cα1<br/>Cα2<br/>Cα3<br/>Cα4</td>
+<td>CA1<br/>CA2<br/>CA3<br/>CA4</td>
+<td>0,16,313<br/>0,16,314<br/>0,16,315<br/>0,16,316</td>
+<td>0<br/>0<br/>0<br/>0</td>
+</tr>
+<tr>
+<td>Y component of<br/>thrust misalign-<br/>ment vector</td>
+<td>SαCβ1<br/>SαCβ2<br/>SαCβ3<br/>SαCβ4</td>
+<td>SACB1<br/>SACB2<br/>SACB3<br/>SACB4</td>
+<td>0,16,317<br/>0,16,320<br/>0,16,321<br/>0,16,322</td>
+<td>0<br/>0<br/>0<br/>0</td>
+</tr>
+<tr>
+<td>Z component of<br/>thrust misalign-<br/>ment vector</td>
+<td>SαSβ1<br/>SαSβ2<br/>SαSβ3<br/>SαSβ4</td>
+<td>SASB1<br/>SASB2<br/>SASB3<br/>SASB4</td>
+<td>0,16,323<br/>0,16,324<br/>0,16,325<br/>0,16,326</td>
+<td>0<br/>0<br/>0<br/>0</td>
+</tr>
+<tr>
+<td>Checksum Constant</td>
+<td>CKSMIB</td>
+<td>CKSMIB</td>
+<td>0,16,327</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+The time from GRR of occurrence of the following events must be recorded as  $T_{\text{EVNT}}$ .
+
+- • Liftoff
+- • S-IB Inboard Engines Cutoff
+- • S-IB Outboard Engines Cutoff
+- • Predicted Time of S-IVB Mainstage (90% thrust)
+- • S-IVB EMRC
+- • S-IVB Cutoff
+
+The time  $T_{\text{EVNT}}$  is used to adjust the  $(F/M)_c$  computations. On the first boost major loop pass after the occurrence of one of the above events, the  $(F/M)_c$  acceleration must be computed using Eq. 4.2.17 through 4.2.22. In order to satisfy these equations the program must save the values of  $\dot{M}$ ,  $F_{\text{EO}}$ ,  $PF$ , and  $F_b$  prior to the event and store these values as  $\dot{M}'$ ,  $F'_{\text{EO}}$ ,  $PF'$ , and  $F'_b$  respectively.
+
+The parameter  $M'_{c1}$  used in Eqs. 4.2.20 and 4.2.21 must be set equal to  $M'_c$  as computed by Eq. 4.2.17 except at places where the accelerometer processing mass constants change, i.e. at  $T1 + 0.0$  and  $T3 + 0.0$ . During the computation cycle in which  $TB1$  and  $TB3$  start,  $M'_{c1}$  must be set as defined in the Event Sequence Timeline of Part II.
+
+The point in the current boost major loop where the event occurred is determined by Eq. 4.2.16, where  $T_{\text{asp}}$  is the time of accelerometer read prior to the event,  $T_{\text{asc}}$  is the time of accelerometer read following the event used in Eq. 4.2.19.
+
+The parameters  $\Delta V_x$ ,  $\Delta V_y$ , and  $\Delta V_z$ , used in the performance factor calculation Eq. 4.2.34, must be the accelerometer change if the accelerometer change was reasonable for the current BML. If the X, Y, or Z channel accelerometer change is determined to be unreasonable, the corresponding velocity change computed by Eq. 4.2.26, 4.2.28, or 4.2.30 must be used in Eq. 4.2.34 to compute the performance factor.
+
+The backup acceleration  $(F/M)_c$  is adjusted by the performance factor computed during the second previous boost major loop (Eq. 4.2.36); however, if an accelerometer failure has been detected, the performance factor computed during the first previous boost major loop (Eq. 4.2.35) must be used in Eq. 4.2.13, 4.2.15, 4.2.20, 4.2.22, and 4.2.34. This factor must be set to one at S-IB Outboard Engines Cutoff until the predicted time of S-IVB mainstage thrust, plus the nominal BML \* time during this time frame,  $(T3+T3_{FMC}+\Delta T_{N2})$  at which time \* Eq. 4.2.34 must be used to compute the performance factor. During the time interval from S-IVB Engine Cutoff to the start of orbital navigation the performance factor must be set equal to one.
+
+The parameter  $F_{EO}$  used in the  $(F/M)_c$  calculations is nominally set to one during Time Base 1. However, from the time of detection of the first engine failure in Time Base 1 until the start of Time Base 2,  $F_{EO}$  must be set equal to SIBE0B.
+
+The values of force, mass and mass flow rate are initially set from values taken from a table. These values must be changed several times during the mission to represent all levels of performance. The times at which these values are changed are defined in the Event Sequence Timeline defined in Part II.
+
+#### 4.3 BOOST NAVIGATION
+
+The flight program must determine the vehicle position, velocity, and gravitational acceleration relative to the plumbline coordinate system. During boost, a trapezoidal integration scheme is used to compute position and velocity components, and a gravitational acceleration model is used to compute the components of gravitational acceleration.
+
+##### 4.3.1 Integration
+
+The trapezoidal integration scheme determines the vehicle position and velocity from initial conditions, accelerometer data, and earth gravitation.
+
+![Figure 4-2 Boost Guidance Timeline. A vertical timeline diagram showing the sequence of guidance and maneuver events for Xz, Xy, and Xx axes over time. The timeline starts at T0 and ends at TCO. Key events include YAW, PITCH, and ROLL maneuvers, and IGM guidance updates. The diagram shows the state of each axis at various time points, such as Xz = 0 at T0, Xy = f(t) at T1, and Xx = theta_x at T0. It also shows the transition from last computed values to IGM values and the final state at TCO.](79cda1fae648e8c286791a7eec5ab480_1_img.webp)
+
+The diagram illustrates the Boost Guidance Timeline, showing the sequence of guidance and maneuver events for three axes:  $X_z$ ,  $X_y$ , and  $X_x$  over time. The timeline is marked with time points  $T_0$ ,  $T_1$ ,  $\approx T_1 + 11$ ,  $\approx T_1 + 12$ ,  $\approx T_1 + 55$ ,  $T_1 + T_{ar}$ ,  $T_3 + T_{3IGM}$ ,  $T^* \leq \epsilon_2$ ,  $T_{3i} \leq T_{HSL} + \Delta T_b$ , and  $T_{CO}$ .
+
+Key events and states along the timeline:
+
+- **At  $T_0$ :**
+  - $X_z = 0$
+  - $X_y = 0$
+  - $X_x = \theta_x$
+- **At  $T_1$ :**
+  - $X_y = f(t)$
+- **At  $\approx T_1 + 11$  to  $\approx T_1 + 12$ :**
+  - $X_z = g(t)$
+- **At  $\approx T_1 + 55$ :**
+  - **Yaw Maneuver:**  $X_z = \text{LAST COMPUTED } X_z = g(t)$
+  - **Pitch Maneuver:**  $X_y = \text{LAST COMPUTED } X_y = f(t)$
+  - **Roll Maneuver:**  $X_x = 0$
+- **At  $T_1 + T_{ar}$ :**
+  - $X_z = \text{LAST COMPUTED } X_z = g(t)$
+  - $X_y = \text{LAST COMPUTED } X_y = f(t)$
+- **At  $T_3 + T_{3IGM}$ :**
+  - $X_z$  FROM IGM
+  - $X_y$  FROM IGM
+- **At  $T^* \leq \epsilon_2$ :**
+  - $X_z = \tilde{X}_z$
+  - $X_y = \tilde{X}_y$
+- **At  $T_{3i} \leq T_{HSL} + \Delta T_b$ :**
+  - $X_z = \text{LAST COMPUTED IGM } X_z$
+  - $X_y = \text{LAST COMPUTED IGM } X_y$
+- **At  $T_{CO}$ :**
+  - $X_z = \text{LAST COMPUTED IGM } X_z$
+  - $X_y = \text{LAST COMPUTED IGM } X_y$
+
+The diagram also includes a vertical arrow pointing downwards, labeled "TIME". Asterisks (\*) are placed to the right of the  $\approx T_1 + 11$ ,  $\approx T_1 + 55$ ,  $T_1 + T_{ar}$ ,  $T^* \leq \epsilon_2$ ,  $T_{3i} \leq T_{HSL} + \Delta T_b$ , and  $T_{CO}$  time points.
+
+Figure 4-2 Boost Guidance Timeline
+
+#### 4.4.1 First Stage Guidance
+
+From GRR to T3 + 0.0 the flight program must generate guidance commands to insure that the launch vehicle aligns along the platform azimuth, and flies a preprogrammed time tilt profile along the specified azimuth.
+
+##### 4.4.1.1 Roll Maneuver
+
+At GRR, the inertial platform Z axis is aligned with the platform azimuth (see Section 3); the vehicle  $Z_B$  axis is aligned 90 degrees East of North. To maintain these relationships, the  $\chi_x$  guidance command is initialized and maintained at the last roll gimbal angle  $\theta_x$  read in the Prepare to Launch (PTL) program. \*
+
+When the vehicle has cleared the LUT (when  $(X_S - \text{initial } X_S) \geq \text{GANTRY}$ ) (primary requirement), or alternatively when  $T_c \geq T_{S0}$  (backup requirement), the roll maneuver begins. The  $\chi_x$  guidance command is set to zero to align the vehicle to the proper flight azimuth and bit 2 of MC25 is set. The parameter  $T_c$  is the time from T1 biased by the constant  $T_d$  to compensate for delays between computing and commanding the attitude, Eq. 4.4.1. When  $|\theta_x| \leq 0.5$  degrees the roll maneuver is considered to be complete and bit 3 of MC25 is set.
+
+##### 4.4.1.2 Time Tilt Pitch Guidance
+
+The time tilt pitch maneuver is begun under the same criteria as those for the roll maneuver. When the vehicle has cleared the LUT (when  $X_S - (\text{initial } X_S) \geq \text{GANTRY}$ ), or alternatively when  $T_c \geq T_{S0}$ , computations of  $\chi_y$  begin.
+
+The  $\chi_y$  guidance commands are computed as a function of time ( $T_c$ ) by a third-degree polynomial. The time profile for the pitch program is divided into three segments and Eq. 4.4.2 is used to compute the time tilt pitch commands during the indicated segments.
+
+### S-IB CONTINGENCY ENGINE FAILURE CAPABILITY
+
+The diagram illustrates the logic for S-IB Contingency Engine Failure Capability. It starts with eight engine status inputs: ENG. 1 TOK, ENG. 2 TOK, ENG. 3 TOK, ENG. 4 TOK, ENG. 5 TOK, ENG. 6 TOK, ENG. 7 TOK, and ENG. 8 TOK. Each input is connected to a 2-input OR gate. The outputs of the first four OR gates are combined into a single output labeled DI14. Similarly, the outputs of the next four OR gates are combined into a single output labeled DI15. These two signals, DI14 and DI15, are inputs to a dashed box containing the following logic:
+
+- **SINGLE ENGINE CUTOFF ENABLE COMMAND (T1 + 3.0 SEC):** This logic block takes DI14 and a signal labeled T3 + 0.0 as inputs. It consists of two 2-input OR gates. The first OR gate takes DI14 and T3 + 0.0 as inputs. The second OR gate takes the output of the first OR gate and a signal labeled TB2 as inputs.
+- **ADJUST THRUST MISALIGNMENT FACTOR IN ACCEL. ZERO TEST:** This logic block takes the output of the SINGLE ENGINE CUTOFF ENABLE COMMAND block and a signal labeled TB2 as inputs. It consists of a 2-input OR gate.
+- **ADJUST TIME TILT (TILT ARREST AND CHI FREEZE):** This logic block takes the output of the SINGLE ENGINE CUTOFF ENABLE COMMAND block and a signal labeled TB2 as inputs. It consists of a 2-input OR gate.
+- **MODIFY (F/M)<sub>c</sub> TO 7/8 NOMINAL VALUE:** This logic block takes the output of the SINGLE ENGINE CUTOFF ENABLE COMMAND block and a signal labeled TB2 as inputs. It consists of a 2-input OR gate.
+
+The final outputs of the logic block are three signals: ADJUST THRUST MISALIGNMENT FACTOR IN ACCEL. ZERO TEST, ADJUST TIME TILT (TILT ARREST AND CHI FREEZE), and MODIFY (F/M)<sub>c</sub> TO 7/8 NOMINAL VALUE. An asterisk (\*) is located to the right of the first output.
+
+Figure 4-3 S-IB Contingency Engine Failure Capability
+
+used as the current guidance command. All  $\chi_y$  guidance command freezes due to S-IB engine failures are delayed until  $T_c \geq T_2$ . When the freeze period is completed,  $T_c \geq TMEFRZ$ , the time tilt profile resumes. The time to end the  $\chi_y$  freeze, TMEFRZ, is computed in Eq. 4.4.5. The time to arrest the guidance commands,  $T_{ar}$ , is modified by  $\Delta T_f$  and  $C_{arl}$  (Eq. 4.4.6) for the first S-IB engine failure detected. \*
+
+#### 4.4.1.4.1 Engine Out Responses In Time Base 1
+
+The flight program responses to S-IB engine failures in Time Base 1 are as follows:
+
+- • The time tilt computations are modified as described above for the first engine out only.
+- •  $F_{EO}$  must be set to SIBE0B.
+- • The  $\sin (6^\circ)$  is substituted for  $\sin (2^\circ)$  in the zero test computation, Eq. 4.2.3, until  $T3 + 0.0$ .
+- • Bit 8 of MC25 is set upon detection of DI15, and bit 9 of MC25 is set upon detection of DI14.
+
+If GRF occurs prior to the start of TB2, the downrange velocity guard on TB2 must be bypassed.
+
+If GRF occurs prior to HSL entrance, HSL entrance is inhibited and DI9 tests are enabled.
+
+For further details on required program responses to GRF, see Section 8.2.2.
+
+#### 4.4.4 Steering Misalignment Correction (SMC)
+
+Because of thrust vector misalignment and center of mass offset, it is possible that the thrust direction achieved in response to IGM guidance commands is in error. The steering misalignment correction (SMC) compensates for this error and achieves the desired thrust direction. To accomplish this, SMC terms in both pitch and yaw planes are calculated by determining the relative position of the acceleration vector with respect to the vehicle longitudinal axis. Eq. 4.4.83 and 4.4.84 are used to calculate the pitch and yaw SMC terms, respectively.
+
+The values of  $\chi_y$  and  $\chi_z$  used in Eq. 4.4.83 and 4.4.84 are the minor loop  $\chi$ 's read within two minor loops following the read of the accelerometers. \*
+
+Steering misalignment correction term are first computed at  $T3 + T_{SMC}$ . The SMC terms are set to zero at  $T4 + 0.0$ . Calculations of new SMC corrections are inhibited during HSL and during periods when one or more of the following failure conditions exists:
+
+- • An indication of an unreasonable gimbal angle exists
+- • An indication of an unreasonable accelerometer reading exists
+- • An indication of an unacceptable accelerometer zero reading exists
+
+- • One or more minor loop guidance command is rate limited \*
+- • The yaw guidance command is magnitude limited. \*
+
+During periods when SMC terms are being computed, bit 10 of MC25 is set; it is reset when SMC calculations are inhibited. The SMC terms are held at their last computed values while the calculations are inhibited.
+
+#### 4.4.5 Chi Computations
+
+Steering commands computed in IGM and orbital guidance are converted into plumbline coordinate system guidance commands. The steering commands  $\chi_{y4}$  and  $\chi_{z4}$  are used to form the desired unit thrust vector relative to the target plane coordinate system. This unit thrust vector is then transformed into the plumbline coordinate system, Eq. 4.4.85. The inertial pitch and yaw guidance commands are then computed from the components of the unit thrust vector, Eq. 4.4.86 and 4.4.87. The SMC terms are added to the guidance commands. After the inertial pitch and yaw guidance commands are computed, the yaw command is limited to a maximum magnitude of 45 degrees. This limit is required to prevent the tumbling of the three gimbal platform by approaching the physical limitations in the middle (yaw) gimbal.
+
+If GRF occurs prior to the start of TB2, the downrange velocity guard on TB2 must be bypassed.
+
+If GRF occurs prior to HSL entrance, HSL entrance is inhibited and DI9 tests are enabled.
+
+For further details on required program responses to GRF, see Section 8.2.2.
+
+#### 4.4.4 Steering Misalignment Correction (SMC)
+
+Because of thrust vector misalignment and center of mass offset, it is possible that the thrust direction achieved in response to IGM guidance commands is in error. The steering misalignment correction (SMC) compensates for this error and achieves the desired thrust direction. To accomplish this, SMC terms in both pitch and yaw planes are calculated by determining the relative position of the acceleration vector with respect to the vehicle longitudinal axis. Eq. 4.4.83 and 4.4.84 are used to calculate the pitch and yaw SMC terms, respectively.
+
+The values of  $\chi_y$  and  $\chi_z$  used in Eq. 4.4.83 and 4.4.84 are the minor loop  $\chi$ 's read within two minor loops following the read of the accelerometers. \*
+
+Steering misalignment correction term are first computed at  $T3 + T_{SMC}$ . The SMC terms are set to zero at  $T4 + 0.0$ . Calculations of new SMC corrections are inhibited during HSL and during periods when one or more of the following failure conditions exists:
+
+- • An indication of an unreasonable gimbal angle exists
+- • An indication of an unreasonable accelerometer reading exists
+- • An indication of an unacceptable accelerometer zero reading exists
+
+- • One or more minor loop guidance command is rate limited \*
+- • The yaw guidance command is magnitude limited. \*
+
+During periods when SMC terms are being computed, bit 10 of MC25 is set; it is reset when SMC calculations are inhibited. The SMC terms are held at their last computed values while the calculations are inhibited.
+
+#### 4.4.5 Chi Computations
+
+Steering commands computed in IGM and orbital guidance are converted into plumbline coordinate system guidance commands. The steering commands  $\chi_{y4}$  and  $\chi_{z4}$  are used to form the desired unit thrust vector relative to the target plane coordinate system. This unit thrust vector is then transformed into the plumbline coordinate system, Eq. 4.4.85. The inertial pitch and yaw guidance commands are then computed from the components of the unit thrust vector, Eq. 4.4.86 and 4.4.87. The SMC terms are added to the guidance commands. After the inertial pitch and yaw guidance commands are computed, the yaw command is limited to a maximum magnitude of 45 degrees. This limit is required to prevent the tumbling of the three gimbal platform by approaching the physical limitations in the middle (yaw) gimbal.
+
+- • Guidance Reference Failure Tests
+- • Issuance of the S-IVB cutoff switch selector commands.
+
+The HSL calculations are initiated when the predicted time-to-go  $T_{3i}$  (Eq. 4.4.17) becomes less than the preset time ( $T_{HSL}$ ) plus a computed time bias ( $\Delta T_b$ ) and the velocity-to-be-gained is less than a velocity guard ( $V_{GRD}$ ).
+
+On the first pass through the HSL, IGM guidance commands must be frozen to their last computed values and the predicted  $T_{3i}$  is decreased by the last computed value of the time bias ( $\Delta T_b$ ) which compensates for a velocity bias, Eq. 4.4.89. On all subsequent passes, the predicted  $T_{3i}$  is decremented by the length of the BML,  $\Delta T$ , Eq. 4.4.90.
+
+The prediction of the S-IVB cutoff time is performed with Eq. 4.4.91 through 4.4.94. This cutoff prediction uses a second-degree polynomial which expresses velocity as a function of time. This polynomial is constructed using the current and two previous BML durations and velocity values. The polynomial is then evaluated to give the time at which the cutoff velocity will be achieved. The cutoff velocity is biased by the preset  $\Delta V_b$  to compensate for thrust tailoff and system delays which cause velocity gain after the S-IVB cutoff command is issued.
+
+Beginning with the initial calculation of the predicted cutoff time in the HSL, the most recent  $T_{3i}$  value will be decremented and tested every 40 ms (a function of minor loop execution). When  $T_{3i}$  is determined to be less than 60 ms, the program must inhibit interrupts (except INT9 and INT12), continuously compare the time to S-IVB cutoff switch selector read issuance, and issue the S-IVB cutoff switch selector command sequence when the real time clock reading becomes greater than or equal to  $T_{CO}$ . Upon issuing the first S-IVB cutoff switch selector, minor loops must be enabled and INT4 and INT11 must be enabled.
+
+Any time that the predicted cutoff time calculation in Eq. 4.4.94 indicates that the time-to-go is less than 20 ms, the cutoff commands must be issued immediately.
+
+When the read command for the S-IVB Engine Cutoff No. 1 ON switch selector is issued, bit 23 of MC25 must be set.
+
+If guidance reference failure occurs, entrance to the high speed loop (HSL) shall be inhibited. If the HSL has already been entered when GRF is recognized, the HSL shall continue until cut-off.
+
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*
+
+#### 4.4.3 Guidance Reference Failure (GRF)
+
+If GRF is detected anytime during the mission, the S/C control of Saturn capability is provided by hardware logic in response to the guidance reference failure discrete outputs (D04 or D06). This capability is never disabled once enabled. Checks for DI9 begin immediately upon detection of GRF and continue to be made once per BML during boost until DI9 is detected. Once DI9 is detected, bit 15 of MC27 is set. This bit is never reset.
+
+Upon detection of GRF, all attitude error commands originating from the flight program are maintained at their current value until DI9 is detected. When DI9 is detected, all attitude error commands are set and maintained at zero for the remainder of the mission.
+
+If GRF occurs prior to the start of TB2, the downrange velocity guard on TB2 must be bypassed.
+
+If GRF occurs prior to HSL entrance, HSL entrance is inhibited and DI9 tests are enabled.
+
+For further details on required program responses to GRF, see Section 8.2.2.
+
+#### 4.4.4 Steering Misalignment Correction (SMC)
+
+Because of thrust vector misalignment and center of mass offset, it is possible that the thrust direction achieved in response to IGM guidance commands is in error. The steering misalignment correction (SMC) compensates for this error and achieves the desired thrust direction. To accomplish this, SMC terms in both pitch and yaw planes are calculated by determining the relative position of the acceleration vector with respect to the vehicle longitudinal axis. Eq. 4.4.83 and 4.4.84 are used to calculate the pitch and yaw SMC terms, respectively.
+
+The values of  $\chi_y$  and  $\chi_z$  used in Eq. 4.4.83 and 4.4.84 are the minor loop  $\chi$ 's at the time the accelerometers are read.
+
+Steering misalignment correction terms are first computed at  $T3 + T_{SMC}$ . The SMC terms are set to zero at  $T4 + 0.0$ . Calculations of new SMC corrections are inhibited during HSL and during periods when one or more of the following failure conditions exists:
+
+- • An indication of an unreasonable gimbal angle exists
+- • An indication of an unreasonable accelerometer reading exists
+- • An indication of an unacceptable accelerometer zero reading exists
+
+- • One or more minor loop guidance command is rate limited \*
+- • The yaw guidance command is magnitude limited. \*
+
+During periods when SMC terms are being computed, bit 10 of MC25 is set; it is reset when SMC calculations are inhibited. The SMC terms are held at their last computed values while the calculations are inhibited.
+
+#### 4.4.5 Chi Computations
+
+Steering commands computed in IGM and orbital guidance are converted into plumbline coordinate system guidance commands. The steering commands  $\chi_{y4}$  and  $\chi_{z4}$  are used to form the desired unit thrust vector relative to the target plane coordinate system. This unit thrust vector is then transformed into the plumbline coordinate system, Eq. 4.4.85. The inertial pitch and yaw guidance commands are then computed from the components of the unit thrust vector, Eq. 4.4.86 and 4.4.87. The SMC terms are added to the guidance commands. After the inertial pitch and yaw guidance commands are computed, the yaw command is limited to a maximum magnitude of 45 degrees. This limit is required to prevent the tumbling of the three gimbal platform by approaching the physical limitations in the middle (yaw) gimbal.
+
+#### 5.5.5.1 Inertial Attitude Hold Maneuver After S/C Control
+
+To command an inertial attitude hold upon the return of control to the IU, the program must set the inertial platform gimbal angle guidance commands equal to the gimbal angles calculated in the last minor loop before maneuver initiation, Eq. 5.5.7. Bit 17 of MC27 must be set for the duration of this maneuver. Bits 10, 11, 12, and 16 of MC27 must be reset.
+
+#### 5.5.5.2 Track Local Reference Maneuver After S/C Control
+
+To command a track local reference maneuver upon the return of control to the IU, the following processing must be done:
+
+- • Set the desired roll command equal to the roll gimbal angle calculated in the last minor loop before maneuver initiation, Eq. 5.5.8.
+- • Compute the sine and cosine of the pitch and yaw gimbal angles calculated in the last minor loop before maneuver initiation and calculate the vehicle's attitude in the plumbline coordinate system, Eq. 5.5.9.
+- • Compute the components of the vehicle's attitude in the target plane coordinate system, Eq. 5.5.10.
+- • Compute the components of the vehicle's out-of-plane attitude, Eq. 5.5.11.
+- • Compute the vehicle's in-plane attitude with respect to the local horizontal, Eq. 5.5.12.
+
+The results of the above computations will be substituted for the nominal track local reference parameters, Eq. 5.5.13, and the local reference computations described in Section 5.5.3
+
+must be performed. Bit 16 of MC27 must be set for the duration of this maneuver. Bits 10, 11, 12, and 17 of MC27 must be reset.
+
+#### 5.5.6 Guidance Reference Failure (GRF)
+
+If guidance reference failure (GRF) is detected at any time during the mission, the S/C control of Saturn capability will be provided by hardware logic in response to the GRF discrete outputs (D04 or D06). This capability can never be disabled once enabled. Checks for DI9 must begin immediately upon detection of GRF and must continue to be made once per BML during boost mode or once per second during orbital mode until EOM or until DI9 is detected. Once DI9 is detected, bit 15 of Mode Code 27 must be set. This bit must never be reset.
+
+Upon detection of GRF, all attitude error commands originating from the flight program must be frozen at their current value until DI9 is detected. When DI9 is detected, all attitude error commands will be frozen at zero for the remainder of the mission.
+
+#### 5.5.7 DCS Commanded Functions
+
+The preprogrammed attitude timeline can be altered by acceptance of a Generalized Execute Maneuver DCS command. Return will be made to the preprogrammed timeline upon acceptance of the Return to Nominal Timeline DCS command. (See Sections 10.4.7 and 10.4.8.)
+
+### 5.6 TELEMETRY ACQUISITION AND LOSS
+
+The determination of whether the vehicle is in range of a telemetry station will be done as a function of the vehicle's position with respect to the active telemetry stations. The knowledge that the vehicle is in range of a station will be used to start alternate Class 4 switch selector sequences and
+
+compressed data dumps. Each telemetry station must be tested for acquisition every eight seconds from  $T4 + BN_5$  until  $T5 + 0.0$  (see Telemetry Station Table 5-1).
+
+### 5.6.1 Acquisition and Loss Calculations
+
+The determination of whether or not the vehicle is in range of a telemetry station will be made in the following manner.
+
+The earth's rotation since  $T_{GRR}$  is calculated, Eq. 5.6.1, and a new [MGA] matrix is derived. This matrix is then used to transform the vehicle's position in the space-fixed gravitational coordinate system into the earth-fixed telemetry station coordinate system, Eq. 5.6.2. A telemetry station acquisition sphere with radius  $R_{STA}$  is used in computing station acquisition at a zero degree elevation angle from a point above each station. Each station acquisition reference point lies at the intersection of the acquisition sphere with a line passing from the center of the Earth through the station. The distance,  $d_A(i)$ , of the vehicle above or below the horizon of the acquisition reference point is calculated (Eq. 5.6.3 through 5.6.5). This is done by subtracting the radius,  $R_{STA}$ , of the telemetry station acquisition sphere from the dot product of the transformed vehicle's position vector and the unit station vector,  $\overline{C}_A(i)$ . If  $d_A(i)$  is found to be zero or positive for a station in the list, the vehicle is considered to be in acquisition of that station. The preset value of  $R_{STA}$  for each mission is selected to give approximately two degrees of elevation above the horizon of each station at the nominal orbit altitude. The components of  $\overline{C}_A$  for each station in the telemetry station coordinate system are preset for each mission. When a station acquisition or loss is computed, the time of acquisition, TBA, or the time of loss, TBL, in the prevailing time base must be updated.
+
+TABLE 5-1 TELEMETRY STATION TABLE
+
+<table border="1">
+<thead>
+<tr>
+<th>i</th>
+<th>Station</th>
+<th>Station Type</th>
+<th><math>C_{Ax}(i)</math></th>
+<th><math>C_{Ay}(i)</math></th>
+<th><math>C_{Az}(i)</math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>MILA CIF</td>
+<td>Calibrate</td>
+<td>0.87981</td>
+<td>-0.47532</td>
+<td>-0.00134</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bermuda</td>
+<td>Calibrate</td>
+<td>0.81395</td>
+<td>-0.53253</td>
+<td>0.23214</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Newfoundland</td>
+<td>Calibrate</td>
+<td>0.59676</td>
+<td>-0.73785</td>
+<td>0.31537</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Canary Island</td>
+<td>Calibrate and Dump</td>
+<td>0.37533</td>
+<td>-0.46339</td>
+<td>0.80275</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Ascension</td>
+<td>Calibrate</td>
+<td>0.39895</td>
+<td>0.13748</td>
+<td>0.90661</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Madrid</td>
+<td>Calibrate and Dump</td>
+<td>0.17931</td>
+<td>-0.64631</td>
+<td>0.74171</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Carnarvon</td>
+<td>Calibrate</td>
+<td>-0.87993</td>
+<td>0.41883</td>
+<td>-0.22430</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Guam</td>
+<td>Calibrate</td>
+<td>-0.68462</td>
+<td>-0.22874</td>
+<td>-0.69208</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Honeysuckle</td>
+<td>Calibrate</td>
+<td>-0.52869</td>
+<td>0.57948</td>
+<td>-0.62023</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Hawaii</td>
+<td>Calibrate</td>
+<td>0.17552</td>
+<td>-0.37445</td>
+<td>-0.91048</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Goldstone</td>
+<td>Calibrate</td>
+<td>0.65891</td>
+<td>-0.57586</td>
+<td>-0.48396</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Corpus Christi</td>
+<td>Calibrate</td>
+<td>0.84918</td>
+<td>-0.46168</td>
+<td>-0.25641</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*
+
+## SECTION 7
+
+### TIME BASES, DISCRETES, AND INTERRUPTS
+
+#### 7.1 INTRODUCTION
+
+Most of the time-dependent events in the flight program are referenced to important occurrences in the flight to prevent perturbations in one stage from impacting the timing in subsequent stages. To facilitate this timing, time bases must be started upon recognition of these events.
+
+Most discrete outputs (DO) from the LVDC/LVDA to the rest of the Saturn IB system are generated through the stage switch selectors. Each switch selector allows the LVDC to command up to 112 different discrete outputs to each vehicle stage. A detailed explanation of switch selector command processing is contained in Section 9. Thirteen additional discrete output signals can be generated by the LVDC. \*
+
+Two means are available for sending discrete information into the LVDC from the Saturn IB/CSM system and supporting ground equipment: (1) discrete inputs, and (2) interrupts. Three interrupts are controlled internally by the LVDC. (Note: Times marked with an asterisk (\*) are mission-dependent; for exact value, see Event Sequence Timeline in the individual mission requirements, Part II.)
+
+#### 7.2 TIME BASES
+
+Time bases are used to reference program events to some key mission event. A time base must be started within 2 ms of the flight program's recognition that the required conditions have been met. When a time base is started, the flight program must execute the following functions:
+
+1. Read the real-time clock to establish the time at which the time base began
+2. Telemeter the real-time clock reading
+3. Begin accumulating time in the time base
+4. Set the required mode code bit
+5. Stop issuing switch selector commands from the previous time base
+6. Begin issuing switch selector commands from the new time base.
+
+Six primary time bases are required for the Saturn IB flight program and are described below. Backup methods are required for Time Bases 1 through 4. To complement the time base start requirements descriptions, logic diagrams are provided by Figures 7-1 through 7-5. In each figure flight program functions are shown in the shaded area within the broken line while hardware functions are shown outside the broken line. The symbol "•" is used to represent a logical AND gate, giving an output if and only if all inputs to the gate are present. The symbol "+" is used to represent a logical OR gate, giving an output if one or more inputs to the gate is present. A double line input to an OR gate is used to indicate the primary input expected on a nominal mission. A circle in an input line to a logic gate indicates that the complement of the input signal must be used.
+
+#### 7.2.1 Time Base 0 (Guidance Reference Release)
+
+Time Base 0 (TB0) must be initiated when the program recognizes the guidance reference release (GRR) interrupt (INT7). When TB0 is started, the sign bit of Mode Code 25 (MC25) must be set; this bit must never be reset.
+
+#### 7.2.2 Time Base 1 (Liftoff)
+
+Time Base 1 (TB1) must start upon detecting either DI7 (Liftoff "B") or DI24 (Liftoff "A"). These DIs are generated by the
+
+7.4.2 DI2: Command Decoder OM/D "A" and Command Decoder OM/D "B"
+
+This DI indicates to the LVDC whether a DCS command is a mode or data command. A logic 1 indicates a mode command has been received, and a logic 0 indicates a data command has been received. This DI must be interrogated once upon receipt of each command decoder interrupt (INT8); see Section 10 for details of the required program response to this DI.
+
+7.4.3 DI3: Spare (Wired to IU/S-IVB Interface on SA-206 and SA-207, wired to Control Distributor on SA-208 and Subs)
+
+7.4.4 DI4: Spare (Wired to Control Distributor)
+
+7.4.5 DI5: S-IVB Engine Out "A"
+
+DI5 indicates that the S-IVB engine is out. This DI must be checked once per BML, until recognition, during the interval from T3 + S4IGTM until T4 + 0.0. DI5 is used as one of the inputs to initiate TB4 (see paragraph 7.2.5). Upon detection of DI5, the discrete's presence must be noted as satisfying one of the conditions for initiating TB4, and the check for the discrete must be discontinued.
+
+This DI will be actuated when both of the two "thrust OK" switches in the S-IVB J2 engine indicate that the engine main LOX injection pressure is below operating level. There are no hardware inhibits of this DI, and it will be active during the entire mission.
+
+7.4.6 DI6: Spare (SA-206, SA-207, SA-209 and Subs), Spacecraft Separation Indication (SA-208)
+
+7.4.7 DI7: Liftoff "B" \*
+
+This DI, along with DI24, indicates that liftoff has occurred. These DIs are provided by the deactuation of the liftoff relays in the IU at umbilical disconnect and must be interrogated before and after every minor loop (twice every 40 ms) during the time from  $T0 + 17.4^*$  (-0, +40 ms) until detected or until  $T0 +$  BU3, whichever occurs earlier. These DIs are of equal priority and are used as indications to start TBl (see Time Base 1 start logic). \*
+
+7.4.8 DI8: Spare (Wired to the ESE)
+
+7.4.9 DI9: S/C Control of Saturn
+
+This discrete originates in the Spacecraft (S/C), and indicates to the LVDC that the S/C has taken control of the flight control computer (FCC) and that the LVDC outputs to the FCC are not being accepted. The program must check this DI once per BML from  $T4 + 5.0^*$  to  $T4 + BN_5$  and once per second from  $T4 + BN_5$  to EOM. A detailed description of the required program response to this DI is found in the Control Switchover Capability description in Section 5. When this DI is recognized, bit 12 of MC27 must be set; this bit is reset when control is returned to the LVDC. \*
+
+If a guidance reference failure (GRF) is detected, the program must check for this DI once per BML in the boost mode and once per second in orbit until detected. If DI9 is on after GRF, the attitude error commands must be set to zero for the remainder of the mission. Bit 15 of MC27 must also be set and remain set for the remainder of the mission. If DI9 is on when guidance reference failure is detected, bit 12 of MC27 must remain set as well as bit 15 of MC27. For a complete description of program responses to GRF, see Section 8.2.2. \*
+
+If the S/C has taken control of the Saturn, this DI is a logic 1; otherwise, it will be a logic 0. The S/C Control of Saturn Enable switch selector command must be issued or D04 or D06
+
+must be set in order for the S/C commands to be accepted by the FCC. The S/C Control of Saturn Disable switch selector command disables the S/C commands from being accepted by the FCC unless D04 or D06 is on. Although the S/C cannot control the FCC unless the above conditions are met, the discrete input register will recognize this DI during all periods of flight up to S/C separation, at which time this DI becomes zero and remains in that state until EOM.
+
+#### 7.4.10 DI10: Coolant Thermal Switch #1
+
+This DI indicates that the temperature of the environmental control system (ECS) coolant is above the selected control temperature. This input must be checked once every 300 seconds, beginning at  $T_{GRR} + TM$  seconds, for use in maintaining the coolant temperature by controlling the water supply to the sublimator. Bit 18 of MC27 is initially set to indicate that the Water Control Valve Logic Inhibit DCS command has not been received.
+
+If the water valve is closed and either DI10 or DI11 is on, the program must issue the switch selector command to open the water valve. This is a class 1 alternate switch selector sequence. If the water valve is closed and both DI10 and DI11 are off, no action is taken. \*
+
+If the water valve is open and both DI10 and DI11 are off, the program must issue the switch selector command to close the valve. This is a class 1 alternate switch selector sequence. If the water valve is open and either DI10 or DI11 is on, no action is taken. \*
+
+If the Water Control Valve Logic Inhibit DCS command has been accepted, DI10 and DI11 are ignored by the program. Bit 18 of MC27 must be reset.
+
+#### 7.4.11 DI11: Coolant Thermal Switch #2
+
+See DI10.
+
+7.4.12 DI12: S-IB/S-IVB Separation
+
+This DI indicates that the S-IB and S-IVB have separated. This DI is on, logic 1, until separation occurs, at which time it goes off, logic 0. There is no requirement to monitor this DI.
+
+7.4.13 DI13: Spare (206, 207, 208), Spare (Wired to Control Distributor) (209 and Subs)
+
+7.4.14 DI14: S-IB Outboard Engine Out
+
+This DI indicates that at least one S-IB outboard engine is out. This DI must be checked once per BML from  $T1 + T_{S1EO}$  until it is detected or until TB3. A detailed description of the required program response is found in the Engine Out Guidance Modifications discussion in Section 4. When this DI is recognized, bit 9 of MC25 must be set; this bit must never be reset. After this DI has been detected, there is no further requirement to check it.
+
+This discrete is activated when at least two of the three "thrust OK" pressure switches in any one of S-IB engines 1 through 4 (outboard engines) indicate main fuel injection pressure has fallen below operating range. When one or more of the engines is not burning, this DI is a logic 1 and is a logic 0 while all the outboard engines are burning. At S-IB/S-IVB separation, this DI will become a logic 0 and will remain in that state until EOM.
+
+7.4.15 DI15: S-IB Inboard Engine Out \*
+
+DI15 indicates that at least one of the S-IB inboard engines is out. This DI must be checked once per BML from  $T1 + T_{S1EO}$  until it is detected or until TB3. A detailed description of the criteria under which this DI must be checked, and the required
+
+## SECTION 8
+
+### LAUNCH VEHICLE ATTITUDE CONTROL
+
+#### 8.1 INTRODUCTION
+
+The flight program functions as a part of the attitude control system by generating vehicle attitude error signals. The launch vehicle attitude, in the form of angular displacements measured by inertial platform gimbal resolvers, is read into the LVDC through LVDA hardware. The attitude error is then computed by differencing the attitude angles with the desired angles computed by the guidance equations. The resulting attitude error is transformed to the body reference frame, limited in magnitude and rate of change, and issued to the flight control system.
+
+The control functions of determining vehicle attitude and computing and issuing attitude error commands are called the minor loop. These functions must be performed approximately twenty-five times per second during boost and approximately ten times per second during orbit. The supporting control functions of computing attitude change increments and coefficients for the gimbal-to-body transformation required for attitude error command computations are called minor loop support functions. These functions are performed once per boost major loop (BML) during boost and once per second during orbit.
+
+#### 8.2 MINOR LOOP
+
+The minor loop reads platform gimbal data, evaluates these data, and computes and issues attitude error commands. The gimbal angles are processed in the following order: yaw, pitch, and roll.
+
+The minor loop samples the yaw gimbal resolver, evaluates the yaw gimbal resolver data, computes the yaw attitude angle, and computes and issues the yaw attitude error command. This process is then repeated for the pitch and roll gimbals.
+
+Minor loop functions must be performed every 40 ms during boost and every 100 ms during orbit. However, the start of a minor loop may be delayed while processing of any of the following interrupt-protected program functions is under way. During boost, occasional delays of up to 8 ms may result from interference by switch selector processing. A delay of up to 21 ms may result while processing interrupt protected data output multiplexer (DOM) telemetry. A delay of up to 60 ms may occur just prior to S-IVB cutoff. In orbit, minor loops may be delayed up to 12 ms by command decoder interrupt processing.
+
+#### 8.2.1 Gimbal Angle Data
+
+The vehicle attitude angles are sensed by inertial platform resolvers which measure the angles between the three platform gimbals and the mounting frame. Primary, or fine, and backup resolvers are provided for each gimbal.
+
+The fine resolvers are initially selected for attitude determination and are used unless repeated fine resolver errors are detected. A backup resolver is selected for attitude determination only if its corresponding fine resolver shows repeated errors.
+
+The resolver outputs are converted to digital form in the LVDA by a combination of crossover detectors (COD) and redundant eleven bit counters. The resolver data word contains the redundant counter readings and a disagreement bit in the following format: DAAAAAAAAAASSSSBBBBBBBBBBB, where A
+
+## SECTION 9
+
+### SWITCH SELECTOR PROCESSING
+
+#### 9.1 INTRODUCTION
+
+The initiation of time dependent hardware events in the Saturn IB is accomplished by switch selector commands issued by the LVDC/LVDA. A switch selector in each launch vehicle stage, including the Instrument Unit, decodes the commanded address and activates one of 112 possible output circuits in that stage.
+
+Switch selector processing performs the following flight program functions:
+
+- • Actuation of the switch selector command, including the necessary tests, verifications, and issuances
+- • Proper timing, as specified in the Flight Sequencing Table in Part II
+- • Adherence to the hierarchy of priorities when alternate flight sequences are requested.
+
+#### 9.2 COMMAND EXECUTION OPERATIONS
+
+The flight program action required to execute switch selector commands consists of the following sequence of program operations: test for hung stage (as necessary), issue the stage and address, verify the address, issue the read command, and issue the read reset.
+
+### 9.2.1 Sequence of Operations
+
+Figure 9-1 shows the sequence of operations required to issue a switch selector command and the minimum elapsed time which must be allowed between software operations for the corresponding hardware functions to be correctly executed. The minimum times shown in Figure 9-1 result from the hardware reaction times shown in Figure 9-2.
+
+#### 9.2.1.1 Hung Stage Test
+
+If the switch selector stage select circuitry does not reset after a switch selector command has been issued, a hung stage condition exists. Since the eight command address lines from the LVDA are common to all stage switch selectors, a hung stage condition will activate the switch selector circuitry on the hung stage for all subsequent switch selector commands. A hung stage results in erroneous outputs only when the currently selected stage differs from the stage selected by the previous switch selector command.
+
+To test for a hung stage, the program must read the feedback lines. If the feedback bits are zero, there is no hung stage and the stage and address will be issued. If the feedback bits are not zero, a hung stage exists and a forced reset must be issued. Thirteen milliseconds must elapse between the forced reset and the issuance of the stage and address of the next switch selector command.
+
+Prior to issuing certain switch selector commands, the flight program must test for a hung stage. These switch selector commands must include, at a minimum, the first switch selector command after GRR and any switch selector command in which the selected stage differs from that of the previous command. \*
+
+\*  
+\*  
+\*  
+\*
+
+### 9.2.1.2 Stage and Address
+
+The flight program must issue the stage and address after the hung stage test. However, if the hung stage test is not necessary for the present switch selector command, the stage and address must be issued immediately. Table 9-1 indicates the stage and address bit format of the Switch Selector Command Word required for the issuance of all Switch Selector commands. Only one stage will be selected by each switch selector command.
+
+\*  
+\*  
+\*  
+\*
+
+TABLE 9-1 SWITCH SELECTOR COMMAND WORD
+
+<table border="1"><thead><tr><th>Bit Position</th><th>Function</th></tr></thead><tbody><tr><td>S</td><td>Read Command</td></tr><tr><td>1</td><td>Force Reset of Switch Selector Relays</td></tr><tr><td>2</td><td>IU Stage Selected</td></tr><tr><td>3</td><td>Spare</td></tr><tr><td>4</td><td>S-IVB Stage Selected</td></tr><tr><td>5</td><td>Spare</td></tr><tr><td>6</td><td>S-IB Stage Selected</td></tr><tr><td>7-14</td><td>Stage Address</td></tr><tr><td>15-25</td><td>Spare</td></tr></tbody></table>
+
+The 8-bit coded address is transmitted in parallel via eight output lines from the LVDA to all switch selectors. At the same time, the corresponding stage select lines (two lines from each stage select bit to the corresponding stage switch selector) are activated to enable the desired stage to receive the coded command.
+
+After issuing the stage and address, DOM telemetry of the discrete output register and switch selector register must be issued while the stage and address are in the LVDA switch selector register.
+
+In the nominal sequence (no hung stage detected), 18 ms must elapse between the stage and address issuance and the next operation, that of verifying the address. If a hung stage were detected, 26 ms must elapse before verifying the address. The additional 8 ms is required because of the necessary forced reset.
+
+#### 9.2.1.3 Address Verification
+
+After receiving the address and prior to the actuation of the stage circuitry, the stage switch selector returns the one's complement of the received address to the LVDA via eight feedback lines.
+
+The flight program must sample the eight feedback bits to determine if the commanded transfer is correct. If the command has been correctly interpreted by the switch selector, the eight feedback bits will be the one's complement of the commanded address and the read command must be issued immediately.
+
+A feedback which is not the one's complement of the commanded address is an erroneous feedback word. Erroneous feedback words must be tested to determine if they are zero or non-zero.
+
+All erroneous feedback words which are zero must be further tested for a zero simplex malfunction in the switch selector. If the commanded address contains more than one zero, the feedback mechanism is assumed to have failed (zero simplex malfunction) and nominal processing will be resumed as if the feedback were correct.
+
+All other erroneous feedback words will disagree by one or more bits from the one's complement of the commanded address.
+
+If the erroneous feedback word disagrees by only one bit from the one's complement of the commanded address (which includes the case when the commanded address of a zero feedback word contained only one zero), then the program must issue a forced reset. Thirteen milliseconds later the program must issue the stage and one's complement address. Twenty-three milliseconds must elapse between the issuance of the stage and complement address and the issuance of the read command. DOM telemetry of the complement address must also be issued.
+
+If the feedback word disagrees by more than one bit from the address complement and Channel A (normal operation) is in use, then the following sequence of events must be initiated with the time delays specified above:
+
+1. The program must issue a forced reset
+2. Channel B must be selected
+3. The stage and complement of the commanded address must be issued
+4. The read command must be issued.
+
+Bit 12 of the internal control register (ICR) must be set to zero. Bit 17 of Mode Code 24 must be set, this bit must never be reset; and the feedback address must be telemetered. After the program switches to Channel B, Channel A must never be used again. Instead, Channel B will be used for the rest of the mission. Nominal processing of the commanded address, including verification, will be continued using Channel B.
+
+#### 9.2.1.4 Read Command
+
+After an acceptable switch selector stage and address, or complement address, has been issued, the program must issue the read command. This command activates the selected circuitry in the switch selector to produce the command output.
+
+After the read command is issued to the switch selector, the flight program must telemeter the stage, the commanded address, and the real time clock reading when the read command was issued. During the orbital mode when the vehicle is out of electromagnetic view of a telemetry dump station, switch selector commands must be compressed. See Section 11.5 for data compression requirements. The maximum allowable error between the clock value and the actual time the read command is issued is 1.0 ms. The time error must be kept constant for all switch selectors by keeping the number of instructions between the PIOs constant.
+
+The stage must be reloaded in the switch selector register when the read command is issued to provide positive stage identification for real time monitoring (ground support) of the sequencing system.
+
+#### 9.4.5 Class 4 Alternate Sequence
+
+An alternate sequence consisting of one or more switch selector commands, which are to be issued intermittently and concurrently with the switch selector sequence in progress, will be considered a Class 4 sequence. Commands from the Class 4 alternate sequence will be issued when the time until the next switch selector command in the current sequence is greater than 500 ms. This requirement must be enforced until the alternate sequence is completed.
+
+A Class 4 sequence can run concurrently with any other alternate sequence or the current nominal sequence. Furthermore, the starting of a new sequence (nominal or alternate Class 1, 2, or 3) does not cancel a Class 4 sequence that is being issued intermittently. The Class 4 sequence will continue to be issued in the new sequence whenever time permits. However, if a Class 4 sequence is requested while another Class 4 sequence is in progress, the new request must be honored and the new sequence will replace the former Class 4 sequence. (An example of a Class 4 sequence is the telemetry station acquisition sequence.) \*
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+#### 11.4.1.1.6 Special Telemetry
+
+The time at which the current time base started must be telemetered to allow an accurate determination of switch selector command times. This information must be telemetered once every BML during boost mode and once per second during orbital mode, but will change only when a new time base begins.
+
+The special codes shown in Table 11-2 are necessary to adequately mark the end of the telemetry during each computation cycle and to mark the beginning of the telemetry for the next cycle.
+
+TABLE 11-2 ETC/BTC TELEMETRY
+
+<table border="1"><thead><tr><th>Symbol</th><th>Data Word</th></tr></thead><tbody><tr><td>ETC (end of telemetry cycle)</td><td>7 0 7 0 7 0 7 0 6</td></tr><tr><td>BTC (begin telemetry cycle)</td><td>Computation cycle counter</td></tr></tbody></table>
+
+The ETC word must be telemetered immediately after all LVDC telemetry is completed in each BML in boost mode or in each one second interval in orbital mode; the BTC word must be telemetered just prior to the beginning of the telemetry cycle. The redundancy is necessary since interrupts can destroy these LVDC words.
+
+The discrete input register (DIR), the internal control register (ICR), and the discrete output register (DOR), must be telemetered once during each BML in boost mode and once per second during orbital mode.
+
+The error monitor register (EMR) will be read into the LVDC each time it is PIOed. All readings of the EMR within each BML in boost mode must be ORed together into a single word
+
+and telemetered in the same BML, at which time the ORed word must be reset. In orbital mode, a one second accumulation and an eight second accumulation of ORed EMR readings must be telemetered at a regular once per second frequency and once per eight second frequency, respectively. The one second accumulated ORed word must be reset after the telemetry is issued. The eight second accumulation must continue to be ORed with subsequent EMR readings. When a dump station loss is processed it must be reset.
+
+#### 11.4.1.2 LVDC On Occurrence Telemetry
+
+Special telemetry is required when events significant to the flight sequence occur. The occurrence of these events is indicated by the setting of particular bits in discrete hardware registers as outputs from the LVDC (discrete output register or switch selector register) and as inputs to LVDC (discrete input register, interrupt storage register or switch selector feedback register).
+
+In addition, the start time of each time base in conjunction with a special indication of whether the time base was initiated nominally or by the backup method must be telemetered. \*
+
+##### 11.4.1.2.1 Discrete Register Inputs and Outputs
+
+An indication of the discrete inputs (DIs) given in Table 11-3 must be telemetered when detected in the BML during boost mode.
+
+#### 11.4.1.2.2. Special Time Base Start Telemetry
+
+The real time clock reading associated with the initiation of TB0, TB1, TB2, TB3 and TB5 must be telemetered. The required format is defined in Figure 11-1 and the specific ID codes are given in the Telemetry Tags Table 11-8. If both DIs are received for TB1 initiation, the codes of the two DIs must be ORed together and used as the ID code for telemetry. If TB3 is initiated on the time backup, a special indication must be telemetered with an associated real time clock reading.
+
+An indication of which two of the four possible conditions initiated TB4 must be telemetered at T4+0. The specific ID codes for each of the four possible conditions are defined in the Telemetry Tags Table 11-8. The codes of the two conditions that initiated TB4 must be ORed together and used as the ID code for telemetry. The required format is defined in Figure 11-1.
+
+#### 11.4.2 LVDA Telemetry
+
+LVDA telemetry data includes nominal minor loop data and information on LVDA registers and hardware interfaces. All LVDA telemetry is issued through the DOM to the telemetry system. The PIOs for all available LVDA telemetry are defined in the Telemetry Tags Table 11-8. The hardware-determined data formats are described in the LVDC/LVDA Programmers manual.<sup>1</sup>
+
+Telemetry of certain LVDA data must be guaranteed at regular intervals or on occurrence. An interval, of at least 8.334 ms since the last LVDC telemetry PIO or the last LVDA PIO, must be provided to ensure that an empty DOM word is available.
+
+---
+
+<sup>1</sup>IBM: Programmer's Operating Manual, Saturn V LVDC, LVDA, Programmable Test Controller, NAS8-11561 and NAS8-11562, June 1, 1968
+
+#### 11.4.2.1 LVDA Regularly Scheduled Telemetry
+
+From every minor loop, each of the three crossover detector (COD) counter readings (fine or backup, whichever is in use) combined with the respective ladder output must be telemetered.
+
+The following hardware data must be telemetered at least once per BML during boost mode (except during the high speed cutoff loop) and once per second during orbital mode:
+
+- • Internal control register (ICR)
+- • Crossover detector and power supply word
+- • Error monitor register (EMR)
+- • Discrete input register (DIR)
+- • X, Y, and Z accelerometer readings
+- • X, Y, and Z backup gimbals.
+
+#### 11.4.2.2 LVDA On-Occurrence Telemetry
+
+A special PIO must be issued immediately after the switch selector stage and address have been loaded into the switch selector register to telemeter switch selector and discrete output register driver outputs.
+
+### 11.5 DATA COMPRESSION
+
+During orbital mode, significant time intervals will occur during which the vehicle will be out of electromagnetic view
+
+of a telemetry dump station. During these intervals, data must be processed and stored in the LVDC for later transmission when the vehicle comes within the acquisition region of the next telemetry dump station. These data must also be processed and stored while the vehicle is within the acquisition region of the telemetry dump station, to provide continuity of data. The processing and storing of these data is referred to as data compression.
+
+\*  
+\*  
+\*  
+\*
+
+#### 11.5.1 General Data Compression Requirements
+
+The following requirement must apply for all compressed data:
+
+- • Data compression must be programmed for a minimum of nine hours. (A new compressed data time base may be initiated, if necessary.)
+- • Storage requirements must be based on a maximum compression period of 5700 seconds.
+- • If the maximum storage allocation in a particular table is exceeded between dump stations, the most recent data must be compressed over the oldest data in the affected table. This condition is called table wraparound.
+- • Each data word or set of data words must have stored with it a word containing a unique identification (ID) code and an associated time accurate to 1.1 seconds. The ID code and time must be stored in the same relative locations for all data. The associated time must be the time at which the data is stored.
+
+### 11.5.2 Data to be Compressed
+
+Compressed data can be conveniently divided into three groups:
+
+- • Group A: time compressed data, in which quantities are sampled and stored at regular intervals
+- • Group B: occurrence compressed data, in which data describing certain events are stored when the events occur
+- • Group C: amplitude compressed data, in which regularly sampled quantities are stored only when a change is detected.
+
+A summary of the compressed data is given in Table 11-6. The Compressed Data Table 11-14 defines the required data, the ID codes, and the data formats.
+
+TABLE 11-6 COMPRESSED DATA SUMMARY
+
+<table border="1"><thead><tr><th>Group</th><th>Data</th></tr></thead><tbody><tr><td>A</td><td><math>\left\{ \begin{array}{l} \text{Fine gimbal angles} \\ \text{Backup gimbal angles} \\ \text{Accelerometer outputs} \end{array} \right.</math></td></tr><tr><td>B</td><td><math>\left\{ \begin{array}{l} \text{Discrete outputs} \\ \text{TLC HOP constants} \\ \text{Switch selector stages and addresses} \end{array} \right.</math></td></tr><tr><td>C</td><td><math>\left\{ \begin{array}{l} \text{Error monitor register contents} \\ \text{Mode code 24} \\ \text{Discrete inputs} \end{array} \right.</math></td></tr></tbody></table>
+
+TABLE 11-13 MODE CODE DESCRIPTION (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th colspan="3">Mode Code 25</th>
+</tr>
+<tr>
+<th><u>Bit No.</u></th>
+<th><u>Bit Set Indication</u></th>
+<th><u>Reset Bit</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25</td>
+<td>TLC (INT9), simultaneous memory error</td>
+<td>This bit must never be reset after it has been set.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 11-13 MODE CODE DESCRIPTION (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th colspan="3">Mode Code 27</th>
+</tr>
+<tr>
+<th>Bit No.</th>
+<th>Bit Set Indication</th>
+<th>Reset Bit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>Powered flight DCS inhibit removed</td>
+<td>This bit must be reset each time the DCS is inhibited.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Execute Alternate Sequence DCS command accepted</td>
+<td>This bit must be reset after the corresponding alternate sequence command has been implemented.</td>
+</tr>
+<tr>
+<td>2-6</td>
+<td>Spare</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>S-IVB/IU De-orbit DCS command accepted</td>
+<td>This bit must be reset at TB5 start.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Navigation Update DCS command accepted</td>
+<td>This bit must be reset after the update is incorporated.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Time Base Update DCS command accepted</td>
+<td>The state of this bit will initially be zero and must be changed each time an update is accepted.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Local reference maneuver in progress</td>
+<td>This bit must be reset when bit 11, 12, 16 or 17 of MC27 is set.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Inertial attitude hold in progress</td>
+<td>This bit must be reset when bit 10, 12, 16 or 17 of MC27 is set.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>S/C in control (DI9 recognized)</td>
+<td>This bit must be reset when control is returned to the LVDC. If GRF occurs while this bit is set, it must remain set.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Spare</td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Guidance Reference Failure discretes (DO4/DO6) are set.</td>
+<td>This bit must never be reset after it has been set.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>S/C has assumed control of the Saturn after GRF detection (DI9 recognized after DO4 and DO6 set.)</td>
+<td>This bit must never be reset after it has been set.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Tracking local reference after S/C control (This bit remains set until time for next programmed maneuver.)</td>
+<td>This bit must be reset when bit 10, 11, 12 or 17 of MC27 is set.</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+\*  
+\*
+
+TABLE 15-1 ABBREVIATIONS (CONTINUED)
+
+<table>
+<tr>
+<td>ML</td>
+<td>Minor Loop</td>
+</tr>
+<tr>
+<td>MLC</td>
+<td>Mobile Launch Computer</td>
+</tr>
+<tr>
+<td>MLS</td>
+<td>Minor Loop Support</td>
+</tr>
+<tr>
+<td>MSB</td>
+<td>Most Significant Bit</td>
+</tr>
+<tr>
+<td>MSFC</td>
+<td>Marshall Space Flight Center (Huntsville, Alabama)</td>
+</tr>
+<tr>
+<td>NM</td>
+<td>Nautical Mile</td>
+</tr>
+<tr>
+<td>N.P.</td>
+<td>North Pole</td>
+</tr>
+<tr>
+<td>NPV</td>
+<td>Non-Propulsive Vent</td>
+</tr>
+<tr>
+<td>OA</td>
+<td>Output Axis</td>
+</tr>
+<tr>
+<td>OM/D</td>
+<td>Orbital Mode-Data Bit in DCS word transmitted from ground</td>
+</tr>
+<tr>
+<td>OML</td>
+<td>Orbital Major Loop</td>
+</tr>
+<tr>
+<td>ON</td>
+<td>Orbital Navigation</td>
+</tr>
+<tr>
+<td>PCM</td>
+<td>Pulse Code Modulation</td>
+</tr>
+<tr>
+<td>PIO</td>
+<td>Process Input-Output</td>
+</tr>
+<tr>
+<td>PTL</td>
+<td>Prepare to Launch</td>
+</tr>
+<tr>
+<td>PU</td>
+<td>Propellant Utilization</td>
+</tr>
+<tr>
+<td>QMS</td>
+<td>(qms) Quarter Milliseconds</td>
+</tr>
+<tr>
+<td>RCA-110A</td>
+<td>Designation for ground computer used in checkout and prelaunch</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td>Real Time Clock (as used in Parts III &amp; IV)</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td>Reasonableness Test Constant (as used in Parts I &amp; II)</td>
+</tr>
+<tr>
+<td>S-IB</td>
+<td>Designation for Saturn IB vehicle first stage</td>
+</tr>
+<tr>
+<td>S-IVB</td>
+<td>Designation for Saturn IB vehicle second stage</td>
+</tr>
+<tr>
+<td>S/C, SC</td>
+<td>Spacecraft</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>Spacecraft Lunar Module Adapter</td>
+</tr>
+<tr>
+<td>SM</td>
+<td>Service Module</td>
+</tr>
+<tr>
+<td>SMC</td>
+<td>Steering Misalignment Correction</td>
+</tr>
+<tr>
+<td>SRA</td>
+<td>Spin Reference Axis</td>
+</tr>
+<tr>
+<td>SS</td>
+<td>Switch Selector Command</td>
+</tr>
+<tr>
+<td>STDN</td>
+<td>Spaceflight Tracking and Data Network *</td>
+</tr>
+<tr>
+<td>ST-124M</td>
+<td>Designation for the launch vehicle inertial platform</td>
+</tr>
+<tr>
+<td>TBD</td>
+<td>To be determined</td>
+</tr>
+</table>
+
+TABLE 15-1 ABBREVIATIONS (CONTINUED)
+
+<table><tr><td>TB0</td><td>Time Base 0</td></tr><tr><td>TB1</td><td>Time Base 1</td></tr><tr><td>TB2</td><td>Time Base 2</td></tr><tr><td>TB3</td><td>Time Base 3</td></tr><tr><td>TB4</td><td>Time Base 4</td></tr><tr><td>TLC</td><td>Temporary Loss of Control (LVDC simultaneous memory error)</td></tr><tr><td>TM</td><td>Telemetry</td></tr><tr><td>TOPS</td><td>Thrust OK Pressure Switch</td></tr></table>
+
+\*
+
+TABLE 15-2 DEFINITIONS
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="150 123 238 141">Symbol</th>
+<th data-bbox="401 123 674 141">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="150 211 228 241"><math>\bar{A}</math> (<math>\bar{A}_p</math>)</td>
+<td data-bbox="321 211 884 231">Vehicle acceleration vector (predicted) [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 261 178 279"><math>A'</math></td>
+<td data-bbox="321 261 851 301">Intermediate parameter used in HSL time-to-go calculations [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 331 178 349"><math>A''</math></td>
+<td data-bbox="321 331 851 371">Intermediate parameter used in HSL time-to-go calculations [m/sec<sup>3</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 401 194 421"><math>A_{c0}</math></td>
+<td data-bbox="321 401 864 441">Estimated uncertainty in the expected velocity change computation [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="150 461 251 491"><math>\bar{A}_D</math> (<math>\bar{A}_{Dp}</math>)</td>
+<td data-bbox="321 461 851 481">Drag acceleration vector (predicted) [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td data-bbox="150 511 181 531"><math>a_e</math></td>
+<td data-bbox="321 511 884 531">Semi-major axis of the earth-model ellipsoid [m]</td>
+</tr>
+<tr>
+<td data-bbox="150 561 181 581"><math>A_z</math></td>
+<td data-bbox="321 561 884 601">Platform azimuth, computed in Preflight routines [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="150 631 194 651"><math>A_{zL}</math></td>
+<td data-bbox="321 631 754 651">Position I azimuth at launch [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="150 681 194 701"><math>A_{00}</math></td>
+<td data-bbox="321 681 851 721">Constant term of variable azimuth polynomial, used by Preflight routines [deg]</td>
+</tr>
+<tr>
+<td data-bbox="150 751 194 771"><math>A_{01}</math></td>
+<td data-bbox="321 751 884 791">Coefficient of inclination <math>i</math> in variable azimuth polynomial, used by Preflight routines</td>
+</tr>
+<tr>
+<td data-bbox="150 821 194 841"><math>A_{10}</math></td>
+<td data-bbox="321 821 864 882">Coefficient of descending node angle <math>\lambda</math> in variable azimuth polynomial, used by Preflight routines</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="100 110 178 128"><u>Symbol</u></th>
+<th data-bbox="338 110 610 128"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="100 205 145 225"><math>A_{11}</math></td>
+<td data-bbox="206 205 750 268">Coefficient of product of inclination <math>i</math> and descending node angle <math>\lambda</math> in variable azimuth polynomial, used by Preflight routines <math>[\text{deg}^{-1}]</math></td>
+</tr>
+<tr>
+<td data-bbox="100 295 165 315"><math>A_1 - A_6</math></td>
+<td data-bbox="206 295 788 334">Coefficients used to compute pitch, yaw, and roll attitude correction commands</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+  
+\*  
+\*  
+\*
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY)
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="92 109 171 128">Symbol</th>
+<th data-bbox="358 109 631 128">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="92 158 124 178"><u>L</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="92 203 124 228"><math>L_p</math></td>
+<td data-bbox="224 203 834 268">Component in the pitch plane of the total corrected velocity-to-be-gained by IGM, used in the calculation of position correction terms <math>K_1</math> and <math>K_2</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 293 124 318"><math>L_y</math></td>
+<td data-bbox="224 293 821 333">Total corrected velocity-to-be-gained by IGM, used in calculation of position correction term [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 363 124 388"><math>L'_y</math></td>
+<td data-bbox="224 363 846 428">Total estimated velocity-to-be-gained by IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 458 124 483"><math>L_1</math></td>
+<td data-bbox="224 458 811 523">Velocity-to-be-gained in first phase IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 548 124 573"><math>L_3</math></td>
+<td data-bbox="224 548 846 613">Corrected velocity-to-be-gained in second phase IGM, used in calculation of the pitch guidance command <math>\chi_y</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 638 124 663"><math>L'_3</math></td>
+<td data-bbox="224 638 846 703">Estimated velocity-to-be-gained in second phase IGM, used in calculation of the predicted terminal range angle <math>\phi_T</math> [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="92 728 134 748">LML</td>
+<td data-bbox="224 728 894 817">Minimum value to be used for the pitch, yaw, and roll ladder magnitude limit if the loss of APS attitude control test determines the vehicle is out of control [deg] *</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[MES]</td>
+<td>Transformation matrix from E-system to S-system</td>
+</tr>
+<tr>
+<td>MFK1-MFK8</td>
+<td>(M/F)<sub>S</sub> filter coefficients</td>
+</tr>
+<tr>
+<td>[MGA]</td>
+<td>Transformation matrix from G-system to A-system</td>
+</tr>
+<tr>
+<td>[MG4]</td>
+<td>Transformation matrix from G-system to 4-system</td>
+</tr>
+<tr>
+<td>MLKRC1</td>
+<td>Gimbal angle RTC used on first pass on the backup gimbal only (all channels) [deg]</td>
+</tr>
+<tr>
+<td>MLKRC3</td>
+<td>Gimbal angle RTC used after first pass on the backup gimbal (pitch and yaw channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>MLKRC5</td>
+<td>Gimbal angle RTC used after first pass on the backup gimbal (roll channel) [deg/ML]</td>
+</tr>
+<tr>
+<td>MLK2</td>
+<td>Fine gimbal angle RTC (pitch and yaw channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>MLK12</td>
+<td>Fine gimbal angle RTC (roll channel) [deg/ML]</td>
+</tr>
+<tr>
+<td>MLR</td>
+<td>Minor Loop rate [sec<sup>-1</sup>]</td>
+</tr>
+<tr>
+<td>ML6HUN</td>
+<td>Zero gimbal angle test constant (all channels) [deg]</td>
+</tr>
+<tr>
+<td>[MSG]</td>
+<td>Transformation matrix from S-system to G-system</td>
+</tr>
+<tr>
+<td>[MSG]</td>
+<td>Transformation matrix from S-system to G-system</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSK5</td>
+<td>Ladder rate limit (all channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>MSK6</td>
+<td>Ladder magnitude limit (pitch and yaw channels) [deg]</td>
+</tr>
+<tr>
+<td>MSK16</td>
+<td>Ladder magnitude limit (roll channel) [deg]</td>
+</tr>
+<tr>
+<td>MSLIM1</td>
+<td>Attitude command (<math>\chi</math>) rate limit (roll channel)<br/>[deg/ML]</td>
+</tr>
+<tr>
+<td>MSLIM2</td>
+<td>Attitude command (<math>\chi</math>) rate limit (pitch and yaw<br/>channels) [deg/ML]</td>
+</tr>
+<tr>
+<td>[MSV]</td>
+<td>Transformation matrix from S-system to V-system</td>
+</tr>
+<tr>
+<td>MS04DT</td>
+<td>The reciprocal of MS25DT</td>
+</tr>
+<tr>
+<td>MS15DT</td>
+<td>Number of permissible unreasonable backup resolver read-<br/>ings per computation cycle before setting D04 and D06</td>
+</tr>
+<tr>
+<td>MS25DT</td>
+<td>Number of minor loops per <math>\Delta T_N</math> through minor loop<br/>support</td>
+</tr>
+<tr>
+<td>[MS4]</td>
+<td>Transformation matrix from S-system to 4-system</td>
+</tr>
+<tr>
+<td>[M4V]</td>
+<td>Transformation matrix from 4-system to V-system</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="154 138 226 151"><u>Symbol</u></th>
+<th data-bbox="401 138 673 151"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="154 186 178 201"><u>N</u></td>
+<td data-bbox="931 231 941 241">*</td>
+</tr>
+<tr>
+<td data-bbox="154 278 226 291">NTSTB2</td>
+<td data-bbox="273 278 841 316">Nominal time in Time Base 1 to start Time Base 2 in repeatable flight simulation [sec]</td>
+</tr>
+<tr>
+<td data-bbox="154 348 226 361">NTSTB3</td>
+<td data-bbox="273 348 841 386">Nominal time in Time Base 2 to start Time Base 3 in repeatable flight simulation [sec]</td>
+</tr>
+<tr>
+<td data-bbox="154 418 226 431">NUPTIM</td>
+<td data-bbox="273 418 851 454">Time from GRR at which a DCS Navigation Update is to be implemented [sec]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="101 125 171 138">Symbol</th>
+<th data-bbox="348 125 618 138">Definition and Comments</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="101 173 121 186"><u>P</u></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="101 284 111 297">P</td>
+<td data-bbox="266 284 808 319">Parameter used in calculation of gravitational acceleration vector</td>
+<td data-bbox="881 221 891 231">*</td>
+</tr>
+<tr>
+<td data-bbox="101 354 138 373"><math>P_{bx}</math></td>
+<td data-bbox="266 354 821 391">Performance factor bias along <math>X_B</math> axis for back-up acceleration computations</td>
+<td data-bbox="881 354 891 389">*<br/>*</td>
+</tr>
+<tr>
+<td data-bbox="101 426 138 445"><math>P_{by}</math></td>
+<td data-bbox="266 426 821 463">Performance factor bias along <math>Y_B</math> axis for back-up acceleration computations</td>
+<td data-bbox="881 426 891 461">*<br/>*</td>
+</tr>
+<tr>
+<td data-bbox="101 498 138 517"><math>P_{bz}</math></td>
+<td data-bbox="266 498 821 535">Performance factor bias along <math>Z_B</math> axis for back-up acceleration computations</td>
+<td data-bbox="881 498 891 533">*<br/>*</td>
+</tr>
+<tr>
+<td data-bbox="101 563 121 582"><math>P_C</math></td>
+<td data-bbox="266 563 818 576">Elapsed time in artificial <math>\tau</math> mode at EMRC [sec]</td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="101 611 148 630"><math>P_{CMR}</math></td>
+<td data-bbox="266 611 868 624">Preset length of artificial <math>\tau</math> mode after EMRC [sec]</td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="101 701 121 720"><math>P_1</math></td>
+<td data-bbox="266 701 834 714">IGM parameter used in calculation of range angle</td>
+<td data-bbox="881 654 891 664">*</td>
+</tr>
+<tr>
+<td data-bbox="101 748 121 767"><math>P_3</math></td>
+<td data-bbox="266 748 868 785">IGM parameter used in calculation of pitch attitude correction term</td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="101 819 138 838"><math>P_{34}</math></td>
+<td data-bbox="266 819 844 856">Parameter in harmonic expansion of earth's gravitational potential</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="153 143 241 161"><u>Symbol</u></th>
+<th data-bbox="416 143 688 161"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="153 193 188 211"><u>Q</u></td>
+<td></td>
+</tr>
+<tr>
+<td data-bbox="153 238 181 261"><math>Q_p</math></td>
+<td data-bbox="276 238 808 273">IGM parameter used in calculation of position correction term *</td>
+</tr>
+<tr>
+<td data-bbox="153 306 181 329"><math>Q_y</math></td>
+<td data-bbox="276 306 808 341">IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td data-bbox="153 374 181 397"><math>Q_1</math></td>
+<td data-bbox="276 374 808 409">IGM parameter used in calculation of position correction term</td>
+</tr>
+<tr>
+<td data-bbox="153 442 181 465"><math>Q_3</math></td>
+<td data-bbox="276 442 808 477">IGM parameter used in calculation of position correction term</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>R</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\bar{R}</math> (<math>\bar{R}_p</math>)</td>
+<td>Vehicle geocentric radius vector (predicted) [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_L</math></td>
+<td>Geocentric radius to the center of the IU on the launch pad. Used to calculate initial conditions [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_{OG}</math></td>
+<td>Radius vector for use in orbital guidance [m]</td>
+</tr>
+<tr>
+<td><math>R_{STA}</math></td>
+<td>Radius of telemetry station acquisition sphere, set to a value giving a two-degree elevation angle at the nominal orbit altitude [m] *</td>
+</tr>
+<tr>
+<td><math>\bar{R}_T</math></td>
+<td>Terminal radius vector [m]</td>
+</tr>
+<tr>
+<td><math>\bar{R}_1</math></td>
+<td>Unit vector along <math>\bar{R}</math></td>
+</tr>
+<tr>
+<td><math>\frac{RA_{M1}}{RA_{M5}}</math></td>
+<td>Roll angle for orbital guidance maneuvers 1-5 [pirads]</td>
+</tr>
+<tr>
+<td>ROLL</td>
+<td>Roll attitude error correction command [ladder bits]</td>
+</tr>
+<tr>
+<td>ROLLA</td>
+<td>Presetting for <math>\chi_x</math> for orbital guidance [pirads]</td>
+</tr>
+<tr>
+<td>ROV</td>
+<td>Constant used to bias terminal range angle prediction</td>
+</tr>
+<tr>
+<td>RTCX</td>
+<td>Reasonableness test constant (RTC) for X accelerometer channel [m/sec<sup>2</sup>]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>Y</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_A</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_A</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>Y_B</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_B</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{DS}</math></td>
+<td>Component of <math>\bar{A}_D</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>Y_G</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_G</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Gg}</math></td>
+<td>Component of <math>\bar{G}</math> along <math>Y_G</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>Y_{LS}</math></td>
+<td>Component of <math>\bar{R}_L</math> along <math>Y_S</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_m</math></td>
+<td>Measured platform velocity along <math>Y_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_m</math></td>
+<td>Average platform acceleration along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_0</math></td>
+<td>Initial value of <math>\dot{Y}_S</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>Y_P</math></td>
+<td>Component of the non-orthogonal inertial platform gimbal system, identical to the <math>Y_S</math> axis [m] *</td>
+</tr>
+<tr>
+<td><math>Y_{ref}</math></td>
+<td>Y reference angle of execute generalized maneuver commanded attitude [pirads]</td>
+</tr>
+<tr>
+<td><math>Y_S</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_S</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_S</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_S</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_S</math></td>
+<td>Component of <math>\bar{A}</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Definition and Comments</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\dot{Y}_{Sg}</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_S</math> axis due to gravitational acceleration [m/sec]</td>
+<td>*<br/>*</td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Sg}</math></td>
+<td>Component of <math>\bar{G}</math> along <math>Y_S</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_V</math></td>
+<td>Component of <math>\bar{R}</math> along <math>X_V</math> axis. This is identical to <math>Y_4</math> [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_V</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_V</math> axis [m/sec]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{Vg}^*</math></td>
+<td>Component of <math>\bar{G}^*</math> along <math>Y_V</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\ddot{Y}_{VgT}</math></td>
+<td>Component of <math>\bar{G}_T</math> along <math>Y_V</math> axis [m/sec<sup>2</sup>]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_{VT}</math></td>
+<td>Component of <math>\bar{R}_T</math> along <math>Y_V</math> axis [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_{VT}</math></td>
+<td>Component of <math>\bar{V}_T</math> along <math>Y_V</math> axis [m/sec]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>Y_4</math></td>
+<td>Component of <math>\bar{R}</math> along <math>Y_4</math> axis. This is identical to <math>Y_V</math> [m]</td>
+<td></td>
+</tr>
+<tr>
+<td><math>\dot{Y}_4</math></td>
+<td>Component of <math>\bar{V}</math> along <math>Y_4</math> axis [m]</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAW</td>
+<td>Yaw attitude error command [ladder bits]</td>
+<td>*</td>
+</tr>
+<tr>
+<td>YAWC01-<br/>YAWC25</td>
+<td>Table of yaw commands for S-IB stage guidance associated with times in table TYAW [deg]</td>
+<td>*<br/>*</td>
+</tr>
+<tr>
+<td>YAWLIM</td>
+<td>Yaw guidance command limit [pirads]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><u>ALPHA</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\alpha</math></td>
+<td>Angle of attack [pirads]</td>
+</tr>
+<tr>
+<td><math>\alpha_{ACTX}</math></td>
+<td>Attitude error comparison constant for the X channel<br/>loss of APS attitude control test [deg] *</td>
+</tr>
+<tr>
+<td><math>\alpha_{ACTZ}</math></td>
+<td>Attitude error comparison constant for the Z channel<br/>loss of APS attitude control test [deg] *</td>
+</tr>
+<tr>
+<td><math>\alpha_f</math></td>
+<td>Weighting factor based on first phase IGM performance<br/>used in adjusting <math>\tau_3</math> computations</td>
+</tr>
+<tr>
+<td><math>\alpha_{LH}</math></td>
+<td>Angle between desired <math>\bar{P}</math> and the local horizontal<br/>[pirads]</td>
+</tr>
+<tr>
+<td><u>DELTA</u></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\delta_2</math></td>
+<td>Intermediate parameter used in terminal range angle<br/>prediction</td>
+</tr>
+<tr>
+<td><math>\Delta A</math></td>
+<td>Measured velocity change from accelerometer optisyn<br/>A [pulses] *</td>
+</tr>
+<tr>
+<td><math>\Delta B</math></td>
+<td>Measured velocity change from accelerometer optisyn<br/>B [pulses] *</td>
+</tr>
+<tr>
+<td><math>\Delta L_3</math></td>
+<td>Correction to velocity-to-be-gained <math>L_3</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>\overline{\Delta R}</math></td>
+<td>Radius-to-be-gained vector [m]</td>
+</tr>
+<tr>
+<td><math>\overline{\Delta R_{SAV}}</math></td>
+<td>Vector symbol for the low order bits of the com-<br/>puted position change during the past orbital<br/>navigation pass, saved to reduce truncation error<br/>[m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta T</math></td>
+<td>Execution time of the last BML [sec]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="85 124 158 138">Symbol</th>
+<th data-bbox="335 124 606 138">Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="85 174 115 188"><math>\Delta T'</math></td>
+<td data-bbox="225 174 530 188">Previous value of <math>\Delta T</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 274 115 288"><math>\Delta T_b</math></td>
+<td data-bbox="225 274 850 310">Time bias to compensate for S-IVB engine thrust decay after cutoff [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 334 115 348"><math>\Delta T'_E</math></td>
+<td data-bbox="225 334 863 394">Fraction of a major loop prior to the occurrence of a thrust event, used in <math>(F/M)_c</math> calculations for the next BML [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 420 150 434"><math>\Delta T_{EVNT}</math></td>
+<td data-bbox="225 420 863 480">Fraction of a major loop after the occurrence of a thrust event, used in <math>(F/M)_c</math> calculation for the next BML [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 506 115 520"><math>\Delta T_f</math></td>
+<td data-bbox="225 506 670 520">Duration of S-IB guidance freeze [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 546 115 560"><math>\Delta T_N</math></td>
+<td data-bbox="225 546 515 560">Nominal value of <math>\Delta T</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 586 125 600"><math>\Delta T_{N1}</math></td>
+<td data-bbox="225 586 750 600">Nominal <math>\Delta T</math> from <math>T0 + 0.0</math> until <math>T1 + 0.0</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 626 125 640"><math>\Delta T_{N2}</math></td>
+<td data-bbox="225 626 775 640">Nominal <math>\Delta T</math> from <math>T1 + 0.0</math> until <math>T3 + T3_{IGM}</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 666 125 680"><math>\Delta T_{N3}</math></td>
+<td data-bbox="225 666 740 680">Nominal <math>\Delta T</math> from <math>T3 + T3_{IGM}</math> until <math>T4 - \epsilon_2</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 706 125 720"><math>\Delta T_{N4}</math></td>
+<td data-bbox="225 706 670 720">Nominal <math>\Delta T</math> from <math>T4 - \epsilon_2</math> to <math>T4 - T_{HSL}</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 746 125 760"><math>\Delta T_{N5}</math></td>
+<td data-bbox="225 746 750 760">Nominal <math>\Delta T</math> from <math>T4 + 0.0</math> until <math>T4 + BN_5</math> [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 786 125 800"><math>\Delta T_{N6}</math></td>
+<td data-bbox="225 786 655 800">Nominal <math>\Delta T</math> from <math>T4 + BN_5</math> to EOM [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 826 115 840"><math>\Delta T'_3</math></td>
+<td data-bbox="225 826 863 852">IGM time-to-go correction term based on vehicle performance during the past BML [sec]</td>
+</tr>
+<tr>
+<td data-bbox="85 878 105 892"><math>\Delta V</math></td>
+<td data-bbox="225 878 765 892">Actual change in velocity in S-system [pulses]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\overline{\Delta V}</math></td>
+<td>Velocity-to-be-gained vector [m/sec]</td>
+</tr>
+<tr>
+<td><math>\overline{\Delta V'}</math></td>
+<td>Approximation for <math>\overline{\Delta V}</math> [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_b</math></td>
+<td>Velocity bias to allow for engine thrust decay after cutoff [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cx}</math></td>
+<td>Change in velocity along <math>X_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cy}</math></td>
+<td>Change in velocity along <math>Y_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{cz}</math></td>
+<td>Change in velocity along <math>Z_S</math> from velocity counter [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta V_f</math></td>
+<td>Expected change in velocity in the S-coordinate system [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fx}</math></td>
+<td>Expected change in velocity along <math>X_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fy}</math></td>
+<td>Expected change in velocity along <math>Y_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{fz}</math></td>
+<td>Expected change in velocity along <math>Z_S</math> due to thrust [pulses]</td>
+</tr>
+<tr>
+<td><math>\Delta V_{gx}</math></td>
+<td>Change in velocity along <math>X_S</math> due to gravity [m/sec]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="83 143 161 161"><u>Symbol</u></th>
+<th data-bbox="348 143 616 161"><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="83 233 138 258"><math>\Delta V_{gy}</math></td>
+<td data-bbox="214 233 803 258">Change in velocity along <math>Y_S</math> due to gravity [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="83 281 138 306"><math>\Delta V_{gz}</math></td>
+<td data-bbox="214 281 803 306">Change in velocity along <math>Z_S</math> due to gravity [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="83 328 148 353"><math>\overline{\Delta V}_{SAV}</math></td>
+<td data-bbox="214 328 793 413">Vector symbol for the low order bits of the computed velocity change during the past orbital navigation pass, saved to reduce truncation error [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="83 441 128 466"><math>\Delta V_x</math></td>
+<td data-bbox="214 441 638 466">Change in velocity along <math>X_S</math> [pulses] *</td>
+</tr>
+<tr>
+<td data-bbox="83 488 128 513"><math>\Delta V_y</math></td>
+<td data-bbox="214 488 638 513">Change in velocity along <math>Y_S</math> [pulses] *</td>
+</tr>
+<tr>
+<td data-bbox="83 535 128 560"><math>\Delta V_z</math></td>
+<td data-bbox="214 535 638 560">Change in velocity along <math>Z_S</math> [pulses] *</td>
+</tr>
+<tr>
+<td data-bbox="83 582 118 597"><math>\Delta X</math></td>
+<td data-bbox="214 582 758 597">Attitude error about roll gimbal axis [pirads]</td>
+</tr>
+<tr>
+<td data-bbox="83 625 138 650"><math>\Delta X_{mf}</math></td>
+<td data-bbox="214 625 733 650">Change in <math>X_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td data-bbox="83 672 138 697"><math>\Delta X_{Sg}</math></td>
+<td data-bbox="214 672 733 708">Change in radius vector along <math>X_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td data-bbox="83 735 128 760"><math>\Delta X_V</math></td>
+<td data-bbox="214 735 603 760">Component of <math>\overline{\Delta R}</math> along <math>X_V</math> axis [m]</td>
+</tr>
+<tr>
+<td data-bbox="83 782 128 807"><math>\Delta \dot{X}_V</math></td>
+<td data-bbox="214 782 653 807">Component of <math>\overline{\Delta V}</math> along <math>X_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="83 829 128 854"><math>\Delta \dot{X}'_V</math></td>
+<td data-bbox="214 829 663 854">Component of <math>\overline{\Delta V'}</math> along <math>X_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td data-bbox="83 876 118 891"><math>\Delta Y</math></td>
+<td data-bbox="214 876 773 891">Attitude error about pitch gimbal axis [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta Y_{mf}</math></td>
+<td>Change in <math>Y_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Y_{Sg}</math></td>
+<td>Change in radius vector along <math>Y_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Y_V</math></td>
+<td>Component of <math>\overline{\Delta R}</math> along <math>Y_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}_V</math></td>
+<td>Component of <math>\overline{\Delta V}</math> along <math>Y_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Y}'_V</math></td>
+<td>Component of <math>\overline{\Delta V'}</math> along <math>Y_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta Z</math></td>
+<td>Attitude error about yaw gimbal axis [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Delta Z_{mf}</math></td>
+<td>Change in <math>Z_S</math> in <math>\Delta T</math> seconds due to thrust [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Z_{Sg}</math></td>
+<td>Change in radius vector along <math>Z_S</math> axis due to gravitational acceleration [m]</td>
+</tr>
+<tr>
+<td><math>\Delta Z_V</math></td>
+<td>Component of <math>\overline{\Delta R}</math> along <math>Z_V</math> axis [m]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}_V</math></td>
+<td>Component of <math>\overline{\Delta V}</math> along <math>Z_V</math> axis [m/sec]</td>
+</tr>
+<tr>
+<td><math>\Delta \dot{Z}'_V</math></td>
+<td>Component of <math>\overline{\Delta V'}</math> along <math>Z_V</math> axis [m/sec] *</td>
+</tr>
+<tr>
+<td><math>\Delta \theta_{xe}</math></td>
+<td>Expected change in <math>\theta_x</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta \theta_{ye}</math></td>
+<td>Expected change in <math>\theta_y</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\Delta \theta_{ze}</math></td>
+<td>Expected change in <math>\theta_z</math> [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta\chi'_x</math></td>
+<td>Computed <math>\chi_x</math> guidance command increment for minor loop [pirads]</td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\Delta\chi'_y</math></td>
+<td>Computed <math>\chi_y</math> guidance command increment for minor loop [pirads]</td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\Delta\chi'_z</math></td>
+<td>Computed <math>\chi_z</math> guidance command increment for minor loop [pirads]</td>
+<td>*</td>
+</tr>
+</tbody>
+</table>
+
+EPSILON
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\epsilon_2</math></td>
+<td>Time prior to S-IVB cutoff to begin <math>\tilde{\chi}</math>-steering [sec] (see note 1)</td>
+</tr>
+</tbody>
+</table>
+
+THETA
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\theta_R</math></td>
+<td>Total angular rotation of earth since GRR [pirads]</td>
+<td>*</td>
+</tr>
+<tr>
+<td><math>\theta_T</math></td>
+<td>Desired terminal flight path angle [pirads]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Theta_x</math></td>
+<td>Platform gimbal angle about <math>X_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_x</math></td>
+<td>Value of <math>\Theta_x</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{xa}</math></td>
+<td>Average value of <math>\Theta_x</math> during next major loop pass [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{xac}</math></td>
+<td>Average value of <math>\Theta_x</math> during the past major loop pass, *<br/>used in backup acceleration computations [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Theta_{xe}</math></td>
+<td>Expected value of <math>\Theta_x</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\Theta}_{xe}</math></td>
+<td>Expected rate of change of <math>\Theta_x</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\Theta_{xp}</math></td>
+<td>Value of <math>\Theta_x</math> in the past BML, used in the <math>\Theta_{xac}</math> *<br/>computations [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Theta_y</math></td>
+<td>Platform gimbal angle about <math>Y_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_y</math></td>
+<td>Value of <math>\Theta_y</math> used in minor loop [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{ya}</math></td>
+<td>Average value <math>\Theta_y</math> during next major loop pass [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{yac}</math></td>
+<td>Average value of <math>\Theta_y</math> during the past major loop pass, *<br/>used in backup acceleration computations [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Theta_{ye}</math></td>
+<td>Expected value of <math>\Theta_y</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\Theta}_{ye}</math></td>
+<td>Expected rate of change of <math>\Theta_y</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\Theta_{yp}</math></td>
+<td>Value of <math>\Theta_y</math> in the past BML, used in the <math>\Theta_{yac}</math> *<br/>computations [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Theta_z</math></td>
+<td>Platform gimbal angle about <math>Z_p</math> axis [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta'_z</math></td>
+<td>Value of <math>\Theta_z</math> used in minor loop [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 15-2 DEFINITIONS (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Theta_{za}</math></td>
+<td>Average value of <math>\Theta_z</math> during next major loop pass [pirads]</td>
+</tr>
+<tr>
+<td><math>\Theta_{zac}</math></td>
+<td>Average value of <math>\Theta_z</math> during the past major loop pass, used in the backup acceleration computations [pirads] *</td>
+</tr>
+<tr>
+<td><math>\Theta_{ze}</math></td>
+<td>Expected value of <math>\Theta_z</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\Theta}_{ze}</math></td>
+<td>Expected rate of change of <math>\Theta_z</math> [pirads/sec]</td>
+</tr>
+<tr>
+<td><math>\Theta_{zp}</math></td>
+<td>Value of <math>\Theta_z</math> in the past BML, used in the <math>\Theta_{zac}</math> computations [pirads] *</td>
+</tr>
+</tbody>
+</table>
+
+LAMBDA
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\lambda</math></td>
+<td>Angle from launch meridian to the descending node of the desired orbit computed as a function of <math>\lambda_0</math>, <math>\dot{\lambda}</math>, and <math>T_D</math></td>
+</tr>
+<tr>
+<td><math>\lambda_0</math></td>
+<td>Value of <math>\lambda</math> valid for a GRR time of <math>T_{GRR0}</math> [pirads]</td>
+</tr>
+<tr>
+<td><math>\dot{\lambda}</math></td>
+<td>Time rate of change of <math>\lambda_0</math> [pirads/sec]</td>
+</tr>
+</tbody>
+</table>
+
+MU
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\mu</math></td>
+<td>Product of the universal gravitational constant and the mass of the earth [<math>m^3/sec^2</math>]</td>
+</tr>
+</tbody>
+</table>
+
+PI
+
+<table border="1">
+<tbody>
+<tr>
+<td><math>\pi</math></td>
+<td>3.14159265</td>
+</tr>
+</tbody>
+</table>
+
+PART II  
+TABLE OF CONTENTS
+
+<table><thead><tr><th>Paragraph</th><th>Title</th><th>Page</th></tr></thead><tbody><tr><td>N/A</td><td>EDD CONFIGURATION CONTROL PAGE LISTING</td><td>ii</td></tr><tr><td>SECTION 1:</td><td>AS-206 DATA AND REQUIREMENTS</td><td>--</td></tr><tr><td>1.1</td><td>INTRODUCTION</td><td>II-1-1</td></tr><tr><td>1.2</td><td>LOGIC DIFFERENCES BETWEEN THE AS-206<br/>MISSION AND THE BASELINE REQUIREMENTS</td><td>3</td></tr><tr><td>1.2.1</td><td><u>M415 Thermal Control Coating<br/>Experiment</u></td><td>3</td></tr><tr><td>1.3</td><td>EVENT SEQUENCING TIMELINE</td><td>5</td></tr><tr><td>1.4</td><td>ORBITAL ATTITUDE TIMELINE</td><td>23</td></tr><tr><td>1.5</td><td>PRESETTINGS</td><td>25</td></tr><tr><td>1.6</td><td>FLIGHT SEQUENCING</td><td>45</td></tr><tr><td>1.7</td><td>DIGITAL COMMAND SYSTEM (DCS) MODE<br/>COMMAND SUMMARY</td><td>63</td></tr><tr><td>1.8</td><td>FLIGHT SIMULATION LADDER PROFILES</td><td>65</td></tr><tr><td>1.9</td><td>VARIABLE DATA TAPE DATA</td><td>67</td></tr><tr><td>SECTION 2:</td><td>AS-207 DATA AND REQUIREMENTS</td><td>-- *</td></tr><tr><td>2.1</td><td>INTRODUCTION</td><td>II-2-1</td></tr><tr><td>2.2</td><td>LOGIC DIFFERENCES BETWEEN THE SA-207<br/>MISSION AND THE BASELINE REQUIREMENTS</td><td>4</td></tr><tr><td>2.3</td><td>EVENT SEQUENCING TIMELINE</td><td>18</td></tr><tr><td>2.4</td><td>ORBITAL ATTITUDE TIMELINE</td><td>37</td></tr><tr><td>2.5</td><td>PRESETTINGS</td><td>39</td></tr><tr><td>2.6</td><td>FLIGHT SEQUENCING</td><td>61</td></tr></tbody></table>
+
+PART II
+
+TABLE OF CONTENTS
+
+<table><thead><tr><th>Paragraph</th><th>Title</th><th>Page</th></tr></thead><tbody><tr><td>SECTION 2:</td><td>AS-207 DATA AND REQUIREMENTS (CONTINUED)</td><td></td></tr><tr><td>2.7</td><td>DIGITAL COMMAND SYSTEM (DCS) MODE COMMAND SUMMARY</td><td>81</td></tr><tr><td>2.8</td><td>FLIGHT SIMULATION LADDER PROFILES</td><td>83</td></tr><tr><td>2.9</td><td>VARIABLE DATA TAPE DATA</td><td>85</td></tr></tbody></table>
+
+$$X_{\text{XSI}} = \text{Arctan} \left[ \frac{\sin \chi_R'}{\cos \chi_R'} \right] + \beta_{\text{usun}} \quad (206.11)$$
+
+#### 1.2.1.5 Definitions
+
+The following definitions are unique to the M415 experiment:
+
+<table border="1">
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Definition and Comments</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\overline{u}_{\text{M415}}</math></td>
+<td>Unit vector perpendicular to the <math>X_B</math> axis and located midway between the M415 experiment panels</td>
+</tr>
+<tr>
+<td><math>\overline{u}_{\text{sun}}</math></td>
+<td>Unit vector parallel to earth-sun line and positive toward the sun</td>
+</tr>
+<tr>
+<td><math>\overline{u}_{\text{sung}}</math></td>
+<td>Unit solar vector in the Gravitational Coordinate System</td>
+</tr>
+<tr>
+<td><math>\overline{u}_{\text{XB}}</math></td>
+<td>Unit vector perpendicular to <math>\overline{u}_{\text{sun}}</math> and lying in the orbital plane</td>
+</tr>
+<tr>
+<td><math>\overline{u}_{\text{Y4}}</math></td>
+<td>Unit vector parallel to the <math>Y_4</math> axis transformed to the S-system</td>
+</tr>
+<tr>
+<td><math>X_{\text{sun}}</math></td>
+<td>Component of <math>\overline{u}_{\text{sun}}</math> along <math>X_S</math> axis</td>
+</tr>
+<tr>
+<td><math>X_{\text{XB}}</math></td>
+<td>Component of <math>\overline{u}_{\text{XB}}</math> along <math>X_S</math> axis</td>
+</tr>
+<tr>
+<td><math>Y_{\text{sun}}</math></td>
+<td>Component of <math>\overline{u}_{\text{sun}}</math> along <math>Y_S</math> axis</td>
+</tr>
+<tr>
+<td><math>Y_{\text{XB}}</math></td>
+<td>Component of <math>\overline{u}_{\text{XB}}</math> along <math>Y_S</math> axis</td>
+</tr>
+</tbody>
+</table>
+
+<table border="1">
+<thead>
+<tr>
+<th><u>Symbol</u></th>
+<th><u>Definition and Comments</u></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>Z_{XB}</math></td>
+<td>Component of <math>\overline{u_{XB}}</math> along <math>Z_S</math> axis</td>
+</tr>
+<tr>
+<td><math>Z_{\text{sun}}</math></td>
+<td>Component of <math>\overline{u_{\text{sun}}}</math> along <math>Z_S</math> axis</td>
+</tr>
+<tr>
+<td><math>\alpha_{\text{sun}}</math></td>
+<td>Angle between the launch meridian and the projection of the earth-sun line onto the equatorial plane, positive in an eastward direction from the launch meridian [pirads]</td>
+</tr>
+<tr>
+<td><math>\beta_{\text{usun}}</math></td>
+<td>Angle between the <math>+Z_B</math> axis and the <math>\overline{u_{M415}}</math> vector [pirads] *</td>
+</tr>
+<tr>
+<td><math>\lambda_L</math></td>
+<td>Longitude of launch meridian, positive east of the Greenwich Meridian [pirads]</td>
+</tr>
+<tr>
+<td><math>\phi_{\text{sun}}</math></td>
+<td>Angle between the earth-sun line and the equatorial plane, positive when the sun vector is above the equatorial plane [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi'_R</math></td>
+<td>Intermediate roll gimbal angle used in M415 experiment attitude calculation [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_{\text{XSI}}</math></td>
+<td>Roll guidance command required for the maneuver to solar inertial attitude [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_{\text{YSI}}</math></td>
+<td>Pitch guidance command required for the maneuver to solar inertial attitude [pirads]</td>
+</tr>
+<tr>
+<td><math>\chi_{\text{ZSI}}</math></td>
+<td>Yaw guidance command required for the maneuver to solar inertial attitude [pirads]</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Set the backup gimbal angle RTC (MLKRC1) to 18.5 deg for first use in all channels. Set the backup gimbal angle RTC after first use to 0.6 deg per minor loop in pitch and yaw (MLKRC3) and 0.6 deg per minor loop in roll (MLKRC5).</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>17.4 (-0,+40 ms)</td>
+<td>D1</td>
+<td>Start checking DI24 (Liftoff "A") and DI7 (Liftoff "B") for purpose of setting Time Base 1. These discretetes must be checked before and after every minor loop (twice every 40 ms).</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>BU3</td>
+<td>150.0</td>
+<td>D1</td>
+<td>Enter a one instruction non-interruptible loop, preventing TB1 initiation, if lift-off (DI7 or DI24) has not been detected.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>TM</td>
+<td>497.0</td>
+<td>D1</td>
+<td>Activate ECS Water Valve logic. The variable TM is incremented by 300 sec each time the logic is exercised.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>NUPTIM</td>
+<td>Variable</td>
+<td>E</td>
+<td>Update position and velocity components via Navigation Update DCS command. This is a transmitted parameter and has meaning only if that command has been received and accepted.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>T<sub>TMA1</sub>-<br/>T<sub>TMA4</sub></td>
+<td>Variable</td>
+<td>C4</td>
+<td>Times to change thrust misalignment segments in accelerometer backup computations, given by the variable data tape.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Initialize backup thrust, mass and mass flow rate to <math>F_1</math>, <math>M_1</math>, and <math>M_1</math>, and start computing <math>(F/M)_c</math>.</p>
+<p>Stop looking for Liftoff Discretes, DI24 and DI7.</p>
+<p>Set <math>T_{EVNT} = T1</math> and compute <math>\Delta T'_E</math></p>
+<p>Start using <math>\Delta T_{N2}</math>.</p>
+<p>Set <math>BIAS = BIAS1</math></p>
+<p>Set <math>M'_{c1} = M_1</math></p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{S1EO}</math></td>
+<td>3.0</td>
+<td>D3</td>
+<td>
+<p>Start computing acceleration <math>(F/M)</math> based on measured velocities, using the first guess <math>FM0</math> initialized at <math>T0+0</math>.</p>
+<p>Start checking DI14 and DI15 for S-IB engine out indications. If either discrete is detected, the <math>\sin(6^\circ)</math> will be used to compute <math>A_{c0}</math>, time tilt guidance will be modified, the backup accelerometer parameters will be modified, bit 18 of Mode Code 24 will be set, and either bit 8 (for DI15) or bit 9 (for DI14) of Mode Code 25 will be set.</p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{f1}</math></td>
+<td>3.0</td>
+<td>C3</td>
+<td>Change from first to second segment freeze time function for S-IB engine out.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>T<sub>RTC</sub></td>
+<td>10.0</td>
+<td>D3</td>
+<td>Set the accelerometer RTCs to 6 m/sec<sup>2</sup> downrange (Z), vertical (X), and cross-range (Y).<br/><br/>Begin computing performance factor (PF).</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>f2</sub></td>
+<td>39.8</td>
+<td>C3</td>
+<td>End of second segment of engine failure freeze time function. (This is the latest time that an engine failure will result in a chi freeze.) *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>far</sub></td>
+<td>109.8</td>
+<td>C3</td>
+<td>Change from first segment to second segment of tilt arrest time bias function. Tilt arrest time will not be decreased for engine failures after this time. *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>129.5</td>
+<td>D1</td>
+<td>Enable INT2 (S-IB Low Level Sensors Dry "A") and INT6 (S-IB Low Level Sensors Dry "B") for initiation of Time Base 2. This is keyed to the "Propellant Level Sensors Enable" switch selector command. If either signal is recognized after this time and downrange velocity is greater than or equal to 500 m/sec (bypass when GRF has occurred), Time Base 2 must be set. *</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>NTSTB2</td>
+<td>134.5</td>
+<td>D1</td>
+<td>Nominal start time for Time Base 2 used in repeatable flight simulation. *</td>
+</tr>
+</tbody>
+</table>
+
+II-1-11
+
+Rev. C
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>T_c</math></td>
+<td>TMEFRZ</td>
+<td>0</td>
+<td>C3</td>
+<td>End <math>\chi_y</math> freeze following an S-IB engine out. TMEFRZ is recalculated at the engine out time <math>T_{EO}</math>.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S0}</math></td>
+<td>10.3</td>
+<td>C3</td>
+<td>Backup time for starting pitch and roll guidance (Guidance will nominally be started at tower clearance.)</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{T2}</math></td>
+<td>30.0</td>
+<td>C4</td>
+<td>Earliest time for chi freeze initiation if an S-IB engine failure occurs.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S1}</math></td>
+<td>47.8</td>
+<td>C3</td>
+<td>Begin using second segment Time Tilt (Pitch program) coefficients. *</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S2}</math></td>
+<td>89.8</td>
+<td>C3</td>
+<td>Begin using third segment Time Tilt (Pitch program) coefficients. *</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{ar}</math></td>
+<td>131.05</td>
+<td>C3</td>
+<td>Nominal time to stop Time Tilt (Tilt Arrest). (This time can be extended by an S-IB engine out.)</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td>TYAW01</td>
+<td>255.0</td>
+<td>C3</td>
+<td>Begin yaw guidance. *</td>
+</tr>
+<tr>
+<td colspan="5">
+                    Note: <math>T_c = T_{as} - T_l + T_d</math>, where <math>T_d</math> is the implementation delay. This causes the segment changes to be introduced into vehicle dynamics at the specified presetting times, referenced to Time Base 1 start.
+                </td>
+</tr>
+</tbody>
+</table>
+
+II-1-12
+
+Rev. C
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Inhibit INT2 and INT6 (S-IB Low Level Sense signals). If DI15 has not been previously detected, continue checking for it until detected. Do not modify accelerometer Zero test if DI15 is detected during Time Base 2.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td></td>
+<td>2.9</td>
+<td></td>
+<td>Continue checking for DI14. Do not modify accelerometer backups if DI14 is detected during Time Base 2.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td></td>
+<td>2.9</td>
+<td></td>
+<td>Set vertical and downrange (X&amp;Z) accelerometer RTCs to <math>50 \text{ m/sec}^2</math>; and leave the crossrange (Y) RTC unchanged at <math>6 \text{ m/sec}^2</math>.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>T2<sub>IECO</sub></td>
+<td>3.0</td>
+<td>D1</td>
+<td>Disable accelerometer zero test.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>T2<sub>IECO</sub></td>
+<td>3.0</td>
+<td>D1</td>
+<td>Stop computing acceleration, F/M, and set it to the preset constant FM2. (This is keyed to the inboard engines cutoff switch selector.)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Set <math>T_{\text{EVNT}} = T2_{\text{IECO}}</math>, compute <math>\Delta T_E'</math> and set <math>\text{BIAS} = \text{BIAS}2</math>.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>Adjust the S-IB accelerometer backup parameter <math>F_{EO}</math> to 0.5.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>4.5</td>
+<td>D1</td>
+<td>Start checking for S-IB outboard engines cutoff signals (INT5 and DI23), initiated at propellant depletion cutoff, for the purpose of setting Time Base 3. (This is keyed to the LOX Depletion Cutoff Enable switch selector.)</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>NTSTB3</td>
+<td>6.0</td>
+<td>D1</td>
+<td>Nominal start time for Time Base 3 used in repeatable flight simulation.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>BU4</td>
+<td>13.0</td>
+<td>D1</td>
+<td>Start Time Base 3 if not started previously.</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+\*
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Reinitialize first guess at acceleration (F/M), to FM4.</p>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>&lt;</td></tr></tbody></table>
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Change the roll ladder magnitude limit (MSK16) to 3.5 degrees. Pitch and yaw limits remain unchanged.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FMC</sub></td>
+<td>6.08</td>
+<td>C3</td>
+<td>Start using mass flow rate, <math>\dot{M}_2</math>, and backup thrust, <math>F_2</math>, in computing backup acceleration, <math>(F/M)</math>. (This is the predicted time of S-IVB 90% thrust.)<br/><br/>Enable the accelerometer zero test and decrease vertical and downrange accelerometer RTCs to 6 m/sec<sup>2</sup>.<br/><br/>Set BIAS = BIAS4, <math>T_{EVNT} = T3+T3_{FMC}</math>, and compute <math>\Delta T'_E</math></td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub></td>
+<td>6.08</td>
+<td>C3</td>
+<td>Resume computing acceleration, <math>(F/M)</math>, using first guess, FM4, initialized at T3+0.<br/><br/>Start computing smoothed reciprocal acceleration, <math>(M/F)_S</math>, using first guess, <math>(M/F)_0</math>, initialized at T0+0.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FMC</sub>+<math>\Delta T_{N2}</math></td>
+<td>7.09</td>
+<td>C3</td>
+<td>Begin computing performance factor.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>S4IGTM</td>
+<td>10.0</td>
+<td>D1</td>
+<td>Release inhibit on Time Base 4 and start checking for cutoff conditions. Flight Program response to INT4 is inhibited before this time. Start checking DI5. (After this time, the presence of any two of the four S-IVB cutoff indications will initiate Time Base 4.)</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>IGM</sub></td>
+<td>35.0</td>
+<td>C3</td>
+<td>Start IGM.<br/>Start using <math>\Delta T_{N3}</math>.</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*
+
+\*  
+\*
+
+\*
+
+\*
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>T<sub>SMC</sub></td>
+<td>59.3</td>
+<td>C3</td>
+<td>Enable SMC calculations</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3PU</td>
+<td>328.1</td>
+<td>D1</td>
+<td>Save the values of <math>\dot{M}</math>, <math>F_{EO}</math>, PF, and <math>F_b</math> and store these values as <math>\dot{M}'</math>, <math>F'_{EO}</math>, PF', and <math>F'_b</math>.<br/>Start using mass flow rate, <math>\dot{M}_3</math>, and backup thrust, <math>F_3</math>, in computation of backup acceleration, <math>(F/M)_c</math>. Set <math>TEVNT = T3PU</math>, compute <math>\Delta T'_E</math>, and set <math>BIAS = BIAS5</math>. (This event is keyed to the "Mixture Ratio Control Valve Open" switch selector command.)</td>
+</tr>
+<tr>
+<td>T<sub>1i</sub></td>
+<td>None</td>
+<td>0.0</td>
+<td>C3</td>
+<td>Start computing artificial <math>\tau_3</math> and decrementing <math>T_{3i}</math>.<br/>Set <math>T_{1i} = 0</math>.<br/>Stop computing <math>\tau_1</math> and <math>T_{1i}</math>.</td>
+</tr>
+<tr>
+<td>T<sub>1i</sub></td>
+<td>P<sub>C</sub></td>
+<td>0.0</td>
+<td>C3</td>
+<td>Start using <math>\tau_3</math> computed from <math>(M/F)_S</math> (end artificial <math>\tau_3</math> guidance). This event must occur when P<sub>C</sub>, initially zero and recomputed on each BML after T<sub>1i</sub> becomes zero, exceeds the presetting P<sub>CMR</sub>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td><math>\epsilon_2</math></td>
+<td>25.0</td>
+<td>D2</td>
+<td>Start <math>\tilde{x}</math> terminal steering guidance mode.<br/>Start using <math>\Delta T_{N4}</math>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td>BN<sub>1</sub></td>
+<td>14.4</td>
+<td>B</td>
+<td>Start building velocity history for S-IVB cutoff.</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*<
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IGM<br/>Time-to-<br/>go</td>
+<td><math>T_{HSL} + \Delta T_b</math></td>
+<td>5.0 + <math>\Delta T_b</math></td>
+<td>D2</td>
+<td>
+<p>Enter IGM high speed cutoff loop when the velocity-to-be-gained is less than a velocity guard, <math>V_{GRD}</math>. (If guidance reference failure has occurred, do not enter the high speed cutoff loop. If GRF occurs after entering, continue until cutoff.)</p>
+<p>Stop computing IGM guidance commands.</p>
+<p>Inhibit SMC calculations.</p>
+<p>Set up S-IVB Engine Cutoff On switch selector.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\*
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set acceleration, (F/M), to zero.</p>
+<p>Increase vertical and downrange accelerometer RTCs to 50 m/sec<sup>2</sup> (crossrange RTC unchanged at 6 m/sec<sup>2</sup>).</p>
+<p>Disable accelerometer zero test. Set ladder magnitude limit to 2.5 degrees in pitch and yaw (MSK6). Roll remains unchanged.</p>
+<p>Set backup thrust and mass flow rate to zero.</p>
+<p>Reset the command decoder and the DCS error counter, reset INT8, and release inhibit on INT8.</p>
+<p>Enable the following DCS commands: Time Base Update, Generalized Switch Selector, Execute Generalized Maneuver, Return to Nominal Timeline, Terminate, Inhibit Water Control Valve Logic, <u>Ladder</u> Magnitude Limit, and S-IVB/IU De-orbit.</p>
+<p>Stop checking for S-IVB cutoff. (Disable INT4 and DI5.)</p>
+<p>Begin the Z attitude test using <math>\alpha_{ACTZ} = 48.0</math> degrees and change <math>\alpha_{ACTX} = 90.0</math> deg.</p>
+<p>Start using <math>\Delta T_{N5}</math>.</p>
+<p>Change the zero gimbal test constant, ML6HUN, to 1.4 deg.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*
+
+TABLE 1-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T5</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Reset bit 7 of MC27.</p>
+<p>Inhibit the Time Base Update, Execute Generalized Maneuver, Return to Nominal Timeline, Ladder Magnitude Limit and S-IVB/IU De-orbit DCS commands.</p>
+<p>Disable the loss of APS Attitude Control test.</p>
+<p>Force a telemetry station loss and disable telemetry acquisition and loss calculations. *</p>
+<p>Set the pitch and yaw ladder magnitude limit (MSK6) to 15.3 deg</p>
+<p>Reset the platform measured velocity components, <math>\dot{X}_m</math>, <math>\dot{Y}_m</math> and <math>\dot{Z}_m</math>, to zero.</p>
+<p>Start monitoring velocity increments (<math>\Delta V</math>).</p>
+</td>
+</tr>
+<tr>
+<td>T5+T<sub>SS</sub></td>
+<td>None</td>
+<td>1.0</td>
+<td>D1</td>
+<td>
+<p>Set the pitch and yaw Ladder Magnitude limit (MSK6) to 2.5 deg. *</p>
+</td>
+</tr>
+<tr>
+<td>T5+T<sub>SS</sub></td>
+<td>None</td>
+<td>2905.0</td>
+<td>D1</td>
+<td>
+<p>Enable the Execute Generalized Maneuver DCS command. *</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+## 1.5 PRESETTINGS
+
+Table 1-3 establishes the presettings to be used in the flight program. Program sequencing presettings are excluded since they are established in Section 1.3. For each presetting, the table gives:
+
+- • The symbol
+- • The required value and associated units
+- • The definition
+- • A source code.
+
+Notice that the units of mass, force and angle presettings are not the same as those specified to be used in the flight program in Section 15 of Part I. The units used in the following table are consistent with those in other Apollo documentation while those in the flight program are dictated by programming constraints. For flight program implementation, all values given in degrees must be converted to pirads by dividing by 180. The forces, given in newtons, and masses, given in kilograms, must be converted to kilograms and  $\text{kg-sec}^2/\text{m}$ , respectively, by dividing each quantity by  $9.80665 \text{ m/sec}^2$ .
+
+The source codes are inserted for information only and are not flight program requirements. The codes denote:
+
+- A1 Constants established by the baseline requirements (mission-independent)
+- A2 Launch pad dependent constants
+
+- B Constants established by IBM
+- C2 Constants established by the orbital timeline
+- C3 Constants established by normal boost guidance requirements
+- C4 Constants established by alternate mission requirements
+- D2 Constants established by vehicle dynamics requirements
+- D3 Constants established by other program requirements.
+
+TABLE 1-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IVB CUTOFF SEQUENCE (SEE NOTE 3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>SIVB ENGINE CUTOFF NO. 1 ON</td>
+<td>0100 1101</td>
+<td>SIVB</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>SIVB ENGINE CUTOFF NO. 2 ON</td>
+<td>0010 1100</td>
+<td>SIVB</td>
+<td>48</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+Notes on Table 1-4:
+
+Note 1:
+
+Each of these switch selector commands must be programmed as an alternate switch selector sequence. These are Class 3 alternate switch selector sequences. Requirements for issuance of these alternate sequences are detailed in Section 7.4.10.
+
+Note 2:
+
+The IU telemetry and S-IVB telemetry shall be calibrated after orbital insertion by using a special sequence. This special sequence of events consists of IU and S-IVB telemetry calibration commands and shall be initiated by the LVDC using special tracking station acquisition logic. The first telemetry calibrate command shall be issued 60.0 seconds after station acquisition as determined by the LVDC. This is a Class 4 alternate switch selector sequence.
+
+Note 3:
+
+This switch selector sequence must be issued in response to S-IVB velocity cutoff or Spacecraft initiated S-IVB cutoff. It should be noted that if Time Base 4 is initiated prior to the completion of this sequence, the sequence must be terminated. The second command of this sequence must be scheduled immediately after the first command. This is a Class 1 alternate switch selector sequence.
+
+Note 4:
+
+This sequence must be issued to stop the LOX depletion dump and to initiate the hydrogen depletion dump. This sequence must be issued at  $T5+T_{LDD}+33.9$ . This is a Class 4 alternate switch selector sequence.
+
+Notes on Table 1-4 (Continued)
+
+Note 5:
+
+This switch selector sequence is issued to stop the hydrogen depletion dump and provide safing sequences. This sequence must be issued at  $T5+T_{LDD}+T_{HDD}+63.9$ . This is a Class 4 alternate switch selector sequence.
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+## 1.9 VARIABLE DATA TAPE DATA
+
+Table 1-6 establishes the Variable Data Tape Data which must \*  
+be assembled in the SA-206 flight program. The values \*  
+presently assigned to the listed items are for checkout \*  
+purposes only. This table provides the LVDC address, symbolic \*  
+name, decimal value, and scaling factor for each of the \*  
+Variable Data Tape data items.
+
+Table 1-7 establishes the data that is required and must be \*  
+contained on the Variable Data Tape. \*
+
+TABLE 1-6 VARIABLE DATA TAPE DATA
+
+<table border="1">
+<thead>
+<tr>
+<th>Address</th>
+<th>Name</th>
+<th>Decimal Value/Scaling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>016300</td>
+<td>TDAY</td>
+<td>1.200000D 02 10</td>
+</tr>
+<tr>
+<td>016301</td>
+<td>BXO</td>
+<td>-4.100000D-01 0</td>
+</tr>
+<tr>
+<td>016302</td>
+<td>BYO</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016303</td>
+<td>BZO</td>
+<td>-1.730000D-01 0</td>
+</tr>
+<tr>
+<td>016304</td>
+<td>PBX</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016305</td>
+<td>PBY</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016306</td>
+<td>PBZ</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016307</td>
+<td>TTMA1</td>
+<td>0.0 15</td>
+</tr>
+<tr>
+<td>016310</td>
+<td>TTMA2</td>
+<td>1.880000D 02 15</td>
+</tr>
+<tr>
+<td>016311</td>
+<td>TTMA3</td>
+<td>1.900000D 02 15</td>
+</tr>
+<tr>
+<td>016312</td>
+<td>TTMA4</td>
+<td>5.970000D 02 15</td>
+</tr>
+<tr>
+<td>016313</td>
+<td>CA1</td>
+<td>9.999999D-01 0</td>
+</tr>
+<tr>
+<td>016314</td>
+<td>CA2</td>
+<td>9.999999D-01 0</td>
+</tr>
+<tr>
+<td>016315</td>
+<td>CA3</td>
+<td>9.999930D-01 0</td>
+</tr>
+<tr>
+<td>016316</td>
+<td>CA4</td>
+<td>9.999770D-01 0</td>
+</tr>
+<tr>
+<td>016317</td>
+<td>SACB1</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016320</td>
+<td>SACB2</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016321</td>
+<td>SACB3</td>
+<td>-3.835000D-03 0</td>
+</tr>
+<tr>
+<td>016322</td>
+<td>SACB4</td>
+<td>-6.856000D-03 0</td>
+</tr>
+<tr>
+<td>016323</td>
+<td>SASB1</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016324</td>
+<td>SASB2</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016325</td>
+<td>SASB3</td>
+<td>1.54000D-04 0</td>
+</tr>
+<tr>
+<td>016326</td>
+<td>SASB4</td>
+<td>1.96000D-04 0</td>
+</tr>
+<tr>
+<td>016327</td>
+<td>CKSMIB</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*
+
+TABLE 1-7 DATA REQUIRED ON VARIABLE DATA TAPE
+
+<table border="1">
+<thead>
+<tr>
+<th>Address/Octal Value</th>
+<th>Name</th>
+<th>Decimal Value/Scaling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>016300 036000000</td>
+<td>TDAY</td>
+<td>1.200000D 02 10</td>
+</tr>
+<tr>
+<td>016301 627024364</td>
+<td>BXO</td>
+<td>-4.100000D-01 0</td>
+</tr>
+<tr>
+<td>016302 000000000</td>
+<td>BYO</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016303 723554426</td>
+<td>BZO</td>
+<td>-1.730000D-01 0</td>
+</tr>
+<tr>
+<td>016304 000000000</td>
+<td>PBX</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016305 000000000</td>
+<td>PBY</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016306 000000000</td>
+<td>PBZ</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016307 001360000</td>
+<td>TTMA1</td>
+<td>1.880000D 02 15</td>
+</tr>
+<tr>
+<td>016310 002244000</td>
+<td>TTMA2</td>
+<td>2.970000D 02 15</td>
+</tr>
+<tr>
+<td>016311 003320000</td>
+<td>TTMA3</td>
+<td>4.360000D 02 15</td>
+</tr>
+<tr>
+<td>016312 003754000</td>
+<td>TTMA4</td>
+<td>5.070000D 02 15</td>
+</tr>
+<tr>
+<td>016313 377776644</td>
+<td>CA1</td>
+<td>9.999910D-01 0</td>
+</tr>
+<tr>
+<td>016314 377776166</td>
+<td>CA2</td>
+<td>9.999865D-01 0</td>
+</tr>
+<tr>
+<td>016315 377775510</td>
+<td>CA3</td>
+<td>9.999820D-01 0</td>
+</tr>
+<tr>
+<td>016316 377775072</td>
+<td>CA4</td>
+<td>9.999780D-01 0</td>
+</tr>
+<tr>
+<td>016317 776724202</td>
+<td>SACB1</td>
+<td>-4.240000D-03 0</td>
+</tr>
+<tr>
+<td>016320 776532266</td>
+<td>SACB2</td>
+<td>-5.170000D-03 0</td>
+</tr>
+<tr>
+<td>016321 776362636</td>
+<td>SACB3</td>
+<td>-5.960000D-03 0</td>
+</tr>
+<tr>
+<td>016322 776250062</td>
+<td>SACB4</td>
+<td>-6.530000D-03 0</td>
+</tr>
+<tr>
+<td>016323 000024552</td>
+<td>SASB1</td>
+<td>1.580000D-04 0</td>
+</tr>
+<tr>
+<td>016324 000026220</td>
+<td>SASB2</td>
+<td>1.700000D-04 0</td>
+</tr>
+<tr>
+<td>016325 000027770</td>
+<td>SASB3</td>
+<td>1.830000D-04 0</td>
+</tr>
+<tr>
+<td>016326 000031230</td>
+<td>SASB4</td>
+<td>1.930000D-04 0</td>
+</tr>
+<tr>
+<td>016327 434146562</td>
+<td>CKSMIB</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*  
+\*
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+## SECTION 2
+
+### SA-207 DATA AND REQUIREMENTS
+
+#### 2.1 INTRODUCTION
+
+The requirements for the SA-207 Flight Program consist of the baseline defined in Part I and this Section of Part II. Wherever the SA-207 program functions must differ from the baseline, the requirements of this Section supersede the baseline requirements of Part I.
+
+The Skylab SL-3 mission has been assigned to the SA-207 vehicle. This mission will be the second manned mission of the Skylab A mission. A general discription of the Skylab A mission can be found in Section 1.2 of Part I and Section 1.1 of Part II.
+
+The SL-3 mission has the following configuration:
+
+- • Launch Vehicle
+
+The diagram illustrates the nominal mission profile for SA-207/SL-3, centered around a representation of Earth. The mission is depicted through several orbital paths and key events:
+
+- **Event 1:** A satellite is shown in a high orbit at the top of the diagram.
+- **Event 2:** A rocket is shown launching from the Earth's surface, with a dashed line indicating its initial ascent path.
+- **Event 3:** A point on the inner orbital path, located near the launch site.
+- **Event 4:** A point on the inner orbital path, further along the trajectory.
+- **Event 5:** A point on the inner orbital path, continuing the mission.
+- **Event 6:** A point on the inner orbital path, where a dashed line indicates a transition or maneuver.
+- **Event 7:** A point on the outer orbital path, where a satellite is shown in orbit.
+- **Event 8:** A satellite is shown in orbit at the bottom of the diagram.
+- **Event 9:** A point on the outer orbital path, following the satellite at event 8.
+
+The diagram uses concentric circles to represent different orbital altitudes and dashed lines to show the transition between orbits or mission phases.
+
+FIGURE 2-1 NOMINAL SA-207/SL-3 MISSION PROFILE.
+
+1. The S-IVB/IU and CSM will be inserted into an 81 by 120 NM orbit.
+2. The spacecraft will initiate separation of the S-IVB/IU and the CSM.
+3. The CSM will use the Service Propulsion System (SPS) to begin rendezvous with the workshop leaving the S-IVB/IU in the 81 by 120 NM orbit.
+4. After approximately four orbits the S-IVB/IU will be turned to a retrograde attitude and the residual S-IVB propellants will be dumped through the engine, causing the S-IVB/IU to deorbit into the Pacific.
+5. The CSM will rendezvous and dock with the workshop.
+6. The crew will transfer from the CSM and activate the workshop. The crew will stay with the workshop for up to 56 days.
+7. After the mission is complete the crew will prepare the workshop for orbital storage, and transfer to the CSM. The CSM will undock and de-orbit for an Earth re-entry and recovery.
+
+## 2.2 LOGIC DIFFERENCES BETWEEN THE SA-207 MISSION AND THE BASELINE REQUIREMENTS
+
+This section contains any SA-207/SL-3 Flight Program requirements which require logic changes from the baseline requirements. As presently defined, the only SA-207 program logic requirements, which are different from those presented in Part I, are to delete the compressed data dump as a function of the acquisition and loss calculation and implement the Compressed Data Dump DCS command. The implementation of these changes is detailed in the following Sections and Tables. These Sections and Tables must replace the corresponding Sections in Part I. Section 10.4.14 must be added.
+
+## 5.6 TELEMETRY ACQUISITION AND LOSS
+
+The determination of whether the vehicle is in range of a telemetry station will be done as a function of the vehicle's position with respect to the active telemetry stations. The knowledge that the vehicle is in range of a station will be used to start alternate Class 4 switch selector sequences. Each telemetry station must be tested for acquisition every eight seconds from  $T_4 + BN_5$  until  $T_5 + 0.0$  (see Telemetry Station Table 5-1).
+
+### 5.6.1 Acquisition and Loss Calculations
+
+The determination of whether or not the vehicle is in range of a telemetry station will be made in the following manner.
+
+The earth's rotation since  $T_{GRR}$  is calculated, Eq. 5.6.1, and a new [MGA] matrix is derived. This matrix is then used to transform the vehicle's position in the space-fixed gravitational coordinate system into the earth-fixed telemetry station coordinate system, Eq. 5.6.2. A telemetry station acquisition
+
+sphere with radius  $R_{STA}$  is used in computing station acquisition at a zero degree elevation angle from a point above each station. Each station acquisition reference point lies at the intersection of the acquisition sphere with a line passing from the center of the Earth through the station. The distance,  $d_A(i)$ , of the vehicle above or below the horizon of the acquisition reference point is calculated (Eq. 5.6.3 through 5.6.5). This is done by subtracting the radius,  $R_{STA}$ , of the telemetry station acquisition sphere from the dot product of the transformed vehicle's position vector and the unit station vector,  $\overline{C_A}(i)$ . If  $d_A(i)$  is found to be zero or positive for a station in the list, the vehicle is considered to be in acquisition of that station. The preset value for  $R_{STA}$  for each mission is selected to give approximately two degrees of elevation above the horizon of each station at the nominal orbit altitude. The components of  $\overline{C_A}$  for each station in the telemetry station coordinate system are preset for each mission (see Table 5-1). When a station acquisition or loss is computed, the time of acquisition, TBA, or the time of loss, TBL, in the prevailing time base must be updated.
+
+#### 5.6.2 Acquisition and Loss Sequence
+
+The capability to start an alternate Class 4 switch selector sequence (see Section 9.4.5) when the vehicle goes from a dark period into acquisition of at least one telemetry station must be provided. If more than one station is acquired without a loss between stations, only one acquisition sequence will be issued.
+
+#### 5.6.3 Telemetry Dumps
+
+(This Section must be deleted.)
+
+TABLE 5-1 TELEMETRY STATION TABLE
+
+<table border="1">
+<thead>
+<tr>
+<th>i</th>
+<th>Station</th>
+<th>Station Type</th>
+<th><math>C_{Ax}(i)</math></th>
+<th><math>C_{Ay}(i)</math></th>
+<th><math>C_{Az}(i)</math></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>MILA CIF</td>
+<td>Calibrate</td>
+<td>0.87981</td>
+<td>-0.47532</td>
+<td>-0.00134</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Bermuda</td>
+<td>Calibrate</td>
+<td>0.81395</td>
+<td>-0.53253</td>
+<td>0.23214</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Newfoundland</td>
+<td>Calibrate</td>
+<td>0.59676</td>
+<td>-0.73785</td>
+<td>0.31537</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Canary Island</td>
+<td>Calibrate</td>
+<td>0.37533</td>
+<td>-0.46339</td>
+<td>0.80275</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Ascension</td>
+<td>Calibrate</td>
+<td>0.39895</td>
+<td>0.13748</td>
+<td>0.90661</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Madrid</td>
+<td>Calibrate</td>
+<td>0.17931</td>
+<td>-0.64631</td>
+<td>0.74171</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Carnarvon</td>
+<td>Calibrate</td>
+<td>-0.87993</td>
+<td>0.41883</td>
+<td>-0.22430</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Guam</td>
+<td>Calibrate</td>
+<td>-0.68462</td>
+<td>-0.22874</td>
+<td>-0.69208</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Honeysuckle</td>
+<td>Calibrate</td>
+<td>-0.52869</td>
+<td>0.57948</td>
+<td>-0.62023</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Hawaii</td>
+<td>Calibrate</td>
+<td>0.17552</td>
+<td>-0.37445</td>
+<td>-0.91048</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Goldstone</td>
+<td>Calibrate</td>
+<td>0.65891</td>
+<td>-0.57586</td>
+<td>-0.48396</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Corpus Christi</td>
+<td>Calibrate</td>
+<td>0.84918</td>
+<td>-0.46168</td>
+<td>-0.25641</td>
+</tr>
+</tbody>
+</table>
+
+### 10.3.1 DCS Mode Command Verification
+
+When a mode command is received, the following tests must be conducted, in the order listed, before the command will be accepted.
+
+1. True-complement test: The 14 information bits transferred from the command decoder to the LVDC accumulator contain redundant information. LVDC bits 5 through 6 represent the command in true form. LVDC bits 7 through 13 must be the 1's complement of bits 5-6. If they are not, the command must not be accepted and DCS error code 10 must be issued.
+2. Sequence bit test: LVDC bit 6 is designated as the sequence bit. This bit must be 0 for DCS mode commands. If this bit is 1, the command must not be accepted and DCS error code 24 must be issued.
+3. Terminate command test: If the DCS mode command is the terminate command, then the mode expected test, DCS in progress test, mission acceptance test, and time acceptance test are omitted. The terminate command must be accepted whenever any other DCS command is acceptable.
+4. Mode expected test: If a DCS mode command is received when a data command is required to complete the requirements of a previous mode command, the mode command must be rejected and DCS error code 20 must be telemetered.
+5. DCS in progress test: If another DCS routine is presently being processed (e.g., performing a
+
+memory dump or a compressed data dump), then the present mode command must not be accepted and DCS error code 64 must be issued.
+
+1. Mission acceptance test: If the DCS mode command is not defined for this mission, it must not be accepted and DCS error code 14 must be issued.
+2. Time acceptance test: If the DCS mode command is not acceptable at the time it is received, it must be rejected and DCS error code 74 must be issued. It should be noted that if a mode command is received during a period when the mode is valid and the related data words are received outside this period, the command may be erroneously accepted.
+
+If all these conditions are satisfied, the flight program must: issue Discrete Output 1 (DO1), which generates a Computer Reset Pulse (CRP); telemeter the proper mode status word twice; either prepare to receive DCS data commands or perform the commanded function, if no data is required; and reset DO1. The format for the mode status word is defined in Table 10-2.
+
+TABLE 10-2 MODE STATUS WORD FORMAT
+
+<table border="1"><thead><tr><th>LVDC Bit Position</th><th>S-5</th><th>6-25 (Octal)</th></tr></thead><tbody><tr><td>Data</td><td>DCS mode command information bits 14-9</td><td>0000000</td></tr></tbody></table>
+
+If any test fails, the program must telemeter the appropriate DCS error message twice, monitor the number of consecutive verification failures, and ignore the mode command. A CRP must not be issued. The absence of the CRP indicates to the ground station that the command is not accepted by the program. If seven consecutive verification failures occur, an automatic program initiated terminate must be performed, as defined in Section 10.4.5.
+
+#### 10.4 DCS COMMANDS
+
+The flight program must accept and process the following DCS commands:
+
+- • Time base update
+- • Navigation update
+- • Generalized switch selector
+- • Memory dump
+- • Terminate
+- • ECS water control valve logic inhibit
+- • Execute generalized maneuver
+- • Return to nominal timeline
+- • Execute alternate sequence
+- • Execute special maneuvers
+- • Targeting load
+- • Ladder magnitude limit
+- • S-IVB/IU de-orbit
+- • Compressed data dump.
+
+Table 10-6 lists the current DCS mode command assignments, the LVDC 14-bit position format, and the DCS data command requirements. Some of these DCS mode commands may not be required for every mission. The required DCS mode commands and their acceptance times for a particular mission, and any additional commands required for that mission only, will be defined in the Digital Command System commands table in the individual mission requirements, Part II.
+
+TABLE 10-6 DCS MODE COMMANDS
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">Octal<br/>Rep. of<br/>LVDC Bit<br/>Position<br/>S-5</th>
+<th colspan="2">Binary Rep. of<br/>LVDC Bit<br/>Position</th>
+<th rowspan="2">Definition<br/>(General)</th>
+<th rowspan="2">Data<br/>Words<br/>Req'd.</th>
+</tr>
+<tr>
+<th>S-6</th>
+<th>7-13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>0010000</td>
+<td rowspan="16">1's complement of LVDC bits S-6</td>
+<td>Time base update</td>
+<td>1</td>
+</tr>
+<tr>
+<td>11</td>
+<td>0010010</td>
+<td>Navigation update</td>
+<td>35</td>
+</tr>
+<tr>
+<td>12</td>
+<td>0010100</td>
+<td>Generalized switch selector</td>
+<td>2</td>
+</tr>
+<tr>
+<td>13</td>
+<td>0010110</td>
+<td>Memory dump</td>
+<td>6</td>
+</tr>
+<tr>
+<td>20</td>
+<td>0100000</td>
+<td>Terminate</td>
+<td>0</td>
+</tr>
+<tr>
+<td>21</td>
+<td>0100010</td>
+<td>Execute alternate sequence</td>
+<td>5</td>
+</tr>
+<tr>
+<td>32</td>
+<td>0110100</td>
+<td>Targeting load</td>
+<td>45</td>
+</tr>
+<tr>
+<td>33</td>
+<td>0110110</td>
+<td>Execute maneuver A</td>
+<td>5</td>
+</tr>
+<tr>
+<td>34</td>
+<td>0111000</td>
+<td>Execute maneuver B</td>
+<td>5</td>
+</tr>
+<tr>
+<td>35</td>
+<td>0111010</td>
+<td>Execute generalized maneuver</td>
+<td>20</td>
+</tr>
+<tr>
+<td>36</td>
+<td>0111100</td>
+<td>Return to nominal timeline</td>
+<td>5</td>
+</tr>
+<tr>
+<td>41</td>
+<td>1000010</td>
+<td>Ladder magnitude limit</td>
+<td>1</td>
+</tr>
+<tr>
+<td>43</td>
+<td>1000110</td>
+<td>Compressed data dump</td>
+<td>0</td>
+</tr>
+<tr>
+<td>44</td>
+<td>1001000</td>
+<td>S-IVB/IU de-orbit</td>
+<td>6</td>
+</tr>
+<tr>
+<td>45</td>
+<td>1001010</td>
+<td>Water control valve logic inhibit</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+#### 10.4.5 Terminate
+
+This DCS command will cause the flight program to terminate the receipt of multiple word commands or terminate a memory dump in progress. Upon receipt of this command, the flight program must do the following:
+
+- • Terminate any multiple-word DCS commands prior to the receipt of the last valid data word
+- • Terminate any commands which have failed to be validated by the LVDC
+- • Terminate a memory dump prior to the telemetry of the last block of data
+- • Terminate a compressed data dump
+- • Return to the configuration required to accept a new mode command.
+
+The terminate command will have no effect on the execution of a DCS routine whose data requirements have been met and validated, except for the memory dump routine. The terminate command must be enabled whenever the command decoder interrupt is enabled.
+
+Under certain specified conditions, an automatic program initiated terminate must be performed. These specific conditions are detailed within each applicable DCS command description section. A program initiated terminate must provide all the functions of the DCS terminate command except early memory dump termination and early compressed data dump termination.
+
+#### 10.4.14 Compressed Data Dump
+
+This DCS command must provide the capability to dump the compressed data tables. No data words are required for this DCS command.
+
+Upon acceptance of this DCS command the flight program must dump the compressed data tables in their entirety three times. Details of the compressed data tables and their telemetry are given in Section 11.5. Once a compressed data dump has been started only a terminate command will be accepted by the program until the dump is completed. Other mode commands received during a dump must be rejected and DCS error code 64 must be issued. Receipt of a terminate command any time before the dump is completed must stop the dump.
+
+#### 11.5 DATA COMPRESSION
+
+During orbital mode, significant time intervals will occur during which the vehicle will be out of electromagnetic view of a telemetry dump station. During these intervals, data must be processed and stored in the LVDC for later transmission when the Compressed Data Dump DCS command is received. These data must also be processed and stored while the compressed data dump is being performed. The processing and storing of these data is referred to as data compression.
+
+##### 11.5.1 General Data Compression Requirements
+
+The following requirement must apply for all compressed data:
+
+- • Data compression must be programmed for a minimum of nine hours. (A new compressed data time base may be initiated, if necessary.)
+
+- • Storage requirements must be based on a maximum compression period of 5700 seconds.
+- • If the maximum storage allocation in a particular table is exceeded between dumps, the most recent data must be compressed over the oldest data in the affected table. This condition is called table wraparound.
+- • Each data word or set of data words must have stored with it a word containing a unique identification (ID) code and an associated time accurate to 1.1 seconds. The ID code and time must be stored in the same relative locations for all data. The associated time must be the time at which the data is stored.
+
+### 11.5.3 Telemetry of Compressed Data
+
+Although the compressed data must be telemetered when the compressed data dump DCS command is received, it has the lowest priority of all orbital functions. Real time telemetry and processing of interrupts will consume about 25 percent of the duty cycle. The remaining time can be devoted to telemetering compressed data. This will allow all compressed data tables (1650 items) to be telemetered once in about 36 seconds.
+
+Table 11-7 shows the storage allocation requirements of each compressed data table. The duplex storage requirement defines the minimum size required for each table in order to contain at least the maximum specified number of samples.
+
+The following ground rules apply to compressed data telemetry:
+
+- • The three low order bits of the mode register must be used to distinguish compressed data from other telemetry. The mode register setting for compressed data must be octal 3.
+
+- ● Compressed data must only be dumped when the compressed data dump DCS command is received.
+- ● Each table must be telemetered three times, unless the Terminate DCS command is received.
+- ● Since it is possible that the compressed data dump will have to be terminated before all data is telemetered, the program must telemeter the compressed data in such a way as to ensure that each table is at least partially emptied. The first item in each table must be telemetered and the second in each table, etc, until each table has been telemetered once.
+- ● After all the tables have been telemetered the first time a second and third telemetry of all tables must be performed in the same manner as the first telemetry.
+- ● Each compressed data table must be telemetered with a different telemetry PIO tag. (The specific PIO tags are defined in the Telemetry Tags Table 11-8.)
+- ● All items in any one table must be telemetered with the same telemetry PIO tag. In every case, one complete entry must be telemetered before the next is processed.
+- ● A special code must be telemetered to indicate the start and end of each table. (The specific PIO codes are defined in the Telemetry Tags Table 11-8.)
+
+TABLE 11-7 COMPRESSED DATA STORAGE REQUIREMENTS
+
+<table border="1">
+<thead>
+<tr>
+<th colspan="2">Table</th>
+<th>Locations<br/>per<br/>Sample</th>
+<th>Maximum<br/>No. of<br/>Samples</th>
+<th>Storage Require-<br/>ment (Duplex<br/>Locations)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>Gimbal angles</td>
+<td>8</td>
+<td>59</td>
+<td>472</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Composite<br/>EMR word</td>
+<td>2</td>
+<td>101</td>
+<td>202</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Discrete in-<br/>puts, dis-<br/>crete out-<br/>puts, switch<br/>selectors,<br/>TLC, and<br/>MC24</td>
+<td>2</td>
+<td>---</td>
+<td>512</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Accelerome-<br/>ters</td>
+<td>4</td>
+<td>116</td>
+<td>464</td>
+</tr>
+<tr>
+<td colspan="2">Total</td>
+<td></td>
+<td></td>
+<td>1650</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 11-8
+
+TELEMETRY TAGS
+
+<table border="1">
+<thead>
+<tr>
+<th colspan="8">LVDC DATA</th>
+</tr>
+<tr>
+<th>Mod.<br/>Reg.</th>
+<th>PIO<br/>Tag</th>
+<th>PCM<br/>Tag</th>
+<th>EDD<br/>Symbol</th>
+<th>Description</th>
+<th>Frequency<br/>(Segments)</th>
+<th>Scal-<br/>ing</th>
+<th>Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>530</td>
+<td>4554</td>
+<td>K<sub>3</sub></td>
+<td>Altitude correction in yaw guidance angle</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>1</td>
+<td>rad</td>
+</tr>
+<tr>
+<td>2</td>
+<td>534</td>
+<td>4556</td>
+<td>K<sub>4</sub></td>
+<td>IGM yaw rate correction</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>-2</td>
+<td>rad/sec</td>
+</tr>
+<tr>
+<td>2</td>
+<td>550</td>
+<td>4564</td>
+<td>X<sub>z</sub>4</td>
+<td>Yaw guidance command in target plane system</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>0</td>
+<td>pirads</td>
+</tr>
+<tr>
+<td>2</td>
+<td>554</td>
+<td>4566</td>
+<td>X<sub>y</sub>4</td>
+<td>Pitch guidance command in target plane system</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>0</td>
+<td>pirads</td>
+</tr>
+<tr>
+<td>2</td>
+<td>560</td>
+<td>4570</td>
+<td>SMCZ</td>
+<td>Yaw steering misalignment correction</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>0</td>
+<td>pirads</td>
+</tr>
+<tr>
+<td>2</td>
+<td>564</td>
+<td>4572</td>
+<td>SMCY</td>
+<td>Pitch steering misalignment correction</td>
+<td>C<sub>1</sub>(3-4)</td>
+<td>0</td>
+<td>pirads</td>
+</tr>
+<tr>
+<td>3</td>
+<td>011</td>
+<td>7404</td>
+<td>N/A</td>
+<td>Start of Compressed Data Table 2</td>
+<td rowspan="8">Telem-<br/>etered<br/>as<br/>speci-<br/>fied<br/>in<br/>Section<br/>11.5.3</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>014</td>
+<td>6406</td>
+<td>N/A</td>
+<td>Start of Compressed Data Table 3</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>015</td>
+<td>7406</td>
+<td>N/A</td>
+<td>Start of Compressed Data Table 4</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>020</td>
+<td>6410</td>
+<td>N/A</td>
+<td>Start of Compressed Data Table 5</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>021</td>
+<td>7410</td>
+<td>N/A</td>
+<td>End of Compressed Data Table 2</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>024</td>
+<td>6412</td>
+<td>N/A</td>
+<td>End of Compressed Data Table 3</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>025</td>
+<td>7412</td>
+<td>N/A</td>
+<td>End of Compressed Data Table 4</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>030</td>
+<td>6414</td>
+<td>N/A</td>
+<td>End of Compressed Data Table 5</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 11-8
+
+TELEMETRY TAGS
+
+<table border="1">
+<thead>
+<tr>
+<th colspan="8">LVDC DATA</th>
+</tr>
+<tr>
+<th>Mod.<br/>Reg.</th>
+<th>PIO<br/>Tag</th>
+<th>PCM<br/>Tag</th>
+<th>EDD<br/>Symbol</th>
+<th>Description</th>
+<th>Frequency<br/>(Segments)</th>
+<th>Scal-<br/>ing</th>
+<th>Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>041</td>
+<td>7420</td>
+<td>N/A</td>
+<td>Compressed Data Table 4</td>
+<td rowspan="4">Telem-<br/>etered<br/>as<br/>speci-<br/>fied<br/>in<br/>Section<br/>11.5.3</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>404</td>
+<td>6502</td>
+<td>N/A</td>
+<td>Compressed Data Table 2</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>410</td>
+<td>6504</td>
+<td>N/A</td>
+<td>Compressed Data Table 5</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>3</td>
+<td>414</td>
+<td>6506</td>
+<td>N/A</td>
+<td>Compressed Data Table 3</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+
+### 2.3 EVENT SEQUENCING TIMELINE
+
+The following table describes the requirements for flight program sequencing. For each timed event, the table gives:
+
+- • A definition of the event
+- • The time at which the event must occur
+- • The time base or other occurrence to which the event is referenced
+- • The name of the time presetting.
+
+During boost mode, the events must occur at the times specified in the table with a minus zero, plus one boost major loop tolerance (unless a closer tolerance is defined). During orbital mode, the tolerance is minus zero, plus one second (unless a closer tolerance is defined). Events specified to occur at a time base plus zero ( $T_j+0$ ) must be performed after the essential functions of starting the time base, but before any other functions except switch selector functions and minor loops.
+
+Events that are defined with different presetting names must not be initiated by common logic, even though the times of occurrence may be the same. Common logic may be used for all events that are specified with the same presetting name.
+
+The table contains a source code that is not a program requirement. It indicates the source and character of certain presettings and is included for convenience only. The meanings of the source codes are:
+
+A1 Times established by the baseline requirements (mission-independent)
+
+B Times established by IBM
+
+C2 Times established by the orbital timeline
+
+C3 Times established by normal boost guidance requirements
+
+C4 Times established by alternate mission requirements
+
+D1 Times established by the Flight Sequence ICD
+
+D2 Times established by vehicle dynamics requirements
+
+D3 Times established by other program requirements
+
+E Times established by DCS transmitted data.
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TO</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Initialize acceleration, (F/M), to FM0</p>
+<p>Set backup acceleration <math>(F/M)_c</math>, to the negative of the computed value of <math>G_{Sx}</math>.</p>
+<p>Set the accelerometer RTCs to 3 m/sec<sup>2</sup> vertical (X), 2 m/sec<sup>2</sup> crossrange (Y) and downrange (Z).</p>
+<p>Initialize backup force, mass, and mass flow rate to <math>F_0</math>, <math>M_0</math>, and <math>\dot{M}_0</math> respectively.</p>
+<p>Enable accelerometer zero test, using <math>\sin(2^\circ)</math> to compute <math>A_{c0}</math>.</p>
+<p>Initialize all values of reciprocal acceleration to <math>(M/F)_0</math> for use in S-IVB stage IGM.</p>
+<p>Reset all interrupts.</p>
+<p>Release Inhibit on INT9, TLC Interrupt.</p>
+<p>Set the number of permissible unreasonable backup resolver readings (MS15DT) to 12 per 0.8 sec. The guidance reference failure discretizes (D04 and D06) will be set on detecting 13 unreasonable backup resolver readings in 0.8 sec.</p>
+<p>Set the zero gimbal test constant ML6HUN to 0.06 deg (all channels).</p>
+<p>Set MS25DT to <math>25 * \Delta T_{N1}</math>.</p>
+<p>Set <math>F_{EO}</math> equal to 1; initialize the 3 values of the performance factor to .93 (<math>PF</math>, <math>PF_1</math>, and <math>PF_0</math>.)</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+II-2-20
+
+Rev. C \*
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set MS04DT to <math>0.04/\Delta T_{N1}</math>.</p>
+<p>Start performing tests for guidance reference failure. If that condition is detected, set D04 and D06 and the appropriate mode code bits. These tests must be performed during all phases of flight.</p>
+<p>Set ladder rate limits (MSK5) to 0.48 deg per minor loop, all channels.</p>
+<p>Set ladder magnitude limits to 15.3 deg in pitch and yaw (MSK6) and roll (MSK16).</p>
+<p>Set attitude command (<math>\chi</math>) rate limits to 1.0 deg per sec. (MSLIM1=0.04 deg per minor loop in roll, MSLIM2=0.04 deg per minor loop in pitch and yaw.)</p>
+<p>Set the fine gimbal angle RTCs, (MLK2) and (MLK12) to 1.4 deg per minor loop in the pitch, yaw and roll channels for the initial reading only. After the initial reading, set the fine gimbal angle RTCs to 0.4 deg per minor loop in pitch and yaw (MLK2) and 0.4 deg per minor loop in roll (MLK12).</p>
+<p>Initialize <math>B_{X01}</math> to the preset value from the variable data tape and set <math>B_{Z01}</math> to zero.</p>
+<p>Initialize the parameters <math>C\alpha</math>, <math>S\alpha C\beta</math>, and <math>S\alpha S\beta</math> to 1,0,0 respectively.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Set the backup gimbal angle RTC (MLKRC1) to 18.5 deg for first use in all channels. Set the backup gimbal angle RTC after first use to 0.6 deg per minor loop in pitch and yaw (MLKRC3) and 0.6 deg per minor loop in roll (MLKRC5).</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>None</td>
+<td>17.4 (-0,+40 ms)</td>
+<td>D1</td>
+<td>Start checking DI24 (Liftoff "A") and DI7 (Liftoff "B") for purpose of setting Time Base 1. These discrettes must be checked before and after every minor loop (twice every 40 ms).</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>BU3</td>
+<td>150.0</td>
+<td>D1</td>
+<td>Enter a one instruction non-interruptible loop, preventing TB1 initiation, if liftoff (DI7 or DI24) has not been detected.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>TM</td>
+<td>497.0</td>
+<td>D1</td>
+<td>Activate ECS Water Valve logic. The variable TM is incremented by 300 sec each time the logic is exercised.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>NUPTIM</td>
+<td>Variable</td>
+<td>E</td>
+<td>Update position and velocity components via Navigation Update DCS command. This is a transmitted parameter and has meaning only if that command has been received and accepted.</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>T<sub>TMA1</sub>-<br/>T<sub>TMA4</sub></td>
+<td>Variable</td>
+<td>C4</td>
+<td>Times to change thrust misalignment segments in accelerometer backup computations, given by the variable data tape.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Initialize backup thrust, mass and mass flow rate to <math>F_1</math>, <math>M_1</math>, and <math>M_1</math>, and start computing <math>(F/M)_c</math>.</p>
+<p>Stop looking for Liftoff Discretes, DI24 and DI7.</p>
+<p>Set <math>TEVNT = T1</math> and compute <math>\Delta T'_E</math></p>
+<p>Start using <math>\Delta T_{N2}</math>.</p>
+<p>Set <math>BIAS = BIAS1</math></p>
+<p>Set <math>M'_{c1} = M_1</math></p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{S1EO}</math></td>
+<td>3.0</td>
+<td>D3</td>
+<td>
+<p>Start computing acceleration (F/M) based on measured velocities, using the first guess <math>FM0</math> initialized at <math>T0+0</math>.</p>
+<p>Start checking DI14 and DI15 for S-IB engine out indications. If either discrete is detected, the <math>\sin(6^\circ)</math> will be used to compute <math>A_{c0}</math>, time tilt guidance will be modified, the backup accelerometer parameters will be modified, bit 18 of Mode Code 24 will be set, and either bit 8 (for DI15) or bit 9 (for DI14) of Mode Code 25 will be set.</p>
+</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><math>T_{f1}</math></td>
+<td>3.0</td>
+<td>C3</td>
+<td>Change from first to second segment freeze time function for S-IB engine out.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>T<sub>RTC</sub></td>
+<td>10.0</td>
+<td>D3</td>
+<td>Set the accelerometer RTCs to 6 m/sec<sup>2</sup> downrange (Z), vertical (X), and cross-range (Y).<br/><br/>Begin computing performance factor (PF).</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>f2</sub></td>
+<td>39.8</td>
+<td>C3</td>
+<td>End of second segment of engine failure freeze time function. (This is the latest time that an engine failure will result in a chi freeze.)</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>T<sub>far</sub></td>
+<td>109.8</td>
+<td>C3</td>
+<td>Change from first segment to second segment of tilt arrest time bias function. Tilt arrest time will not be decreased for engine failures after this time.</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>None</td>
+<td>129.5</td>
+<td>D1</td>
+<td>Enable INT2 (S-IB Low Level Sensors Dry "A") and INT6 (S-ID Low Level Sensors Dry "B") for initiation of Time Base 2. This is keyed to the "Propellant Level Sensors Enable" switch selector command. If either signal is recognized after this time and downrange velocity is greater than or equal to 500 m/sec (bypass when GRF has occurred), Time Base 2 must be set.</td>
+</tr>
+<tr>
+<td>T1</td>
+<td>NTSTB2</td>
+<td>134.5</td>
+<td>D1</td>
+<td>Nominal start time for Time Base 2 used in repeatable flight simulation.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>T_c</math></td>
+<td>TMEFRZ</td>
+<td>0</td>
+<td>C3</td>
+<td>End <math>\chi_y</math> freeze following an S-IB engine out. TMEFRZ is recalculated at the engine out time <math>T_{EO}</math>.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S0}</math></td>
+<td>10.3</td>
+<td>C3</td>
+<td>Backup time for starting pitch and roll guidance (Guidance will nominally be started at tower clearance.)</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{T2}</math></td>
+<td>30.0</td>
+<td>C4</td>
+<td>Earliest time for chi freeze initiation if an S-IB engine failure occurs.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S1}</math></td>
+<td>47.8</td>
+<td>C3</td>
+<td>Begin using second segment Time Tilt (Pitch program) coefficients.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{S2}</math></td>
+<td>89.8</td>
+<td>C3</td>
+<td>Begin using third segment Time Tilt (Pitch program) coefficients.</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td><math>T_{ar}</math></td>
+<td>131.05</td>
+<td>C3</td>
+<td>Nominal time to stop Time Tilt (Tilt Arrest). (This time can be extended by an S-IB engine out.)</td>
+</tr>
+<tr>
+<td><math>T_c</math></td>
+<td>TYAW01</td>
+<td>255.0</td>
+<td>C3</td>
+<td>Begin yaw guidance.</td>
+</tr>
+</tbody>
+</table>
+
+Note:  $T_c = T_{as} - T_l + T_d$ , where  $T_d$  is the implementation delay. This causes the segment changes to be introduced into vehicle dynamics at the specified presetting times, referenced to Time Base 1 start.
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Inhibit INT2 and INT6 (S-IB Low Level Sense signals). If DI15 has not been previously detected, continue checking for it until detected. Do not modify accelerometer Zero test if DI15 is detected during Time Base 2.<br/><br/>Continue checking for DI14. Do not modify accelerometer backups if DI14 is detected during Time Base 2.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td></td>
+<td>2.9</td>
+<td></td>
+<td>Set vertical and downrange (X&amp;Z) accelerometer RTCs to <math>50 \text{ m/sec}^2</math>; and leave the crossrange (Y) RTC unchanged at <math>6 \text{ m/sec}^2</math>.<br/><br/>Disable accelerometer zero test.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>T2<sub>IECO</sub></td>
+<td>3.0</td>
+<td>D1</td>
+<td>Stop computing acceleration, F/M, and set it to the preset constant FM2. (This is keyed to the inboard engines cutoff switch selector.)<br/><br/>Set <math>T_{\text{EVNT}} = T2_{\text{IECO}}</math>, compute <math>\Delta T_E'</math> and set BIAS=BIAS2.<br/><br/>Adjust the S-IB accelerometer backup parameter <math>F_{EO}</math> to 0.5.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>None</td>
+<td>4.5</td>
+<td>D1</td>
+<td>Start checking for S-IB outboard engines cutoff signals (INT5 and DI23), initiated at propellant depletion cutoff, for the purpose of setting Time Base 3. (This is keyed to the LOX Depletion Cutoff Enable switch selector.)</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>NTSTB3</td>
+<td>6.0</td>
+<td>D1</td>
+<td>Nominal start time for Time Base 3 used in repeatable flight simulation.</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>BU4</td>
+<td>13.0</td>
+<td>D1</td>
+<td>Start Time Base 3 if not started previously.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Reinitialize first guess at acceleration (F/M), to FM4.</p>
+<p>Reinitialize backup mass, mass flow rate and thrust to M<sub>2</sub>, zero and F<sub>2I</sub>, respectively, and begin using these values to compute backup acceleration (F/M)<sub>c</sub>.</p>
+<p>End Time Tilt guidance if tilt arrest has not already occurred.</p>
+<p>Stop checking DI14 and DI15 for S-IB engine failures. If either discrete was detected earlier, the checking of the recognized discrete stopped at that time.</p>
+<p>Resume using sin (2°) to compute A<sub>c0</sub> and reset bit 18 of Mode Code 24, if set.</p>
+<p>Stop checking DI23 and inhibit INT5 (S-IB Cutoff signals).</p>
+<p>Begin the X attitude error test using <math>\alpha_{ACTX} = 10.0</math> degrees.</p>
+<p>Set F<sub>E0</sub>=1, PF=1, PF<sub>0</sub>=1, PF<sub>1</sub>=1, BIAS=BIAS3, T<sub>EVNT</sub>=T3; compute <math>\Delta T'_E</math>, and stop computing the performance factor.</p>
+<p>Set M'<sub>c1</sub> = M<sub>2</sub>.</p>
+<p>Set B<sub>X01</sub> to zero and set B<sub>Z01</sub> to the preset value from the variable data tape.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>Change the roll ladder magnitude limit (MSK16) to 3.5 degrees. Pitch and yaw limits remain unchanged.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub>C</td>
+<td>6.08</td>
+<td>C3</td>
+<td>Start using mass flow rate, <math>\dot{M}_2</math>, and backup thrust, <math>F_2</math>, in computing backup acceleration, <math>(F/M)</math>. (This is the predicted time of S-IVB 90% thrust.)<br/><br/>Enable the accelerometer zero test and decrease vertical and downrange accelerometer RTCs to 6 m/sec<sup>2</sup>.<br/>Set BIAS = BIAS4, <math>T_{EVNT} = T3+T3_{FM}C, and compute <math>\Delta T'_E</math></math></td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub></td>
+<td>6.08</td>
+<td>C3</td>
+<td>Resume computing acceleration, <math>(F/M)</math>, using first guess, FM4, initialized at T3+0.<br/><br/>Start computing smoothed reciprocal acceleration, <math>(M/F)_S</math>, using first guess, <math>(M/F)_0</math>, initialized at T0+0.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>FM</sub>C + <math>\Delta T_{N2}</math></td>
+<td>7.09</td>
+<td>C3</td>
+<td>Begin computing performance factor.</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>S4IGTM</td>
+<td>10.0</td>
+<td>D1</td>
+<td>Release inhibit on Time Base 4 and start checking for cutoff conditions. Flight Program response to INT4 is inhibited before this time. Start checking DI5. (After this time, the presence of any two of the four S-IVB cutoff indications will initiate Time Base 4.)</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3<sub>IGM</sub></td>
+<td>35.0</td>
+<td>C3</td>
+<td>Start IGM.<br/>Start using <math>\Delta T_{N3}</math>.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T3</td>
+<td>T<sub>SMC</sub></td>
+<td>59.3</td>
+<td>C3</td>
+<td>Enable SMC calculations</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>T3PU</td>
+<td>328.1</td>
+<td>D1</td>
+<td>Save the values of <math>\dot{M}</math>, <math>F_{EO}</math>, PF, and <math>F_b</math> and store these values as <math>\dot{M}'</math>, <math>F'_{EO}</math>, PF', and <math>F'_b</math>.<br/>Start using mass flow rate, <math>\dot{M}_3</math>, and backup thrust, <math>F_3</math>, in computation of backup acceleration, <math>(F/M)_c</math>. Set <math>T_{EVNT} = T3PU</math>, compute <math>\Delta T'_E</math>, and set <math>BIAS = BIAS5</math>. (This event is keyed to the "Mixture Ratio Control Valve Open" switch selector command.)</td>
+</tr>
+<tr>
+<td>T<sub>1i</sub></td>
+<td>None</td>
+<td>0.0</td>
+<td>C3</td>
+<td>Start computing artificial <math>\tau_3</math> and decrementing <math>T_{3i}</math>.<br/>Set <math>T_{1i} = 0</math>.<br/>Stop computing <math>\tau_1</math> and <math>T_{1i}</math>.</td>
+</tr>
+<tr>
+<td>T<sub>1i</sub></td>
+<td>P<sub>C</sub></td>
+<td>0.0</td>
+<td>C3</td>
+<td>Start using <math>\tau_3</math> computed from <math>(M/F)_S</math> (end artificial <math>\tau_3</math> guidance). This event must occur when P<sub>C</sub>, initially zero and recomputed on each BML after T<sub>1i</sub> becomes zero, exceeds the presetting P<sub>CMR</sub>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td><math>\epsilon_2</math></td>
+<td>25.0</td>
+<td>D2</td>
+<td>Start <math>\tilde{\chi}</math> terminal steering guidance mode.<br/>Start using <math>\Delta T_{N4}</math>.</td>
+</tr>
+<tr>
+<td>IGM Time-to-go</td>
+<td>BN<sub>1</sub></td>
+<td>14.4</td>
+<td>B</td>
+<td>Start building velocity history for S-IVB cutoff.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IGM<br/>Time-to-<br/>go</td>
+<td><math>T_{HSL} + \Delta T_b</math></td>
+<td><math>5.0 + \Delta T_b</math></td>
+<td>D2</td>
+<td>
+<p>Enter IGM high speed cutoff loop when the velocity-to-be-gained is less than a velocity guard, <math>V_{GRD}</math>. (If guidance reference failure has occurred, do not enter the high speed cutoff loop. If GRF occurs after entering, continue until cutoff.)</p>
+<p>Stop computing IGM guidance commands.</p>
+<p>Inhibit SMC calculations.</p>
+<p>Set up S-IVB Engine Cutoff On switch selector.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set acceleration, (F/M), to zero.</p>
+<p>Increase vertical and downrange accelerometer RTCs to 50 m/sec<sup>2</sup> (crossrange RTC unchanged at 6 m/sec<sup>2</sup>).</p>
+<p>Disable accelerometer zero test.<br/>Set ladder magnitude limit to 2.5 degrees in pitch and yaw (MSK6). Roll remains unchanged.</p>
+<p>Set backup thrust and mass flow rate to zero.</p>
+<p>Reset the command decoder and the DCS error counter, reset INT8, and release inhibit on INT8.</p>
+<p>Enable the following DCS commands: Time Base Update, Generalized Switch Selector, Execute Generalized Maneuver, Return to Nominal Timeline, Terminate, Inhibit Water Control Valve Logic, Ladder Magnitude Limit, and S-IVB/IU De-orbit.</p>
+<p>Stop checking for S-IVB cutoff. (Disable INT4 and DI5.)</p>
+<p>Begin the Z attitude test using <math>\alpha_{ACTZ} = 48.0</math> degrees and change <math>\alpha_{ACTX} = 90.0</math> deg.</p>
+<p>Start using <math>\Delta T_{N5}</math>.</p>
+<p>Change the zero gimbal test constant, ML6HUN, to 1.4 deg.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Set <math>T_{EVNT} = T4</math>, <math>BIAS = BIAS6</math>, compute <math>\Delta T'_E</math>, stop computing performance factor and set <math>PF=1</math>, <math>PF_0=1</math>, and <math>PF_1=1</math>; thereafter set <math>F_{E0}</math> equal to one.</p>
+<p>Change attitude command rate limits in all channels. <math>MSLIM1 = 0.024</math> deg per minor loop in roll (0.6 deg per sec). <math>MSLIM2 = 0.016</math> deg per minor loop in pitch and yaw (0.4 deg per sec).</p>
+<p>Change from IGM guidance to orbital guidance.</p>
+<p>Set SMC corrections to zero.</p>
+<p>Set guidance commands and minor loop guidance commands to the gimbal angles on the first pass only. Start a <math>\chi</math> freeze. Maintain constant <math>\chi</math> commands.</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>None</td>
+<td>5.0</td>
+<td>D1</td>
+<td>
+<p>Start checking DI9, S/C control of Saturn. The start of this test is keyed to the switch selector command S/C Control of Saturn Enable. If guidance reference failure occurs, DI9 checks will be enabled at the time of failure, independent of programmed time guards.</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Enter orbit initialize and begin orbit navigation.</p>
+<p>Enable the following DCS commands: Memory Dump, Navigation Update, and Compressed Data Dump.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Change the minor loop rate from 25 per sec to 10 per sec.</p>
+<p>Continue using MSLIM1 = 0.6 deg per sec and MSLIM2 = 0.4 deg per sec.</p>
+<p>Start telemetry acquisition and loss calculations.</p>
+<p>Set the number of permissible unreasonable backup resolver readings (MS15DT) to 6 per sec. The guidance reference failure discretizes (D04 and D06) will be set on detecting 7 unreasonable backup resolver readings in 1 sec.</p>
+<p>Set the gimbal angle RTC for first pass on the backup gimbal (MLKRC1) to 18.5 deg.</p>
+<p>Change the backup gimbal angle RTC after first use to 1.1 deg per minor loop in pitch and yaw (MLKRC3) and 1.1 deg per minor loop in roll (MLKRC5).</p>
+<p>Start using <math>\Delta T_{N6}</math>.</p>
+<p>Change the fine gimbal angle RTC to 0.2 deg per minor loop in pitch and yaw (MLK2) and 0.2 deg per minor loop in roll (MLK12).</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4</td>
+<td>BN<sub>5</sub></td>
+<td>15.0</td>
+<td>D3</td>
+<td>
+<p>Change ladder rate limit (MSK5) to 0.24 deg per minor loop, all channels, unless guidance reference failure has occurred. In that case, leave MSK5 unchanged at zero.</p>
+<p>Set MS04DT to <math>.1/\Delta T_{N6}</math>.</p>
+<p>Set MS25DT to <math>10*\Delta T_{N6}</math>.</p>
+<p>Continue using the zero gimbal test constant, ML6HUN, of 1.40 deg (all channels).</p>
+</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T<sub>4M2</sub></td>
+<td>20.0</td>
+<td>C2</td>
+<td>Start Local Reference Maneuver, Track Local Horizontal, Posigrade, Position I down.</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T5<sub>GRD</sub></td>
+<td>5000.0</td>
+<td>D1</td>
+<td>Enable TB5 start.</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T<sub>RNTL</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>Implement the DCS return to nominal time-line. This is a transmitted parameter and has meaning only if that command has been received and accepted.</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>T<sub>SOM</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>Start a DCS generalized orbital maneuver or DCS specialized maneuver. This is a transmitted parameter and has meaning only if the corresponding command has been received and accepted.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time<br/>Reference</th>
+<th>EDD<br/>Symbol</th>
+<th>Presettings<br/>(Seconds)</th>
+<th>Source<br/>Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T4+TBB-TB</td>
+<td>T<sub>SEQ</sub></td>
+<td>Variable</td>
+<td>E</td>
+<td>Start a DCS generalized alternate sequence. This is a transmitted parameter and has meaning only if that command has been received and accepted.</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>60T<sub>DSS</sub></td>
+<td>Variable</td>
+<td>D1</td>
+<td>Start Time Base 5. This is a transmitted parameter and has meaning only if the corresponding DCS command has been received and accepted.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-1 EVENT SEQUENCE TIMELINE (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th>Time Reference</th>
+<th>EDD Symbol</th>
+<th>Presettings (Seconds)</th>
+<th>Source Code</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T5</td>
+<td>None</td>
+<td>0</td>
+<td></td>
+<td>
+<p>Reset bit 7 of MC27.</p>
+<p>Inhibit the Time Base Update, Execute Generalized Maneuver, Return to Nominal Timeline, Ladder Magnitude Limit and S-IVB/IU De-orbit DCS commands.</p>
+<p>Disable the loss of APS Attitude Control test.</p>
+<p>Disable telemetry acquisition and loss calculations.</p>
+<p>Set the pitch and yaw ladder magnitude limit (MSK6) to 15.3 deg</p>
+<p>Reset the platform measured velocity components, <math>\dot{X}_m</math>, <math>\dot{Y}_m</math> and <math>\dot{Z}_m</math>, to zero.</p>
+<p>Start monitoring velocity increments (<math>\Delta V</math>).</p>
+</td>
+</tr>
+<tr>
+<td>T5+T<sub>SS</sub>*</td>
+<td>None</td>
+<td>1.0</td>
+<td>D1</td>
+<td>Set the pitch and yaw Ladder Magnitude limit (MSK6) to 2.5 deg.</td>
+</tr>
+<tr>
+<td>T5+T<sub>SS</sub>*</td>
+<td>None</td>
+<td>2905.0</td>
+<td>D1</td>
+<td>Enable the Execute Generalized Maneuver DCS command.</td>
+</tr>
+</tbody>
+</table>
+
+\*See note 5 to Table 2-4 for definition of T<sub>SS</sub>
+
+## 2.4 ORBITAL ATTITUDE TIMELINE
+
+The following table (Table 2-2) describes the nominal attitude maneuver timeline from S-IVB cutoff until EOM. The following items are defined in the timeline for each maneuver:
+
+- • Maneuver number
+- • Description of the maneuver
+- • Nominal maneuver start time
+- • Maneuver type.
+
+TABLE 2-2 ORBITAL ATTITUDE TIMELINE
+
+<table border="1">
+<thead>
+<tr>
+<th data-bbox="78 125 181 201">Maneuver Number</th>
+<th data-bbox="181 125 325 201">Nominal Maneuver Time Seconds</th>
+<th data-bbox="325 125 775 201">Description of Maneuver</th>
+<th data-bbox="775 125 921 201">Maneuver Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-bbox="78 201 181 258">1</td>
+<td data-bbox="181 201 325 258">T4+0.0</td>
+<td data-bbox="325 201 775 258">Maintain vehicle attitude</td>
+<td data-bbox="775 201 921 258">X freeze</td>
+</tr>
+<tr>
+<td data-bbox="78 258 181 301">2</td>
+<td data-bbox="181 258 325 301">T4+20.0</td>
+<td data-bbox="325 258 775 301">Track local horizontal - posigrade, Position I down</td>
+<td data-bbox="775 258 921 301">Track local reference</td>
+</tr>
+<tr>
+<td data-bbox="78 301 181 704">6</td>
+<td data-bbox="181 301 325 704">T5+0.0</td>
+<td data-bbox="325 301 775 704">Continue TB4 Maneuver in progress when TB5 is started</td>
+<td data-bbox="775 301 921 704">Variable</td>
+</tr>
+</tbody>
+</table>
+
+II-2-38
+
+Rev. C\*
+
+## 2.5 PRESETTINGS
+
+Table 2-3 establishes the presettings to be used in the flight program. Program sequencing presettings are excluded since they are established in Section 1.3. For each presetting, the table gives:
+
+- • The symbol
+- • The required value and associated units
+- • The definition
+- • A source code.
+
+Notice that the units of mass, force and angle presettings are not the same as those specified to be used in the flight program in Section 15 of Part I. The units used in the following table are consistent with those in other Apollo documentation while those in the flight program are dictated by programming constraints. For flight program implementation, all values given in degrees must be converted to pirads by dividing by 180. The forces, given in newtons, and masses, given in kilograms, must be converted to kilograms and  $\text{kg-sec}^2/\text{m}$ , respectively, by dividing each quantity by  $9.80665 \text{ m/sec}^2$ .
+
+The source codes are inserted for information only and are not flight program requirements. The codes denote:
+
+- A1 Constants established by the baseline requirements (mission-independent)
+- A2 Launch pad dependent constants
+
+- B Constants established by IBM
+- C2 Constants established by the orbital timeline
+- C3 Constants established by normal boost guidance requirements
+- C4 Constants established by alternate mission requirements
+- D2 Constants established by vehicle dynamics requirements
+- D3 Constants established by other program requirements.
+
+TABLE 2-3 PRESETTINGS
+
+PAD 39B
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\cos(\phi'_L)</math></td>
+<td>0.87910194</td>
+<td></td>
+<td>A2</td>
+<td>Cosine of geocentric latitude of launch pad</td>
+</tr>
+<tr>
+<td><math>R_L</math></td>
+<td>6373402.3</td>
+<td>m</td>
+<td>A2</td>
+<td>Geocentric radius to the center of the IU on the launch pad, used to calculate initial conditions</td>
+</tr>
+<tr>
+<td><math>\sin(\phi_L - \phi'_L)</math></td>
+<td>0.0028191516</td>
+<td></td>
+<td>A2</td>
+<td>Sine of geodetic latitude minus geocentric latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>\cos(\phi_L)</math></td>
+<td>0.87775474</td>
+<td></td>
+<td>A2</td>
+<td>Cosine of the geodetic latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>\sin(\phi_L)</math></td>
+<td>0.47911023</td>
+<td></td>
+<td>A2</td>
+<td>Sine of the geodetic latitude of the launch pad</td>
+</tr>
+<tr>
+<td><math>X_{LS}</math></td>
+<td>6373377.0</td>
+<td>m</td>
+<td>A2</td>
+<td>Initial radius component along <math>X_S</math>-axis</td>
+</tr>
+</tbody>
+</table>
+
+Note:  $\phi_L = 28.6273060$   
+ $\phi'_L = 28.4657803$
+
+II-2-41
+
+Rev. C \*
+
+TABLE 2-3 PRESETTINGS (CONTINUED)
+
+PREFLIGHT PTL SPECIAL DATA
+
+<table border="1"><thead><tr><th>EDD<br/>Symbol</th><th>Presetting</th><th>Units</th><th>Source<br/>Code</th><th>Definition</th></tr></thead><tbody><tr><td><math>A_{00}</math></td><td>467.766</td><td>deg</td><td>D3</td><td rowspan="4">Coefficients of the variable azimuth polynomial, included in flight routines for use by preflight routines</td></tr><tr><td><math>A_{01}</math></td><td>-19.43775</td><td></td><td>D3</td></tr><tr><td><math>A_{10}</math></td><td>-1.1165417</td><td></td><td>D3</td></tr><tr><td><math>A_{11}</math></td><td>0.0934375</td><td>deg<sup>-1</sup></td><td>D3</td></tr></tbody></table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ BOOST INITIALIZATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>A_{zL}</math></td>
+<td>90.0</td>
+<td>deg</td>
+<td>A1</td>
+<td>Position I Azimuth</td>
+</tr>
+<tr>
+<td><math>G_H</math></td>
+<td>9.7972155</td>
+<td>m/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Huntsville gravity used for flight simulation</td>
+</tr>
+<tr>
+<td><math>\phi_H</math></td>
+<td>34.7166666</td>
+<td>deg</td>
+<td>A1</td>
+<td>Huntsville geodetic latitude used for flight simulation</td>
+</tr>
+<tr>
+<td><math>G_L</math></td>
+<td>9.791855</td>
+<td>m/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Cape Kennedy gravity used for flight simulation</td>
+</tr>
+<tr>
+<td><math>\dot{x}_0</math></td>
+<td>0.0</td>
+<td>m/sec</td>
+<td>A1</td>
+<td>Initial velocity component along <math>X_S</math> axis</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTING (CONTINUED)  
+ACCELEROMETER PROCESSING
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIBEOB</td>
+<td>0.875</td>
+<td></td>
+<td>C4</td>
+<td>Engine out bias used to modify the back-up force and mass flow rate presettings during Time Base 1.</td>
+</tr>
+<tr>
+<td>BIAS1</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which liftoff occurs.</td>
+</tr>
+<tr>
+<td>BIAS2</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which S-IB IECO occurs.</td>
+</tr>
+<tr>
+<td>BIAS3</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which S-IB OECO occurs.</td>
+</tr>
+<tr>
+<td>BIAS4</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which mainstage is achieved (i.e., at <math>T3+T3_{FMC}</math>).</td>
+</tr>
+<tr>
+<td>BIAS5</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which S-IVB EMRC occurs.</td>
+</tr>
+<tr>
+<td>BIAS6</td>
+<td>0</td>
+<td>m/sec</td>
+<td>C4</td>
+<td>Velocity bias used in <math>(F/M)_c</math> calculations during the BML in which S-IVB cutoff occurs.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ACCELEROMETER PROCESSING
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>F_0</math></td>
+<td>5742146.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Backup force used for computing <math>(F/M)_c</math> for first portion of BML in which liftoff occurs.</td>
+</tr>
+<tr>
+<td><math>F_1</math></td>
+<td>7957634.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IB thrust used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>F_{2I}</math></td>
+<td>299973.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB buildup thrust used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>F_2</math></td>
+<td>1022822.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB thrust used to compute <math>(F/M)_c</math> before EMRC</td>
+</tr>
+<tr>
+<td><math>F_3</math></td>
+<td>861540.0</td>
+<td>n</td>
+<td>C4</td>
+<td>Predicted average S-IVB thrust used to compute <math>(F/M)_c</math> after EMRC</td>
+</tr>
+<tr>
+<td><math>\dot{M}_0</math></td>
+<td>0.0</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>Backup mass flow rate used for computing <math>(F/M)_c</math> for first portion of BML in which liftoff occurs.</td>
+</tr>
+<tr>
+<td><math>\dot{M}_1</math></td>
+<td>2882.72</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IB backup mass flow rate used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>\dot{M}_2</math></td>
+<td>246.441</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IVB backup mass flow rate prior to EMRC used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>\dot{M}_3</math></td>
+<td>205.420</td>
+<td>kg/sec</td>
+<td>C4</td>
+<td>S-IVB backup mass flow rate after EMRC used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>M_0</math></td>
+<td>586420.64</td>
+<td>kg</td>
+<td>C4</td>
+<td>Mass of the vehicle used for computing <math>(F/M)_c</math> in the first portion of the BML in which liftoff occurs.</td>
+</tr>
+<tr>
+<td><math>M_1</math></td>
+<td>586420.64</td>
+<td>kg</td>
+<td>C4</td>
+<td>Mass of the vehicle at liftoff used to compute <math>(F/M)_c</math></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ACCELEROMETER PROCESSING
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>M_2</math></td>
+<td>132885.60</td>
+<td>kg</td>
+<td>C4</td>
+<td>Mass of the vehicle (not including LES) at <math>T_3+T_{3_{FMC}}</math> used to compute <math>(F/M)_c</math></td>
+</tr>
+<tr>
+<td><math>\sin (2^\circ)</math></td>
+<td>.0348994967</td>
+<td></td>
+<td>A1</td>
+<td>Sin (<math>2^\circ</math>) used to compute the estimated thrust (F/M) misalignment uncertainty term</td>
+</tr>
+<tr>
+<td><math>\sin (6^\circ)</math></td>
+<td>.1045284633</td>
+<td></td>
+<td>A1</td>
+<td>Sin (<math>6^\circ</math>) used to compute the estimated thrust (F/M) misalignment uncertainty term if an S-IB engine out occurs</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+BOOST NAVIGATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MFK1</td>
+<td>0.32157638</td>
+<td></td>
+<td>D2</td>
+<td>(M/F)<sub>S</sub> filter coefficients for S-IVB stage</td>
+</tr>
+<tr>
+<td>MFK2</td>
+<td>-0.2687668</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK3</td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK4</td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK5</td>
+<td>1.6504718</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK6</td>
+<td>-0.70328021</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK7</td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MFK8</td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FM0</td>
+<td>12.8</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Initial (F/M) for S-IB burn (This presetting is valid at T1+T<sub>S1EO</sub> and is also used to initialize the S-IB engine out acceleration decrease table.)</td>
+</tr>
+<tr>
+<td>FM2</td>
+<td>23.5</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Constant (F/M) from S-IB IECO to T3+0.0</td>
+</tr>
+<tr>
+<td>FM4</td>
+<td>5.9</td>
+<td>m/sec<sup>2</sup></td>
+<td>B</td>
+<td>Initial (F/M) for S-IVB burn</td>
+</tr>
+<tr>
+<td>(M/F)<sub>0</sub></td>
+<td>0.169</td>
+<td>sec<sup>2</sup>/m</td>
+<td>B</td>
+<td>M/F at T3+T3<sub>FM</sub> used to initialize the S-IVB smoothing filter at T0+0</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>3.986032E+14</td>
+<td>m<sup>3</sup>/sec<sup>2</sup></td>
+<td>A1</td>
+<td>Product of universal gravity constant and mass of the earth</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+FIRST STAGE GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B<sub>11</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>12</sub></td>
+<td>15.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during first S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>21</sub></td>
+<td>-.375</td>
+<td></td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>B<sub>22</sub></td>
+<td>15.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Coefficient used to calculate delta freeze time (<math>\Delta T_f</math>) for S-IB engine out during second S-IB engine failure interval</td>
+</tr>
+<tr>
+<td>C<sub>arl</sub></td>
+<td>20.0</td>
+<td>sec</td>
+<td>C4</td>
+<td>Constant time bias used to modify <math>T_{ar}</math> in case of an S-IB engine failure prior to <math>T_{far}</math>.</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)
+
+TABULAR COMMANDED INERTIAL YAW ATTITUDE FOR  
+OPEN LOOP GUIDANCE (TIME TILT YAW COMMANDS) (SOURCE CODE C3)
+
+<table border="1">
+<thead>
+<tr>
+<th>Biased Time Base 1 Time<br/>(T<sub>c</sub>) (Symbols)</th>
+<th>Presetting<br/>(sec)</th>
+<th>Inertial Yaw Command<br/>(Symbols)</th>
+<th>Presetting<br/>(Deg)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>TYAW01</td><td>255.0</td><td>YAWC01</td><td>0.0</td></tr>
+<tr><td>TYAW02</td><td>0.0</td><td>YAWC02</td><td>0.0</td></tr>
+<tr><td>TYAW03</td><td>0.0</td><td>YAWC03</td><td>0.0</td></tr>
+<tr><td>TYAW04</td><td>0.0</td><td>YAWC04</td><td>0.0</td></tr>
+<tr><td>TYAW05</td><td>0.0</td><td>YAWC05</td><td>0.0</td></tr>
+<tr><td>TYAW06</td><td>0.0</td><td>YAWC06</td><td>0.0</td></tr>
+<tr><td>TYAW07</td><td>0.0</td><td>YAWC07</td><td>0.0</td></tr>
+<tr><td>TYAW08</td><td>0.0</td><td>YAWC08</td><td>0.0</td></tr>
+<tr><td>TYAW09</td><td>0.0</td><td>YAWC09</td><td>0.0</td></tr>
+<tr><td>TYAW10</td><td>0.0</td><td>YAWC10</td><td>0.0</td></tr>
+<tr><td>TYAW11</td><td>0.0</td><td>YAWC11</td><td>0.0</td></tr>
+<tr><td>TYAW12</td><td>0.0</td><td>YAWC12</td><td>0.0</td></tr>
+<tr><td>TYAW13</td><td>0.0</td><td>YAWC13</td><td>0.0</td></tr>
+<tr><td>TYAW14</td><td>0.0</td><td>YAWC14</td><td>0.0</td></tr>
+<tr><td>TYAW15</td><td>0.0</td><td>YAWC15</td><td>0.0</td></tr>
+<tr><td>TYAW16</td><td>0.0</td><td>YAWC16</td><td>0.0</td></tr>
+<tr><td>TYAW17</td><td>0.0</td><td>YAWC17</td><td>0.0</td></tr>
+<tr><td>TYAW18</td><td>0.0</td><td>YAWC18</td><td>0.0</td></tr>
+<tr><td>TYAW19</td><td>0.0</td><td>YAWC19</td><td>0.0</td></tr>
+<tr><td>TYAW20</td><td>0.0</td><td>YAWC20</td><td>0.0</td></tr>
+<tr><td>TYAW21</td><td>0.0</td><td>YAWC21</td><td>0.0</td></tr>
+<tr><td>TYAW22</td><td>0.0</td><td>YAWC22</td><td>0.0</td></tr>
+<tr><td>TYAW23</td><td>0.0</td><td>YAWC23</td><td>0.0</td></tr>
+<tr><td>TYAW24</td><td>0.0</td><td>YAWC24</td><td>0.0</td></tr>
+<tr><td>TYAW25</td><td>0.0</td><td>YAWC25</td><td>0.0</td></tr>
+</tbody>
+</table>
+
+Note:
+
+$T_c = T_{as} - T_l + T_d$ , where  $T_d$  is the implementation delay. This causes the segment changes to be introduced into vehicle dynamics at the specified presetting times, referenced to Time Base 1 start.
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ATTITUDE CONTROL
+
+<table border="1"><thead><tr><th>EDD<br/>Symbol</th><th>Presetting</th><th>Units</th><th>Source<br/>Code</th><th>Definition</th></tr></thead><tbody><tr><td>LM</td><td>12.0</td><td>Degrees</td><td>B</td><td>Ladder magnitude limit to be used after loss of APS attitude control test determines the vehicle is out of control.</td></tr></tbody></table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+FIRST STAGE GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F<sub>10</sub></td>
+<td>+0.160503E+1</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>11</sub></td>
+<td>-0.113275E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>12</sub></td>
+<td>-0.576848E-2</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of first segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>13</sub></td>
+<td>+0.971731E-6</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>20</sub></td>
+<td>+0.113283E+2</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>21</sub></td>
+<td>-0.575758E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>22</sub></td>
+<td>-0.231588E-3</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of second segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>23</sub></td>
+<td>-0.146034E-5</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>30</sub></td>
+<td>-0.288222E+2</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>31</sub></td>
+<td>+0.396950E+0</td>
+<td>deg/sec</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>F<sub>32</sub></td>
+<td>-0.870892E-2</td>
+<td>deg/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Coefficients of third segment time tilt polynomial</td>
+</tr>
+<tr>
+<td>F<sub>33</sub></td>
+<td>+0.278457E-4</td>
+<td>deg/sec<sup>3</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>T<sub>d</sub></td>
+<td>1.6170</td>
+<td>sec</td>
+<td>B</td>
+<td>Time tilt bias constant</td>
+</tr>
+<tr>
+<td>GANTRY</td>
+<td>162.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Three sigma altitude gain from liftoff to 10 seconds flight time</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ NOMINAL COMPUTATION CYCLE LENGTHS
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\Delta T_{N1}</math></td>
+<td>.83</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T0+0 to T1+0</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N2}</math></td>
+<td>1.01</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T1+0 to T3+T3<sub>IGM</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N3}</math></td>
+<td>1.75</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T3+T3<sub>IGM</sub> to S-IVB <math>\tilde{\chi}</math> steering</td>
+</tr>
+<tr>
+<td><math>\Delta T_{N4}</math></td>
+<td>1.55</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from start of S-IVB <math>\tilde{\chi}</math> guidance until T4-T<sub>HSL</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N5}</math></td>
+<td>.96</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T4+0 to T4+BN<sub>5</sub></td>
+</tr>
+<tr>
+<td><math>\Delta T_{N6}</math></td>
+<td>1.0</td>
+<td>sec</td>
+<td>B</td>
+<td>Nominal comp cycle length from T4 + BN<sub>5</sub> to EOM</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+BOOST IGM
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>V_{ex1}</math></td>
+<td>4160.9641</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Exhaust velocity used in first phase for IGM computations</td>
+</tr>
+<tr>
+<td><math>T_{1i}</math></td>
+<td>294.0</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal IGM time-to-go from <math>T3+T3_{IGM}</math> to S-IVB EMRC</td>
+</tr>
+<tr>
+<td><math>T_{10}</math></td>
+<td>294.0</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal first phase burn time</td>
+</tr>
+<tr>
+<td><math>\tau_{10}</math></td>
+<td>512.215</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal value of <math>\tau_1</math> used in artificial <math>\tau</math> calculations</td>
+</tr>
+<tr>
+<td><math>M_{GR}</math></td>
+<td>125825.03</td>
+<td>kg</td>
+<td></td>
+<td>Estimated mass of S-IVB at IGM initiation</td>
+</tr>
+<tr>
+<td><math>V_{ex3}</math></td>
+<td>4194.0352</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Exhaust velocity used in second phase IGM computations</td>
+</tr>
+<tr>
+<td><math>\tau_3</math></td>
+<td>258.017</td>
+<td>sec</td>
+<td>C3</td>
+<td>Initial <math>\tau_3</math> for second phase IGM</td>
+</tr>
+<tr>
+<td><math>P_{CMR}</math></td>
+<td>35.0</td>
+<td>sec</td>
+<td>C3</td>
+<td>Duration of artificial <math>\tau_3</math> mode following EMRC</td>
+</tr>
+<tr>
+<td><math>T_{3i}</math></td>
+<td>109.5</td>
+<td>sec</td>
+<td>C3</td>
+<td>Nominal IGM time-to-go from S-IVB EMRC to <math>T4+0</math></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+BOOST IGM
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROV</td>
+<td>1.0</td>
+<td></td>
+<td>C3</td>
+<td>Bias constant for terminal range angle</td>
+</tr>
+<tr>
+<td><math>G_T</math></td>
+<td>-9.351</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal gravity for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_{VgT}</math></td>
+<td>-9.351</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal X gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dot{Y}_{VgT}</math></td>
+<td>0.0</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal Y gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\dot{Z}_{VgT}</math></td>
+<td>0.0</td>
+<td>m/sec<sup>2</sup></td>
+<td>C3</td>
+<td>Terminal Z gravity component for S-IVB burn</td>
+</tr>
+<tr>
+<td>SQ1</td>
+<td>5818.0420</td>
+<td>m/sec</td>
+<td>B</td>
+<td>First guess at <math>\sqrt{(\Delta \dot{X}_V^2 + \Delta \dot{Z}_V^2)}</math> for S-IVB burn</td>
+</tr>
+<tr>
+<td>SQ2</td>
+<td>0.99997756</td>
+<td></td>
+<td>B</td>
+<td>First guess at <math>\sqrt{1 - (F'_{Sy})^2}</math></td>
+</tr>
+<tr>
+<td><math>\Delta V_b</math></td>
+<td>6.5727</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Thrust decay velocity bias for S-IVB burn</td>
+</tr>
+<tr>
+<td>YAWLIM</td>
+<td>45.0</td>
+<td>deg</td>
+<td>B</td>
+<td>Yaw guidance command limit</td>
+</tr>
+<tr>
+<td>SMCG</td>
+<td>0.03</td>
+<td>rad/sec</td>
+<td>D2</td>
+<td>SMC gain for Time Base 3</td>
+</tr>
+<tr>
+<td><math>V_{GRD}</math></td>
+<td>150.0</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Velocity guard for the high speed loop in S-IVB burn</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+ TYPICAL TARGETING LOAD DATA FOR USE BY FLIGHT SIMULATION
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>V_T</math></td>
+<td>7835.13</td>
+<td>m/sec</td>
+<td>C3</td>
+<td>Desired insertion velocity for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>R_T</math></td>
+<td>6528178.0</td>
+<td>m</td>
+<td>C3</td>
+<td>Desired insertion radius for S-IVB burn</td>
+</tr>
+<tr>
+<td><math>\theta_T</math></td>
+<td>0.0</td>
+<td>deg</td>
+<td>C3</td>
+<td>Desired insertion flight path angle</td>
+</tr>
+<tr>
+<td><math>i</math></td>
+<td>49.999</td>
+<td>deg</td>
+<td>C3</td>
+<td>Inclination of parking orbit</td>
+</tr>
+<tr>
+<td><math>\lambda_0</math></td>
+<td>155.021</td>
+<td>deg</td>
+<td>C3</td>
+<td>Longitude of descending node</td>
+</tr>
+<tr>
+<td><math>\dot{\lambda}</math></td>
+<td>-0.004237</td>
+<td>deg/sec</td>
+<td>C3</td>
+<td>Time rate of change of the descending node<br/>(a negative preset value moves the node<br/>westward)</td>
+</tr>
+<tr>
+<td><math>T_{GRRO}</math></td>
+<td>61158.6</td>
+<td>sec</td>
+<td>D3</td>
+<td>Nominal value of <math>T_{GRR}</math>, referenced to <math>T_{GMT}</math></td>
+</tr>
+<tr>
+<td><math>T_{LWC}</math></td>
+<td>61794.0</td>
+<td>sec</td>
+<td>D3</td>
+<td>Liftoff time of launch window closing,<br/>referenced to <math>T_{GMT}</math></td>
+</tr>
+<tr>
+<td><math>A_z</math></td>
+<td>47.035</td>
+<td>deg</td>
+<td>C3</td>
+<td>Platform Azimuth</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTING (CONTINUED)  
+ORBITAL GUIDANCE
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SP<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C2</td>
+<td>Pitch</td>
+</tr>
+<tr>
+<td>CP<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td>Yaw</td>
+</tr>
+<tr>
+<td>SY<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td>Roll</td>
+</tr>
+<tr>
+<td>CY<sub>M1</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RA<sub>M1</sub></td>
+<td>0.0</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TYP<sub>M1</sub> (NOTE*)</td>
+<td>0.0</td>
+<td></td>
+<td>B</td>
+<td>Type of maneuver indicator for Maneuver 1</td>
+</tr>
+<tr>
+<td>SP<sub>M2</sub></td>
+<td>0.0</td>
+<td></td>
+<td>C2</td>
+<td>Pitch</td>
+</tr>
+<tr>
+<td>CP<sub>M2</sub></td>
+<td>1.0</td>
+<td></td>
+<td></td>
+<td>Yaw</td>
+</tr>
+<tr>
+<td>SY<sub>M2</sub></td>
+<td>0.0</td>
+<td></td>
+<td></td>
+<td>Roll</td>
+</tr>
+<tr>
+<td>CY<sub>M2</sub></td>
+<td>1.0</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RA<sub>M2</sub></td>
+<td>0.0</td>
+<td>deg</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TYP<sub>M2</sub></td>
+<td>-1.0</td>
+<td></td>
+<td>B</td>
+<td>Type of maneuver indicator for Maneuver 2</td>
+</tr>
+</tbody>
+</table>
+
+\*NOTE: TYP<sub>M1</sub> -TYP<sub>M3</sub> indicate whether a maneuver is an inertial reference (+1), chi freeze (0), a local reference (-1), or an inertial hold of local reference (-2).
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+GRAVITY
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>a_e</math></td>
+<td>6378165.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Earth's semi-major axis</td>
+</tr>
+<tr>
+<td>b</td>
+<td>6356783.0</td>
+<td>m</td>
+<td>A1</td>
+<td>Earth's semi-minor axis</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0.7875E-5</td>
+<td></td>
+<td>C3</td>
+<td>Fourth zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+<tr>
+<td>H</td>
+<td>0.575E-5</td>
+<td></td>
+<td>C3</td>
+<td>Third zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+<tr>
+<td>J</td>
+<td>1.62345E-3</td>
+<td></td>
+<td>C3</td>
+<td>Second zonal harmonic coefficient used in the gravitational potential model</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+TELEMETRY ACQUISITION AND LOSS
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R<sub>STA</sub></td>
+<td>.6419879.7</td>
+<td>m</td>
+<td>D3</td>
+<td>Mean radius of the telemetry stations</td>
+</tr>
+<tr>
+<td><math>\omega_E</math></td>
+<td>.000023211523</td>
+<td>pirads/<br/>sec</td>
+<td>A1</td>
+<td>Earth's rotational rate</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+DRAG
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>\rho_0</math></td>
+<td>0.179142E-6</td>
+<td>kg/m<sup>3</sup></td>
+<td>C3</td>
+<td>Atmospheric density polynomial coefficients</td>
+</tr>
+<tr>
+<td><math>\rho_1</math></td>
+<td>-0.37213949E-11</td>
+<td>kg/m<sup>4</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_2</math></td>
+<td>0.31057886E-16</td>
+<td>kg/m<sup>5</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_3</math></td>
+<td>-0.12962178E-21</td>
+<td>kg/m<sup>6</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_4</math></td>
+<td>0.26986419E-27</td>
+<td>kg/m<sup>7</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>\rho_5</math></td>
+<td>-0.22388267E-33</td>
+<td>kg/m<sup>8</sup></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>K_D</math></td>
+<td>0.164311287E-2</td>
+<td>m<sup>2</sup>/kg</td>
+<td>C3</td>
+<td>Orbital drag model constant</td>
+</tr>
+<tr>
+<td><math>C_{D1}</math></td>
+<td>11.079923</td>
+<td></td>
+<td>C3</td>
+<td>Drag as a function of the cosine of the angle of attack polynomial coefficients</td>
+</tr>
+<tr>
+<td><math>C_{D2}</math></td>
+<td>0.17954281</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D3}</math></td>
+<td>-2.1771971</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D4}</math></td>
+<td>-0.28074902</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><math>C_{D5}</math></td>
+<td>-5.8764139</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-3 PRESETTINGS (CONTINUED)  
+DRAG
+
+<table border="1">
+<thead>
+<tr>
+<th>EDD<br/>Symbol</th>
+<th>Presetting</th>
+<th>Units</th>
+<th>Source<br/>Code</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math>h_1</math></td>
+<td>1.5E5</td>
+<td>m</td>
+<td>C3</td>
+<td>Lower bound of atmospheric density polynomial</td>
+</tr>
+<tr>
+<td><math>h_2</math></td>
+<td>3.0E5</td>
+<td>m</td>
+<td>C3</td>
+<td>Upper bound of atmospheric density polynomial</td>
+</tr>
+<tr>
+<td><math>\rho_c</math></td>
+<td>0.5E-7</td>
+<td>kg/m<sup>3</sup></td>
+<td>C3</td>
+<td>Constant atmospheric density used when the altitude of the vehicle is less than <math>h_1</math></td>
+</tr>
+</tbody>
+</table>
+
+## 2.6 FLIGHT SEQUENCING
+
+The flight sequencing requirements for SA-207 are established in Table VII of the current revision of the Flight Sequence Program ICD 68M00001 and the approved IRN's described in Table 2-4. The information to be obtained from the ICD are switch selector command title, stage, address, and time from base. No other information contained in the ICD is to be considered a program requirement.
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="2" rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>LIFTOFF - START OF TIME BASE NO. 1 (T1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T1</td>
+<td>.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>SINGLE ENGINE CUTOFF ENABLE</td>
+<td>0101 1010</td>
+<td>S-IB</td>
+<td>100</td>
+<td>T1 +</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>28</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES CLOSE</td>
+<td>0110 1010</td>
+<td>SIVB</td>
+<td>79</td>
+<td>T1 +</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MULTIPLE ENGINE CUTOFF ENABLE NO.1</td>
+<td>0001 0001</td>
+<td>S-IB</td>
+<td>16</td>
+<td>T1 +</td>
+<td>10.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MULTIPLE ENGINE CUTOFF ENABLE NO.2</td>
+<td>0110 1111</td>
+<td>S-IB</td>
+<td>15</td>
+<td>T1 +</td>
+<td>10.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETER CALIBRATION ON</td>
+<td>0101 1111</td>
+<td>S-IB</td>
+<td>2</td>
+<td>T1 +</td>
+<td>20.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETER CALIBRATION OFF</td>
+<td>0000 1111</td>
+<td>S-IB</td>
+<td>39</td>
+<td>T1 +</td>
+<td>25.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>T1 +</td>
+<td>27.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>T1 +</td>
+<td>32.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LAUNCH VEHICLE ENGINES EDS CUTOFF ENABLE</td>
+<td>0011 0001</td>
+<td>IU</td>
+<td>38</td>
+<td>T1 +</td>
+<td>40.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>T1 +</td>
+<td>90.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>T1 +</td>
+<td>95.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 1</td>
+<td>0111 1110</td>
+<td>IU</td>
+<td>43</td>
+<td>T1 +</td>
+<td>100.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 2</td>
+<td>0100 0001</td>
+<td>IU</td>
+<td>21</td>
+<td>T1 +</td>
+<td>100.2</td>
+</tr>
+</tbody>
+</table>
+
+II-2-62
+
+Rev. C\*
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="3">TIME FROM BASE SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+<th>T1</th>
+<th>+</th>
+<th>SECONDS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETER CALIBRATION ON</td>
+<td>0101 1111</td>
+<td>S-IB</td>
+<td>2</td>
+<td>T1</td>
+<td>+</td>
+<td>119.8</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 3</td>
+<td>0101 0001</td>
+<td>IU</td>
+<td>22</td>
+<td>T1</td>
+<td>+</td>
+<td>120.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>IU CONTROL ACCELEROMETER POWER OFF</td>
+<td>0111 0101</td>
+<td>IU</td>
+<td>106</td>
+<td>T1</td>
+<td>+</td>
+<td>120.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETER CALIBRATION OFF</td>
+<td>0000 1111</td>
+<td>S-IB</td>
+<td>39</td>
+<td>T1</td>
+<td>+</td>
+<td>124.8</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TM CALIBRATE ON</td>
+<td>0100 1010</td>
+<td>SIVB</td>
+<td>62</td>
+<td>T1</td>
+<td>+</td>
+<td>127.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TM CALIBRATE OFF</td>
+<td>0000 0111</td>
+<td>SIVB</td>
+<td>63</td>
+<td>T1</td>
+<td>+</td>
+<td>128.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>EXCESS RATE (P,Y,R) AUTO-ABORT INHIBIT ENABLE</td>
+<td>0110 1111</td>
+<td>IU</td>
+<td>15</td>
+<td>T1</td>
+<td>+</td>
+<td>128.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>EXCESS RATE (P,Y,R) AUTO-ABORT INHIBIT AND<br/>SWITCH RATE GYROS SC INDICATION A</td>
+<td>0101 1111</td>
+<td>IU</td>
+<td>2</td>
+<td>T1</td>
+<td>+</td>
+<td>128.9</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IB TWO ENGINES OUT AUTO-ABORT INHIBIT ENABLE</td>
+<td>0000 1110</td>
+<td>IU</td>
+<td>51</td>
+<td>T1</td>
+<td>+</td>
+<td>129.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IB TWO ENGINES OUT AUTO-ABORT INHIBIT</td>
+<td>0001 1110</td>
+<td>IU</td>
+<td>35</td>
+<td>T1</td>
+<td>+</td>
+<td>129.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>PROPELLANT LEVEL SENSORS ENABLE</td>
+<td>0111 0111</td>
+<td>S-IB</td>
+<td>104</td>
+<td>T1</td>
+<td>+</td>
+<td>129.5</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="2" rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IB PROPELLANT LEVEL SENSOR ACTUATION-START OF<br/>TIME BASE NO. 2 (T2)</td>
+<td></td>
+<td>S-IB</td>
+<td></td>
+<td>T2</td>
+<td>.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>EXCESS RATE (ROLL) AUTO-ABORT INHIBIT ENABLE</td>
+<td>0100 1111</td>
+<td>IU</td>
+<td>34</td>
+<td>T2 +</td>
+<td>.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>EXCESS RATE (ROLL) AUTO-ABORT INHIBIT AND<br/>SWITCH RATE GYROS SC INDICATION B</td>
+<td>0111 0001</td>
+<td>IU</td>
+<td>50</td>
+<td>T2 +</td>
+<td>.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>INBOARD ENGINES CUTOFF</td>
+<td>0100 0100</td>
+<td>S-IB</td>
+<td>98</td>
+<td>T2 +</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>AUTO-ABORT ENABLE RELAYS RESET</td>
+<td>0001 0001</td>
+<td>IU</td>
+<td>16</td>
+<td>T2 +</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>CHARGE ULLAGE IGNITION EBW FIRING UNITS</td>
+<td>0111 0100</td>
+<td>SIVB</td>
+<td>54</td>
+<td>T2 +</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>Q-BALL POWER OFF</td>
+<td>0111 1111</td>
+<td>IU</td>
+<td>1</td>
+<td>T2 +</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>PREVALVES OPEN</td>
+<td>0110 1001</td>
+<td>SIVB</td>
+<td>83</td>
+<td>T2 +</td>
+<td>4.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LOX DEPLETION CUTOFF ENABLE</td>
+<td>0000 0110</td>
+<td>S-IB</td>
+<td>97</td>
+<td>T2 +</td>
+<td>4.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FUEL DEPLETION CUTOFF ENABLE</td>
+<td>0110 1010</td>
+<td>S-IB</td>
+<td>79</td>
+<td>T2 +</td>
+<td>5.0</td>
+</tr>
+<tr>
+<td>30</td>
+<td>S-IB OUTBOARD ENGINES CUTOFF</td>
+<td>0011 0011</td>
+<td>S-IB</td>
+<td>18</td>
+<td>T2 +</td>
+<td>12.9</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="2">TIME FROM BASE</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+<th colspan="2">SECONDS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IB OUTBOARD ENGINES CUTOFF - START OF TIME<br/>BASE NO. 3 (T3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T3</td>
+<td>.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IB OUTBOARD ENGINES CUTOFF</td>
+<td>0011 0011</td>
+<td>S-IB</td>
+<td>18</td>
+<td>T3 +</td>
+<td>.1</td>
+</tr>
+<tr>
+<td>28</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES OPEN</td>
+<td>0111 1010</td>
+<td>SIVB</td>
+<td>80</td>
+<td>T3 +</td>
+<td>.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SYSTEM ON</td>
+<td>0111 1001</td>
+<td>SIVB</td>
+<td>103</td>
+<td>T3 +</td>
+<td>.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE CUTOFF NO. 1 OFF</td>
+<td>0111 0010</td>
+<td>SIVB</td>
+<td>13</td>
+<td>T3 +</td>
+<td>.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE CUTOFF NO. 2 OFF</td>
+<td>0000 1100</td>
+<td>SIVB</td>
+<td>49</td>
+<td>T3 +</td>
+<td>.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE OPEN</td>
+<td>0000 0010</td>
+<td>SIVB</td>
+<td>5</td>
+<td>T3 +</td>
+<td>.8</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE BACKUP OPEN</td>
+<td>0100 1111</td>
+<td>SIVB</td>
+<td>34</td>
+<td>T3 +</td>
+<td>.9</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ULLAGE ROCKETS IGNITION</td>
+<td>0101 0100</td>
+<td>SIVB</td>
+<td>56</td>
+<td>T3 +</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IB/S-IVB SEPARATION ON</td>
+<td>0010 0010</td>
+<td>S-IB</td>
+<td>23</td>
+<td>T3 +</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE ON A</td>
+<td>0010 0001</td>
+<td>IU</td>
+<td>53</td>
+<td>T3 +</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE ON B</td>
+<td>0010 1101</td>
+<td>IU</td>
+<td>6</td>
+<td>T3 +</td>
+<td>1.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ENGINE READY BYPASS ON</td>
+<td>0110 0011</td>
+<td>SIVB</td>
+<td>10</td>
+<td>T3 +</td>
+<td>1.9</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001A</td>
+<td>LH2 CHILLDOWN PUMP OFF</td>
+<td>0110 1011</td>
+<td>SIVB</td>
+<td>59</td>
+<td>T3 + 2.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LOX CHILLDOWN PUMP OFF</td>
+<td>0010 0010</td>
+<td>SIVB</td>
+<td>23</td>
+<td>T3 + 2.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE OUT INDICATION A ENABLE</td>
+<td>0001 0011</td>
+<td>IU</td>
+<td>9</td>
+<td>T3 + 2.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE OUT INDICATION B ENABLE</td>
+<td>0011 1100</td>
+<td>IU</td>
+<td>29</td>
+<td>T3 + 2.6</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ENGINE IGNITION SEQUENCE START</td>
+<td>0001 0011</td>
+<td>SIVB</td>
+<td>9</td>
+<td>T3 + 2.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ENGINE IGNITION SEQUENCE START RELAY RESET</td>
+<td>0101 1101</td>
+<td>SIVB</td>
+<td>27</td>
+<td>T3 + 3.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MAINSTAGE ENABLE ON</td>
+<td>0111 0011</td>
+<td>SIVB</td>
+<td>11</td>
+<td>T3 + 3.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LH2 TANK PRESSURIZATION CONTROL SWITCH ENABLE</td>
+<td>0001 1001</td>
+<td>SIVB</td>
+<td>68</td>
+<td>T3 + 5.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE CLOSE</td>
+<td>0010 1101</td>
+<td>SIVB</td>
+<td>6</td>
+<td>T3 + 8.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE BACKUP CLOSE</td>
+<td>0001 1110</td>
+<td>SIVB</td>
+<td>35</td>
+<td>T3 + 8.9</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>CHARGE ULLAGE JETTISON EBW FIRING UNITS</td>
+<td>0110 0100</td>
+<td>SIVB</td>
+<td>55</td>
+<td>T3 + 10.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ULLAGE ROCKETS JETTISON</td>
+<td>0001 1010</td>
+<td>SIVB</td>
+<td>57</td>
+<td>T3 + 13.3</td>
+</tr>
+<tr>
+<td>28</td>
+<td>MAINSTAGE ENABLE OFF</td>
+<td>0001 0001</td>
+<td>SIVB</td>
+<td>16</td>
+<td>T3 + 13.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ULLAGE EBW FIRING UNITS CHARGE RELAYS RESET</td>
+<td>0101 1100</td>
+<td>SIVB</td>
+<td>88</td>
+<td>T3 + 19.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>ULLAGE ROCKETS IGNITION AND JETTISON RELAYS</td>
+<td>0010 1011</td>
+<td>SIVB</td>
+<td>73</td>
+<td>T3 + 19.5</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="3">TIME FROM BASE</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+<th colspan="3">SECONDS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>RESET</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>28<br/>68M00001A</td>
+<td>HEAT EXCHANGER BYPASS VALVE CONTROL ENABLE</td>
+<td>0111 0001</td>
+<td>SIVB</td>
+<td>50</td>
+<td>T3</td>
+<td>+</td>
+<td>24.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>T3</td>
+<td>+</td>
+<td>25.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>T3</td>
+<td>+</td>
+<td>30.4</td>
+</tr>
+<tr>
+<td>30<br/>68M00001A</td>
+<td>WATER COOLANT VALVE OPEN</td>
+<td>0110 0101</td>
+<td>IU</td>
+<td>107</td>
+<td>T3</td>
+<td>+</td>
+<td>39.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 4</td>
+<td>0110 0001</td>
+<td>IU</td>
+<td>4</td>
+<td>T3</td>
+<td>+</td>
+<td>42.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER SWITCH POINT NO. 5</td>
+<td>0011 0010</td>
+<td>IU</td>
+<td>44</td>
+<td>T3</td>
+<td>+</td>
+<td>203.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>T3</td>
+<td>+</td>
+<td>205.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>T3</td>
+<td>+</td>
+<td>210.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LH2 TANK PRESSURIZATION CONTROL SWITCH DISABLE</td>
+<td>0010 1001</td>
+<td>SIVB</td>
+<td>69</td>
+<td>T3</td>
+<td>+</td>
+<td>302.9</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE OPEN</td>
+<td>0000 0010</td>
+<td>SIVB</td>
+<td>5</td>
+<td>T3</td>
+<td>+</td>
+<td>328.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE BACKUP OPEN</td>
+<td>0100 1111</td>
+<td>SIVB</td>
+<td>34</td>
+<td>T3</td>
+<td>+</td>
+<td>328.3</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>T3</td>
+<td>+</td>
+<td>355.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>T3</td>
+<td>+</td>
+<td>360.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>PROPELLANT DEPLETION CUTOFF ARM</td>
+<td>0000 0110</td>
+<td>SIVB</td>
+<td>97</td>
+<td>T3</td>
+<td>+</td>
+<td>400.0</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IVB ENGINE CUTOFF - START OF TIME BASE 4 (T4)</td>
+<td></td>
+<td></td>
+<td>T4</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE CUTOFF NO. 1 ON</td>
+<td>0100 1101</td>
+<td>SIVB</td>
+<td>12 T4 +</td>
+<td>.1</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE CUTOFF NO. 2 ON</td>
+<td>0010 1100</td>
+<td>SIVB</td>
+<td>48 T4 +</td>
+<td>.2</td>
+</tr>
+<tr>
+<td>31</td>
+<td>PREVALVES CLOSE</td>
+<td>0001 0110</td>
+<td>SIVB</td>
+<td>82 T4 +</td>
+<td>.3</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LOX TANK NPV VALVE OPEN ON</td>
+<td>0101 1110</td>
+<td>SIVB</td>
+<td>42 T4 +</td>
+<td>.6</td>
+</tr>
+<tr>
+<td>28</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES CLOSE</td>
+<td>0110 1010</td>
+<td>SIVB</td>
+<td>79 T4 +</td>
+<td>.8</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>LOX TANK FLIGHT PRESSURIZATION SYSTEM OFF</td>
+<td>0111 0111</td>
+<td>SIVB</td>
+<td>104 T4 +</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>PROPELLANT DEPLETION CUTOFF DISARM</td>
+<td>0100 0100</td>
+<td>SIVB</td>
+<td>98 T4 +</td>
+<td>1.8</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE CLOSE</td>
+<td>0010 1101</td>
+<td>SIVB</td>
+<td>6 T4 +</td>
+<td>2.2</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>MIXTURE RATIO CONTROL VALVE BACKUP CLOSE</td>
+<td>0001 1110</td>
+<td>SIVB</td>
+<td>35 T4 +</td>
+<td>2.4</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE OFF A</td>
+<td>0100 1101</td>
+<td>IU</td>
+<td>12 T4 +</td>
+<td>3.5</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE OFF B</td>
+<td>0000 0010</td>
+<td>IU</td>
+<td>5 T4 +</td>
+<td>3.7</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29 T4 +</td>
+<td>3.9</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S/C CONTROL OF SATURN ENABLE</td>
+<td>0011 0011</td>
+<td>IU</td>
+<td>18 T4 +</td>
+<td>5.0</td>
+</tr>
+</tbody>
+</table>
+
+II-2-68
+
+Rev. C\*
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>68M00001A</td>
+<td>RATE MEASUREMENTS SWITCH</td>
+<td>0001 1111</td>
+<td>IU</td>
+<td>17</td>
+<td>T4 + 6.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>S-IVB ENGINE EDS CUTOFFS DISABLE</td>
+<td>0110 0010</td>
+<td>IU</td>
+<td>3</td>
+<td>T4 + 10.0</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN ON</td>
+<td>0101 0110</td>
+<td>SIVB</td>
+<td>99</td>
+<td>T4 + 10.4</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH ON</td>
+<td>0010 1110</td>
+<td>SIVB</td>
+<td>52</td>
+<td>T4 + 12.4</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN OFF</td>
+<td>0101 1010</td>
+<td>SIVB</td>
+<td>100</td>
+<td>T4 + 13.6</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH OFF</td>
+<td>0101 0010</td>
+<td>SIVB</td>
+<td>19</td>
+<td>T4 + 14.8</td>
+</tr>
+<tr>
+<td>33</td>
+<td>CHILLDOWN SHUTOFF VALVES CLOSE</td>
+<td>0101 0101</td>
+<td>SIVB</td>
+<td>91</td>
+<td>T4 + 20.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>P.U. INVERTER AND DC POWER OFF</td>
+<td>0011 1111</td>
+<td>SIVB</td>
+<td>8</td>
+<td>T4 + 30.0</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LOX TANK NPV VALVE OPEN OFF</td>
+<td>0000 0001</td>
+<td>SIVB</td>
+<td>37</td>
+<td>T4 + 30.6</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LOX TANK VENT AND NPV VALVES BOOST CLOSE ON</td>
+<td>0011 1011</td>
+<td>SIVB</td>
+<td>95</td>
+<td>T4 + 33.6</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LOX TANK VENT AND NPV VALVES BOOST CLOSE OFF</td>
+<td>0001 1011</td>
+<td>SIVB</td>
+<td>96</td>
+<td>T4 + 35.6</td>
+</tr>
+<tr>
+<td>31</td>
+<td>PREVALVES OPEN</td>
+<td>0110 1001</td>
+<td>SIVB</td>
+<td>83</td>
+<td>T4 + 680.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>CHILLDOWN SHUTOFF VALVES OPEN</td>
+<td>0011 0101</td>
+<td>SIVB</td>
+<td>92</td>
+<td>T4 + 680.2</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN ON</td>
+<td>0101 0110</td>
+<td>SIVB</td>
+<td>99</td>
+<td>T4 + 680.4</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN OFF</td>
+<td>0101 1010</td>
+<td>SIVB</td>
+<td>100</td>
+<td>T4 + 681.4</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>34</td>
+<td>LH2 TANK VENT AND LATCHING RELIEF VALVES<br/>BOOST CLOSE ON</td>
+<td>0110 0110</td>
+<td>SIVB</td>
+<td>77</td>
+<td>T4 + 684.4</td>
+</tr>
+<tr>
+<td>34</td>
+<td>LH2 TANK VENT AND LATCHING RELIEF VALVES<br/>BOOST CLOSE OFF</td>
+<td>0111 0110</td>
+<td>SIVB</td>
+<td>78</td>
+<td>T4 + 686.4</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 2120.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 2600.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>S-IVB ENGINE EDS CUTOFF NO. 2 DISABLE</td>
+<td>0010 0001</td>
+<td>SIVB</td>
+<td>53</td>
+<td>T4 + 4990.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>PASSIVATION ENABLE</td>
+<td>0110 0111</td>
+<td>SIVB</td>
+<td>85</td>
+<td>T4 + 5000.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 5060.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 5108.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 7520.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 8000.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 10460.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 10508.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 12620.0</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 13100.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 15050.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 15530.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T4 + 18320.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>T4 + 18800.0</td>
+</tr>
+</tbody>
+</table>
+
+II-2-71
+
+Rev. C\*
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="2" rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>START OF TIME BASE 5 (T5)-(T4+60TDSS)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>T5</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE ON</td>
+<td>0111 1100</td>
+<td>SIVB</td>
+<td>28</td>
+<td>T5 +</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>34</td>
+<td>PREVALVES OPEN</td>
+<td>0110 1001</td>
+<td>SIVB</td>
+<td>83</td>
+<td>T5 +</td>
+<td>31.0</td>
+</tr>
+<tr>
+<td>34</td>
+<td>CHILLDOWN SHUTOFF VALVES OPEN</td>
+<td>0011 0101</td>
+<td>SIVB</td>
+<td>92</td>
+<td>T5 +</td>
+<td>32.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE MAINSTAGE CONTROL VALVE OPEN ON</td>
+<td>0000 0100</td>
+<td>SIVB</td>
+<td>74</td>
+<td>T5 +</td>
+<td>33.4</td>
+</tr>
+<tr>
+<td>32</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE ON 'A'</td>
+<td>0010 0001</td>
+<td>IU</td>
+<td>53</td>
+<td>T5 +</td>
+<td>33.6</td>
+</tr>
+<tr>
+<td>32</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE ON 'B'</td>
+<td>0010 1101</td>
+<td>IU</td>
+<td>6</td>
+<td>T5 +</td>
+<td>33.8</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE HE CONTROL VALVE OPEN ON</td>
+<td>0001 0101</td>
+<td>SIVB</td>
+<td>109</td>
+<td>T5 +</td>
+<td>34.0</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>SEQUENCE FOR LOX DEPLETION DUMP STOP AND<br/>LH2 DEPLETION DUMP START<br/>TLS = T5 + TLDD + 33.9<br/>(SEE NOTE 4)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>TLS 0.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE MAINSTAGE CONTROL VALVE OPEN OFF</td>
+<td>0001 0100</td>
+<td>SIVB</td>
+<td>75</td>
+<td>TLS + .1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE HE CONTROL VALVE OPEN OFF</td>
+<td>0011 0100</td>
+<td>SIVB</td>
+<td>110</td>
+<td>TLS + .3</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE IGNITION PHASE CONTROL VALVE OPEN</td>
+<td>0110 0010</td>
+<td>SIVB</td>
+<td>3</td>
+<td>TLS + 29.9</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE HE CONTROL VALVE OPEN ON</td>
+<td>0001 0101</td>
+<td>SIVB</td>
+<td>109</td>
+<td>TLS + 30.1</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th colspan="2">TIME FROM BASE SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>SEQUENCE FOR LH2 DEPLETION DUMP STOP AND<br/>SAFING - TSS = T5 + TLDD + THDD + 63.9<br/>(SEE NOTE 5)</td>
+<td></td>
+<td></td>
+<td></td>
+<td>TSS</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE IGNITION PHASE CONTROL VALVE CLOSE</td>
+<td>0110 0001</td>
+<td>SIVB</td>
+<td>4</td>
+<td>TSS +</td>
+<td>.1</td>
+</tr>
+<tr>
+<td>32</td>
+<td>ENGINE HE CONTROL VALVE OPEN OFF</td>
+<td>0011 0100</td>
+<td>SIVB</td>
+<td>110</td>
+<td>TSS +</td>
+<td>.3</td>
+</tr>
+<tr>
+<td>32</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE<br/>OFF 'A'</td>
+<td>0100 1101</td>
+<td>IU</td>
+<td>12</td>
+<td>TSS +</td>
+<td>.5</td>
+</tr>
+<tr>
+<td>32</td>
+<td>FLIGHT CONTROL COMPUTER S-IVB BURN MODE<br/>OFF 'B'</td>
+<td>0000 0010</td>
+<td>IU</td>
+<td>5</td>
+<td>TSS +</td>
+<td>.7</td>
+</tr>
+<tr>
+<td>31</td>
+<td>AUX. HYDRAULIC PUMP FLIGHT MODE OFF</td>
+<td>0011 1100</td>
+<td>SIVB</td>
+<td>29</td>
+<td>TSS +</td>
+<td>.9</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LOX TANK NPV VALVE OPEN ON</td>
+<td>0101 1110</td>
+<td>SIVB</td>
+<td>42</td>
+<td>TSS +</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN ON</td>
+<td>0101 0110</td>
+<td>SIVB</td>
+<td>99</td>
+<td>TSS +</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>34</td>
+<td>PREVALVES CLOSE</td>
+<td>0001 0110</td>
+<td>SIVB</td>
+<td>82</td>
+<td>TSS +</td>
+<td>2.1</td>
+</tr>
+<tr>
+<td>34</td>
+<td>CHILLDOWN SHUTOFF VALVES CLOSE</td>
+<td>0101 0101</td>
+<td>SIVB</td>
+<td>91</td>
+<td>TSS +</td>
+<td>2.6</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>31</td>
+<td>LOX TANK NPV VALVE LATCH OPEN ON</td>
+<td>0011 0110</td>
+<td>SIVB</td>
+<td>101</td>
+<td>TSS + 3.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH ON</td>
+<td>0010 1110</td>
+<td>SIVB</td>
+<td>52</td>
+<td>TSS + 3.3</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LOX TANK NPV VALVE OPEN OFF</td>
+<td>0000 0001</td>
+<td>SIVB</td>
+<td>37</td>
+<td>TSS + 4.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LH2 TANK LATCHING RELIEF VALVE OPEN OFF</td>
+<td>0101 1010</td>
+<td>SIVB</td>
+<td>100</td>
+<td>TSS + 4.3</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LOX TANK NPV VALVE LATCH OPEN OFF</td>
+<td>0010 0110</td>
+<td>SIVB</td>
+<td>102</td>
+<td>TSS + 5.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LH2 TANK LATCHING RELIEF VALVE LATCH OFF</td>
+<td>0101 0010</td>
+<td>SIVB</td>
+<td>19</td>
+<td>TSS + 5.3</td>
+</tr>
+<tr>
+<td>31</td>
+<td>ENGINE HE CONTROL VALVE OPEN ON</td>
+<td>0001 0101</td>
+<td>SIVB</td>
+<td>109</td>
+<td>TSS + 60.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES OPEN</td>
+<td>0111 1010</td>
+<td>SIVB</td>
+<td>80</td>
+<td>TSS + 100.1</td>
+</tr>
+<tr>
+<td>31</td>
+<td>LOX TANK PRESSURIZATION SHUTOFF VALVES CLOSE</td>
+<td>0110 1010</td>
+<td>SIVB</td>
+<td>79</td>
+<td>TSS + 2900.1</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>WATER COOLANT VALVE SWITCHING (SEE NOTE 1)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>WATER COOLANT VALVE OPEN</td>
+<td>0110 0101</td>
+<td>IU</td>
+<td>107</td>
+<td>+</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>WATER COOLANT VALVE CLOSED</td>
+<td>0100 0101</td>
+<td>IU</td>
+<td>108</td>
+<td>+</td>
+</tr>
+<tr>
+<td></td>
+<td>SPECIAL SEQUENCE FOR VEHICLE TELEMETRY<br/>CALIBRATION (SEE NOTE 2)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE ON</td>
+<td>0010 0010</td>
+<td>IU</td>
+<td>23</td>
+<td>ACQ + 60.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TM CALIBRATE ON</td>
+<td>0100 1010</td>
+<td>SIVB</td>
+<td>62</td>
+<td>ACQ + 63.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TM CALIBRATE OFF</td>
+<td>0000 0111</td>
+<td>SIVB</td>
+<td>63</td>
+<td>ACQ + 64.0</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>TELEMETRY CALIBRATOR IN-FLIGHT CALIBRATE OFF</td>
+<td>0001 0010</td>
+<td>IU</td>
+<td>24</td>
+<td>ACQ + 65.0</td>
+</tr>
+</tbody>
+</table>
+
+TABLE 2-4 SWITCH SELECTOR SEQUENCING (CONTINUED)
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">ICD/IRN</th>
+<th rowspan="2">COMMAND</th>
+<th colspan="3">SWITCH SELECTOR</th>
+<th rowspan="2">TIME<br/>FROM BASE<br/>SECONDS</th>
+</tr>
+<tr>
+<th>CODE</th>
+<th>STAGE</th>
+<th>CHN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>S-IVB CUTOFF SEQUENCE (SEE NOTE 3)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>SIVB ENGINE CUTOFF NO. 1 ON</td>
+<td>0100 1101</td>
+<td>SIVB</td>
+<td>12</td>
+<td>+</td>
+</tr>
+<tr>
+<td>68M00001A</td>
+<td>SIVB ENGINE CUTOFF NO. 2 ON</td>
+<td>0010 1100</td>
+<td>SIVB</td>
+<td>48</td>
+<td>+</td>
+</tr>
+</tbody>
+</table>
+
+Notes on Table 2-4:
+
+Note 1:
+
+Each of these switch selector commands must be programmed as an alternate switch selector sequence. These are Class 3 alternate switch selector sequences. Requirements for issuance of these alternate sequences are detailed in Section 7.4.10.
+
+Note 2:
+
+The IU telemetry and S-IVB telemetry shall be calibrated after orbital insertion by using a special sequence. This special sequence of events consists of IU and S-IVB telemetry calibration commands and shall be initiated by the LVDC using special tracking station acquisition logic. The first telemetry calibrate command shall be issued 60.0 seconds after station acquisition as determined by the LVDC. This is a Class 4 alternate switch selector sequence.
+
+Note 3:
+
+This switch selector sequence must be issued in response to S-IVB velocity cutoff or Spacecraft initiated S-IVB cutoff. It should be noted that if Time Base 4 is initiated prior to the completion of this sequence, the sequence must be terminated. The second command of this sequence must be scheduled immediately after the first command. This is a Class 1 alternate switch selector sequence.
+
+Note 4:
+
+This sequence must be issued to stop the LOX depletion dump and to initiate the hydrogen depletion dump. This sequence must be issued at  $T5+T_{LDD}+33.9$ . This is a Class 4 alternate switch selector sequence.
+
+Notes on Table 2-1 (Continued)
+
+Note 5:
+
+This switch selector sequence is issued to stop the hydrogen depletion dump and provide safing sequences. This sequence must be issued at  $T5+T_{LDD}+T_{HDD}+63.9$ . This is a Class 4 alternate switch selector sequence.
+
+(THIS PAGE HAS BEEN LEFT BLANK INTENTIONALLY.)
+
+## 2.7 DIGITAL COMMAND SYSTEM (DCS) MODE COMMAND SUMMARY
+
+Table 2-5 defines the only DCS commands which are accepted by the AS-206 flight program and the interval during which each command is accepted. The required program response to each command is defined in Section 10 of Part I.
+
+TABLE 2-5 DCS MODE COMMAND FORMAT
+
+<table border="1">
+<thead>
+<tr>
+<th rowspan="2">Octal<br/>Rep. of<br/>LVDC Bit<br/>Position<br/>S-5</th>
+<th colspan="2">Binary Rep. of<br/>LVDC Bit<br/>Position</th>
+<th rowspan="2">Definition</th>
+<th rowspan="2">Acceptance<br/>Times</th>
+</tr>
+<tr>
+<th>S-6</th>
+<th>7-13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>0010000</td>
+<td rowspan="12" style="writing-mode: vertical-rl; transform: rotate(180deg);">Complement of Bits S-6</td>
+<td>Time Base Update</td>
+<td>T4+ 0→T5+0</td>
+</tr>
+<tr>
+<td>11</td>
+<td>0010010</td>
+<td>Navigation Update</td>
+<td>T4+ 15→End of Mission [EOM]</td>
+</tr>
+<tr>
+<td>12</td>
+<td>0010100</td>
+<td>Generalized Switch Selector</td>
+<td>T4+ 0→EOM</td>
+</tr>
+<tr>
+<td>13</td>
+<td>0010110</td>
+<td>Memory Dump</td>
+<td>Prelaunch Command Mode<br/>T4+ 15→EOM</td>
+</tr>
+<tr>
+<td>20</td>
+<td>0100000</td>
+<td>Terminate</td>
+<td>When any other DCS command is allowed</td>
+</tr>
+<tr>
+<td>32</td>
+<td>0110100</td>
+<td>Targeting Load</td>
+<td>Prelaunch Command Mode</td>
+</tr>
+<tr>
+<td>35</td>
+<td>0111010</td>
+<td>Execute Generalized Maneuver</td>
+<td>T4+ 0→T5+0<br/>T5+T<sub>SS</sub>+2905.0→EOM</td>
+</tr>
+<tr>
+<td>36</td>
+<td>0111100</td>
+<td>Return to Nominal Timeline</td>
+<td>T4+ 0→T5+0</td>
+</tr>
+<tr>
+<td>41</td>
+<td>1000010</td>
+<td>Ladder Magnitude Limit</td>
+<td>T4+ 0→T5+0</td>
+</tr>
+<tr>
+<td>43</td>
+<td>1000110</td>
+<td>Compressed Data Dump</td>
+<td>T4+ 0→EOM</td>
+</tr>
+<tr>
+<td>44</td>
+<td>1001000</td>
+<td>S-IVB/IU De-orbit</td>
+<td>T4+ 0→T5+0</td>
+</tr>
+<tr>
+<td>45</td>
+<td>1001010</td>
+<td>Inhibit Water Control Valve Logic</td>
+<td>T4+ 0→EOM</td>
+</tr>
+</tbody>
+</table>
+
+## 2.8 FLIGHT SIMULATION LADDER PROFILES
+
+Figure 2-2 depicts the signal profiles required on the ladder outputs during flight simulation tests. These ladder profiles must be issued as specified in Section 12.4.6 of Part I.
+
+S-IB
+
+![Graph of S-IB (Roll and Pitch/Yaw) vs time. The y-axis ranges from -1 to +5. The x-axis shows time points 22, 27, 63, 68, 71, 74, 100, 120, 125, 128. The graph shows a 'ROLL 5°' pulse from 22 to 63, and a 'PITCH AND YAW 3°' pulse from 71 to 125. Switch points are marked at 100 and 120.](488af65082eeefc5615292962f9668fc_2_img.webp)
+
+ROLL 5°
+
+PITCH AND YAW 3°
+
+22 27 63 68 71 74 100 120 125 128
+
+SWITCH PT 1 AND 2
+
+SWITCH PT 3
+
+T1 + 0
+
+S-IVB
+
+![Graph of S-IVB (Roll and Pitch/Yaw) vs time. The y-axis ranges from -1 to +5. The x-axis shows time points 42, 60, 64, 132, 137, 150, 155, 203.7. The graph shows a 'MAX RATE' pulse at 42, a 'ROLL 2°' pulse from 60 to 64, a 'PITCH AND YAW 5°' pulse from 132 to 155, and a 'COAST' period starting at 203.7. A break in the x-axis is indicated between 64 and 132.](488af65082eeefc5615292962f9668fc_3_img.webp)
+
+MAX RATE
+
+ROLL 2°
+
+PITCH AND YAW 5°
+
+42 60 64 132 137 150 155 203.7
+
+SWITCH PT 4
+
+SWITCH PT. 5
+
+T3 + 0
+
+T4 + 0
+
+![Graph of T4 + 0 vs time. The y-axis ranges from -1 to +3. The x-axis shows time points 60, 64, 70, 74, 80, 84. The graph shows a 'MAX RATE' pulse at 60, a 'PITCH 2°' pulse from 60 to 64, a 'YAW 2°' pulse from 70 to 74, and a 'ROLL 2°' pulse from 80 to 84. The period after 84 is labeled 'COAST'.](488af65082eeefc5615292962f9668fc_4_img.webp)
+
+MAX RATE
+
+PITCH 2°
+
+YAW 2°
+
+ROLL 2°
+
+COAST
+
+60 64 70 74 80 84
+
+FIGURE 2-2 FLIGHT SIMULATION LADDER PROFILES
+
+## 2.9 VARIABLE DATA TAPE DATA
+
+Table 2-6 establishes the Variable Data Tape Data which must be assembled in the SA-207 flight program. The values presently assigned to the listed items are for checkout purposes only. This table provides the LVDC address, symbolic name, decimal value, and scaling factor for each of the Variable Data Tape data items.
+
+TABLE 2-6 VARIABLE DATA TAPE DATA
+
+<table border="1">
+<thead>
+<tr>
+<th>Address</th>
+<th>Name</th>
+<th>Decimal Value/Scaling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>016300</td>
+<td>TDAY</td>
+<td>1.200000D 02 10</td>
+</tr>
+<tr>
+<td>016301</td>
+<td>BX0</td>
+<td>-4.100000D-01 0</td>
+</tr>
+<tr>
+<td>016302</td>
+<td>BY0</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016303</td>
+<td>BZ0</td>
+<td>-1.730000D-01 0</td>
+</tr>
+<tr>
+<td>016304</td>
+<td>PBX</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016305</td>
+<td>PBY</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016306</td>
+<td>PBZ</td>
+<td>0.0 1</td>
+</tr>
+<tr>
+<td>016307</td>
+<td>TTMA1</td>
+<td>0.0 15</td>
+</tr>
+<tr>
+<td>016310</td>
+<td>TTMA2</td>
+<td>1.880000D 02 15</td>
+</tr>
+<tr>
+<td>016311</td>
+<td>TTMA3</td>
+<td>1.900000D 02 15</td>
+</tr>
+<tr>
+<td>016312</td>
+<td>TTMA4</td>
+<td>5.970000D 02 15</td>
+</tr>
+<tr>
+<td>016313</td>
+<td>CA1</td>
+<td>9.999999D-01 0</td>
+</tr>
+<tr>
+<td>016314</td>
+<td>CA2</td>
+<td>9.999999D-01 0</td>
+</tr>
+<tr>
+<td>016315</td>
+<td>CA3</td>
+<td>9.999930D-01 0</td>
+</tr>
+<tr>
+<td>016316</td>
+<td>CA4</td>
+<td>9.999770D-01 0</td>
+</tr>
+<tr>
+<td>016317</td>
+<td>SACB1</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016320</td>
+<td>SACB2</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016321</td>
+<td>SACB3</td>
+<td>-3.835000D-03 0</td>
+</tr>
+<tr>
+<td>016322</td>
+<td>SACB4</td>
+<td>-6.856000D-03 0</td>
+</tr>
+<tr>
+<td>016323</td>
+<td>SASB1</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016324</td>
+<td>SASB2</td>
+<td>0.0 0</td>
+</tr>
+<tr>
+<td>016325</td>
+<td>SASB3</td>
+<td>1.54000D-04 0</td>
+</tr>
+<tr>
+<td>016326</td>
+<td>SASB4</td>
+<td>1.96000D-04 0</td>
+</tr>
+<tr>
+<td>016327</td>
+<td>CKSMIB</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+![IBM logo](75de7e6f1b66744c7e955f1a6cbe5284_1_img.webp)The IBM logo, consisting of the letters "IBM" in a bold, sans-serif font, with horizontal lines running through the letters. A small registered trademark symbol (®) is located to the upper right of the letter "M".
+
+Printed in USA
+
+**Federal Systems Division  
+Electronics Systems Center  
+Huntsville, Alabama**
+
+![Apollo/Saturn Team logo](75de7e6f1b66744c7e955f1a6cbe5284_4_img.webp)The logo for the Apollo/Saturn Team, featuring the letters "IU" in a bold, sans-serif font, enclosed within a thick, black circular border. The letters are white, creating a high-contrast look against the red background.
+
+**Apollo/Saturn Team**
