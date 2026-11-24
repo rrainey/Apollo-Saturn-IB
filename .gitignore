@@ -8,3 +8,7 @@ data/console.log
 data/final.json
 data/results.csv
 data/after.txt
+# LVDC EDD Rev-K parts III-IV PDF is 128 MB, over GitHub's 100 MB per-file
+# limit. Users fetch from https://www.ibiblio.org/apollo/ and save locally.
+# The OCR'd Markdown stays in-repo.
+reference/lvdc_edd_saturn_ib_parts_iii_iv_rev_k.pdf

@@ -42,3 +42,37 @@ Project Apollo Standard Coordinate Systems (PASCs). Cited from
 | `LVDC-EDD/chandra/`, `LVDC-EDD/marker/` | OCR of each PDF |
 
 Each OCR folder also has the tool's metadata and the images it extracted.
+
+### LVDC EDD change documents (Rev-C and Rev-K)
+
+Two Rev-C and Rev-K change documents cover the AS-207 and ASTP
+missions. They do not replace the AS-205 baseline; see
+`memory/feedback_as205_scope_in_change_docs.md` for the scope rule.
+
+| Path | Contents |
+|------|----------|
+| `lvdc_edd_saturn_ib_parts_i_ii_rev_c_changes.pdf` | Rev-C change doc for parts I-II (AS-207 target mission). 53 MB. |
+| `lvdc_edd_saturn_ib_parts_i_ii_rev_k_changes.pdf` | Rev-K change doc for parts I-II (ASTP / AS-210 target mission). 24 MB. |
+| `LVDC-EDD/chandra/lvdc_edd_saturn_ib_parts_i_ii_rev_c_changes/` | Chandra OCR of the Rev-C change doc. |
+| `LVDC-EDD/chandra/lvdc_edd_saturn_ib_parts_i_ii_rev_k_changes/` | Chandra OCR of the Rev-K parts I-II change doc. |
+| `LVDC-EDD/chandra/lvdc_edd_saturn_ib_parts_iii_iv_rev_k/` | Chandra OCR of the Rev-K parts III-IV document (540 pages). |
+
+**Rev-K parts III-IV PDF is NOT in this repository.** The source
+file is 128 MB, over GitHub's 100 MB per-file limit. Get the PDF
+from the Apollo document archive at
+<https://www.ibiblio.org/apollo/> and save it locally as
+`reference/lvdc_edd_saturn_ib_parts_iii_iv_rev_k.pdf`. The repo's
+`.gitignore` excludes that path to prevent accidental commit. The
+OCR'd Markdown is tracked in-repo, so the content is searchable
+without the PDF.
+
+## Cape Kennedy Wind Component Statistics
+
+*Cape Kennedy Wind Component Statistics ... for All Flight Azimuths
+from 0 to 70 km Altitude* (NASA TM-X-53956, 1969). Reference for the
+TM-X-62831 Figure 16 October median wind profile.
+
+| Path | Contents |
+|------|----------|
+| `TM-X-53956.pdf` | The document (12 MB) |
+| `wind-tmx-53956/chandra/` | Chandra OCR, as Markdown and HTML (processing as of 2026-11-24). |
